@@ -140,20 +140,20 @@ The largest block on every single paper, and it depends on nothing else. Start h
 The highest points-per-hour day of the plan. Both are short procedures with fixed shapes.
 
 **Morning — E3 (15 pts)**
-- [ ] `theory/04a` — the lesson: where the dual comes from, the SOB table, CS derived, the
+- [x] `theory/04a` — the lesson: where the dual comes from, the SOB table, CS derived, the
       refutation procedure, worked SS25 E3. Read this first.
-- [ ] `theory/04` — the reference. Formula box only.
-- [ ] Reproduce the SOB table from memory before touching a paper.
+- [x] `theory/04` — the reference. Formula box only.
+- [x] Reproduce the SOB table from memory before touching a paper.
 
 *Warm-up ladder — sheet 4 + CE-04, ~1h15*
-- [ ] `D4.1` *Dual Problem* — `[DRILL]` mechanical dual derivation, nothing else. Do 2–3 until
+- [x] `D4.1` *Dual Problem* — `[DRILL]` mechanical dual derivation, nothing else. Do 2–3 until
       the SOB table is automatic.
-- [ ] `T4.2` *Duality* — `[DRILL]` same, with mixed constraint types and free variables.
-- [ ] `T4.1` *Duality & Complementary Slackness* — `[EXAM]` this is the exam's exact shape:
+- [x] `T4.2` *Duality* — `[DRILL]` same, with mixed constraint types and free variables.
+- [x] `T4.1` *Duality & Complementary Slackness* — `[EXAM]` this is the exam's exact shape:
       derive dual → state CS → use it.
-- [ ] `S4.2` *Duality & Complementary Slackness* — `[EXAM]` second rep of the same shape.
-- [ ] `D4.2` *Primal-Dual* — `[EXAM]` extra rep if the CS certificate still feels shaky.
-- [ ] `T4.3` *Rock-Paper-Scissors* — `[CONCEPT]` zero-sum games. Read only; no endterm has
+- [x] `S4.2` *Duality & Complementary Slackness* — `[EXAM]` second rep of the same shape.
+- [x] `D4.2` *Primal-Dual* — `[EXAM]` extra rep if the CS certificate still feels shaky.
+- [x] `T4.3` *Rock-Paper-Scissors* — `[CONCEPT]` zero-sum games. Read only; no endterm has
       asked for one. `D4.3` *Transportation Problem* — `[CONCEPT]`, same call.
 
 *Then the papers, timeboxed*
