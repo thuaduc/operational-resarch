@@ -19,8 +19,11 @@ pruned to what the past papers actually test. Every file has the same six sectio
 | 02 | [simplex](02-simplex.md) | Tableau, pivoting, degeneracy, Big-M, two-phase, tableau forensics |
 | 03 | [revised-simplex-and-sensitivity](03-revised-simplex-and-sensitivity.md) | `B⁻¹`, Row 0, reduced costs, shadow prices, cost/RHS ranging |
 | 04 | [duality](04-duality.md) | SOB table, weak/strong duality, complementary slackness, zero-sum games |
+| 04a | [duality-lesson](04a-duality-lesson.md) | **Teaching companion to 04, assumes no prior knowledge** — where the dual comes from (the bounding argument), the transpose, SOB, CS derived from strong duality, the refutation procedure, worked SS25 E3 |
 | 05 | [ip-modeling](05-ip-modeling.md) | The full modelling-trick catalogue |
+| 05a | [ip-modeling-lesson](05a-ip-modeling-lesson.md) | **Teaching companion to 05, assumes no prior knowledge** — binaries, summation notation, a first model built from scratch, then relaxation/complexity/templates, big-M derived, indicators, patterns by exam frequency, worked SS25 E4 |
 | 06 | [branch-and-bound-and-cuts](06-branch-and-bound-and-cuts.md) | Bounds, branching, pruning, FIFO/LIFO, Gomory cuts |
+| 06a | [branch-and-bound-lesson](06a-branch-and-bound-lesson.md) | **Teaching companion to 06, assumes no prior knowledge** — why the relaxation bounds, why branching loses nothing, the three pruning rules, a full worked tree, FIFO/LIFO traced, worked SS25 E5 |
 | 07 | [column-generation](07-column-generation.md) | RMP, pricing problem, termination |
 | 08 | [total-unimodularity-and-matroids](08-total-unimodularity-and-matroids.md) | Knapsack DP + FPTAS, TU, matroids + greedy |
 | 09 | [network-flow](09-network-flow.md) | Conservation, residual networks, Ford-Fulkerson, max-flow/min-cut |
