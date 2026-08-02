@@ -10,16 +10,37 @@ modelling, no creativity. The best points-per-hour question after duality.
 
 # Part 0 — What the exam actually asks
 
-Two formats:
+Two formats. The first is far more common:
 
-**Classic** (SS21, SS23, SS24) — solve a 2-variable IP by branch & bound, with the subproblems
-solved graphically on a plot they provide.
+**Classic — solve it graphically** (SS21 A4, SS23 E3, SS24 P3). A 2-variable IP, and **the paper
+hands you a plot** of the LP relaxation with the objective line already drawn. Their wording:
 
-**Reconstruction** (SS25) — the tree is drawn but **ink-blotted**. You're given a table of every
-LP relaxation the wizard considered, including decoys, and you recover which is which. Then:
-optimal solution, and the FIFO vs LIFO exploration order.
+> SS24 P3: *"Note: In the following coordinate systems, the feasible set of the LP relaxation of
+> (P) and the objective function are shown. You can use them to solve the subproblems
+> graphically."*
+>
+> SS23 E3: *"In the following coordinate system, the feasible region of the LP relaxation of (P)
+> as well as the objective function is plotted. You can use this to solve the subproblems."*
 
-The reconstruction format is the current one. Both need the same underlying machinery.
+The task is always the same sentence: *"Solve the integer linear program (P) using the
+branch-and-bound method. Specify the optimal values for x₁ and x₂, as well as the optimal value
+of the objective function."*
+
+**Reconstruction** (SS25 E5). No plot — instead the tree is drawn but **ink-blotted**, and you
+get a table of every LP relaxation considered, decoys included. You recover which node is which,
+give the optimum, and state the FIFO and LIFO exploration orders.
+
+## What this means for your prep
+
+| | Appears in | Priority |
+|---|---|---|
+| Solving subproblems **graphically** | SS21, SS23, SS24 | **highest** — three of four papers |
+| Pruning rules, correct direction | all four | **highest** |
+| Tree reconstruction from a table | SS25 only | high — it's the most recent |
+| FIFO / LIFO ordering | **SS25 only** | moderate — cheap to learn, rarely asked |
+
+**You never run simplex inside this question.** The problems are deliberately two-dimensional so
+that every subproblem is a picture. Bring your ruler — it's on the allowed list for exactly this.
 
 ---
 
@@ -44,8 +65,8 @@ The throwing-away is the point. You never enumerate; you prove entire regions wo
 **LP relaxation:** take the IP and delete the integrality requirements (`x ∈ ℕ₀` becomes
 `x ≥ 0`). What's left is an ordinary LP you can solve.
 
-Because you *removed* restrictions, the relaxation has more feasible points than the IP — every
-integer solution is still allowed, plus fractional ones. More room can only help, so:
+Because you **removed restrictions**, the relaxation has **more feasible points than the IP** 
+—> every integer solution is still allowed, plus fractional ones. More room can only help, so:
 
 ```
 maximisation:   OPT(IP)  ≤  Z_LP        the relaxation is an UPPER bound
@@ -143,7 +164,50 @@ if you prune on a tie; it shows you know the rule.
 
 ---
 
-# Part 5 — A complete worked tree
+# Part 5 — Solving a node on the plot
+
+This is the mechanical skill three of the four papers actually test. Every subproblem is the
+original feasible region plus the branch constraints accumulated down the path — and every
+branch constraint is a **straight vertical or horizontal line**.
+
+```
+1. Start from the plotted LP relaxation. It's already drawn for you.
+
+2. Draw each branch constraint on the path to this node:
+       x₁ ≤ 2   → vertical line at x₁ = 2, keep the LEFT side
+       x₁ ≥ 3   → vertical line at x₁ = 3, keep the RIGHT side
+       x₂ ≤ 1   → horizontal line at x₂ = 1, keep BELOW
+       x₂ ≥ 2   → horizontal line at x₂ = 2, keep ABOVE
+
+3. Constraints ACCUMULATE. A depth-3 node carries three lines, all still in force.
+   Shade what survives all of them.
+
+4. Empty region?  → prune by infeasibility. No arithmetic needed at all.
+
+5. Otherwise slide the objective line in the improving direction until it LAST
+   touches the shaded region. Read the vertex off, and compute Z from it.
+```
+
+Two things make this fast in the exam:
+
+- **Infeasible nodes are free.** You see the empty region instantly; there's nothing to compute.
+  In SS25's tree two of the six nodes were infeasible.
+- **The optimum is always at a vertex**, and after branching the vertices are usually
+  intersections of a branch line with an original constraint — easy to read off, or to solve as
+  a 2×2 system if the picture is ambiguous.
+
+## Which variable to branch on
+
+When more than one variable is fractional, the choice is yours. Only SS25 states a rule:
+
+> *"whenever a branching choice was ambiguous, he chose to branch on the first variable"*
+
+The classic papers say nothing, so **any choice is acceptable — but state which you made and
+stay consistent.** Undocumented choices lose marks; unconventional ones don't.
+
+---
+
+# Part 6 — A complete worked tree
 
 Use SS25's problem:
 ```
@@ -176,10 +240,15 @@ the tree was dismissed with one comparison.
 
 ---
 
-# Part 6 — FIFO vs LIFO
+# Part 7 — FIFO vs LIFO
 
 The rules above say *whether* to close a node. They don't say **which open node to pick next**.
-That's the node-selection strategy, and the exam asks for both.
+That's the node-selection strategy.
+
+> **How much this matters.** Only **SS25** has ever asked for it. SS21, SS23 and SS24 don't
+> mention FIFO or LIFO at all — in those you explore in whatever order you like. So this is
+> worth about twenty minutes, not an afternoon. Learn it because SS25 is the most recent paper
+> and it's cheap, not because it's the core of the topic.
 
 | | **FIFO** | **LIFO** |
 |---|---|---|
@@ -205,7 +274,7 @@ before it has any incumbent to prune with.
 
 ---
 
-# Part 7 — Reconstructing an obscured tree (the SS25 format)
+# Part 8 — Reconstructing an obscured tree (the SS25 format)
 
 You get a tree with blank boxes and a table of candidate subproblems including decoys. Procedure:
 
@@ -227,7 +296,7 @@ constraints to right-hand nodes"*. **Read those sentences.** They determine whic
 
 ---
 
-# Part 8 — Worked example: SS25 E5, all four parts
+# Part 9 — Worked example: SS25 E5, all four parts
 
 Given: `P₀: x = (2.25, 3.75)`, `Z₀ = 14.25`, branch on `x₁`. And `P₃: x = (3.4, 1)`,
 `Z₃ = 12.19`, branch on `x₁`. Edges `P₂→P₃` is `x₂ ≤ 1`, `P₂→P₄` is `x₂ ≥ 2`.
@@ -301,7 +370,7 @@ artefact of the good solution sitting on the left branch. Worth a sentence if yo
 
 ---
 
-# Part 9 — Gomory cuts, briefly
+# Part 10 — Gomory cuts, briefly
 
 Cuts are the *other* way to handle fractional relaxations, and they show up as multiple-choice
 items rather than as a full question. What you need:
@@ -322,25 +391,37 @@ a full exam question; don't spend the afternoon on it.
 
 ---
 
-# Part 10 — Traps and drills
+# Part 11 — Traps and drills
 
 ## Where points are lost
 
 1. **Pruning in the wrong direction.** Write "MAX" or "MIN" at the top of your answer and check
-   rule 3 against it.
-2. **Forgetting that constraints accumulate.** A node carries every ancestor's branch.
+   rule 3 against it. SS24 P3 is a **minimisation** — don't get caught.
+2. **Forgetting that constraints accumulate.** A node carries every ancestor's branch, and on
+   the plot that means every ancestor's line is still cutting.
 3. **Branching on an integer-valued variable.** Only branch on a *fractional* one.
-4. **Missing the early STOP.** The question says "stopped as soon as the optimal solution was
+4. **Not saying which variable you branched on** when several were fractional. Any choice is
+   fine; an undocumented one is not.
+5. **Missing the early STOP** in the SS25 format. "Stopped as soon as the optimal solution was
    confirmed" — running to the end loses the point.
-5. **Ignoring the stated tie-break convention** for which child goes left.
-6. **Not updating the incumbent** when an integral solution beats it.
+6. **Ignoring the stated tie-break convention** for which child goes left.
+7. **Not updating the incumbent** when an integral solution beats it.
+
+## The answer format that earns full marks
+
+For **every** node, write four things:
+```
+node │ constraint added │ vertex read off the plot │ Z │ which rule closed it
+```
+That table *is* the documented approach. A correct final answer with no node record scores badly;
+a fully recorded tree with one arithmetic slip scores well.
 
 ## Before any past paper
 
 From blank paper:
 - the three pruning rules, **for max and for min**
-- FIFO and LIFO order on a 7-node tree
 - why `xᵢ ≤ ⌊f⌋ | xᵢ ≥ ⌈f⌉` loses no integer point
+- FIFO and LIFO order on a 7-node tree *(SS25 format only — 20 minutes, no more)*
 
 ## Warm-up ladder (untimed)
 
@@ -357,8 +438,14 @@ self-study section (S6.x) is in the second half of the same file.
 
 ## Then the papers (timed, one minute per point)
 
-SS25 E5 (14) — the ink-blot reconstruction, current format · SS24 P3 (16) · SS23 E3 (16) ·
-SS21 A4 (13)
+Do the **graphical** ones first — that's three of the four formats:
+
+- **SS23 E3** (16) — max, plot provided. The cleanest example of the classic format.
+- **SS24 P3** (16) — **minimisation**, plot provided. Deliberately do this one second, while the
+  max version is fresh, so you feel the pruning rule flip.
+- **SS21 A4** (13) — max, solve graphically.
+- **SS25 E5** (14) — the ink-blot reconstruction. Different skill: no plot, table lookup, plus
+  the FIFO/LIFO part.
 
 ## Connections to the rest of the paper
 
