@@ -206,7 +206,10 @@ The highest points-per-hour day of the plan. Both are short procedures with fixe
 
 ## Day 4 — Tue 4 Aug — **E7b: Convexity, Slater, KKT** (part of the same 20 pts)
 
-- [ ] `theory/11` second half — Slater vs LICQ, the four KKT blocks, the decision flowchart.
+- [ ] `theory/11b` — the lesson: convex sets vs functions, proving convexity from the
+      definition, the Lagrangian, the four KKT blocks, the complementary-slackness case
+      split, Slater vs LICQ, worked SS25 E7. Read this first.
+- [ ] `theory/11` second half — the reference. Procedures 3–7 and the Formula box.
 
 **Warm-up ladder — sheet 11 + sheet 10 + CE-10, ~2h**
 - [ ] `T11.1` *Convex Functions – Examples* — `[DRILL]` decide convexity for a list of functions.

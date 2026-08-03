@@ -30,6 +30,7 @@ pruned to what the past papers actually test. Every file has the same six sectio
 | 10 | [tsp-and-approximation](10-tsp-and-approximation.md) | Euler/Hamilton, SEC + MTZ, heuristics, MST-doubling vs Christofides |
 | 11 | [nonlinear-and-convex-kkt](11-nonlinear-and-convex-kkt.md) | Hessians, convexity, Lagrange, KKT, Slater vs LICQ |
 | 11a | [nonlinear-unconstrained-lesson](11a-nonlinear-unconstrained-lesson.md) | **Teaching companion to 11, first half, assumes no prior knowledge** — gradient and Hessian from the one-variable case, definiteness via det/trace, minors and the eigenvalue fallback, the convexity shortcut, worked SS24 P7a and SS23 E7 |
+| 11b | [convexity-kkt-lesson](11b-convexity-kkt-lesson.md) | **Teaching companion to 11, second half, assumes no prior knowledge** — convex sets vs functions, four routes to proving convexity, the Lagrangian and why λ ≥ 0, the four KKT blocks, the CS case split, Slater vs LICQ, worked SS25 E7 |
 
 Chapter numbers do **not** match the central-exercise numbers. CE-7 is column generation only;
 CE-8 bundles TU + matroids + network flow; CE-10 includes KKT; CE-11 is online optimization.
