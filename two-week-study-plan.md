@@ -187,58 +187,41 @@ The highest points-per-hour day of the plan. Both are short procedures with fixe
 
 ## Day 3 — Mon 3 Aug — **E7a: Nonlinear, unconstrained** (12–23 pts)
 
-- [ ] `theory/11a` — the lesson: gradient and Hessian built from the one-variable case,
+- [x] `theory/11a` — the lesson: gradient and Hessian built from the one-variable case,
       definiteness by det/trace and by minors, the eigenvalue fallback, the convexity
       shortcut, worked SS24 P7a and SS23 E7. Read this first.
-- [ ] `theory/11` first half — the reference. Procedures 1–2 and the Formula box.
+- [x] `theory/11` first half — the reference. Procedures 1–2 and the Formula box.
 
 **Warm-up ladder — CE-10 + sheet 10, ~1h**
-- [ ] `D10.2` *Unconstrained Optimization* — `[SAME-TYPE]` gradient → critical points → Hessian
+- [x] `D10.2` *Unconstrained Optimization* — `[SAME-TYPE]` gradient → critical points → Hessian
       classification. This is exactly SS24 P7a's task. Do two or three functions until the
       minor test is automatic.
-- [ ] `T10.1` *Gradient Descent vs. Newton's Method* — `[CONCEPT]` read only. Never asked as a
+- [x] `T10.1` *Gradient Descent vs. Newton's Method* — `[CONCEPT]` read only. Never asked as a
       computation, but it is MC fodder (SS25 1h was about gradient descent convergence).
 
 **Then the papers, timeboxed**
-- [ ] SS24 P7a (`x² + y² + e^{2x} − (8x+6y) + 2xy`), SS21 A6.
-- [ ] Then the parameterised one: SS23 E7 — classify all critical points of
+- [x] SS24 P7a (`x² + y² + e^{2x} − (8x+6y) + 2xy`), SS21 A6.
+- [x] Then the parameterised one: SS23 E7 — classify all critical points of
       `f_α(x,y) = −¼x⁴ − ¼y⁴ + αxy` **as a function of α**. Expect a case split, not one answer.
-- [ ] Evening, light: start `theory/11` second half — convex sets, convex functions, and the
-      proof of convexity straight from the definition.
+**Rest of today — the graph block** (moved up from Day 5)
 
-## Day 4 — Tue 4 Aug — **E7b: Convexity, Slater, KKT** (part of the same 20 pts)
+Max-flow / min-cut is the cheapest 14 points on the paper and the demo *is* the exam question.
+Do it while the day still has hours in it.
 
-- [ ] `theory/11b` — the lesson: convex sets vs functions, proving convexity from the
-      definition, the Lagrangian, the four KKT blocks, the complementary-slackness case
-      split, Slater vs LICQ, worked SS25 E7. Read this first.
-- [ ] `theory/11` second half — the reference. Procedures 3–7 and the Formula box.
+- [ ] `theory/09` — conservation, residual network, Ford-Fulkerson, max-flow = min-cut.
+      Cut capacity counts **forward arcs only**.
+- [ ] **`S8.3`** *Max-flow and min-cut counterexamples* — `[SAME]` **this is SS25 E6
+      word-for-word, same graphs.** Do it properly, then check against the SS25 solutions.
+- [ ] `T8.2` *Maximum Flow* — `[DRILL]` only if Ford-Fulkerson itself is shaky.
+- [ ] `D8.4` *Tips and tricks for network modeling* — `[CONCEPT]`, 10 min skim. The five
+      transformations (node splitting, lower bounds, multiple sources) in `theory/09`.
+- [ ] Paper: SS21 A5 (flow part).
+- [ ] Note the recurring verb: **"give a counterexample"**. You are usually disproving, not
+      proving. Practise producing a small graph that breaks a statement.
 
-**Warm-up ladder — sheet 11 + sheet 10 + CE-10, ~2h**
-- [ ] `T11.1` *Convex Functions – Examples* — `[DRILL]` decide convexity for a list of functions.
-- [ ] `T11.2` *Convex functions* — `[EXAM]` **prove convexity from the definition.** This is
-      SS25 E7a's task and the part people skip. Do it until the `f(λx+(1−λ)y) ≤ …` chain is
-      muscle memory.
-- [ ] `D10.1` *Topological Properties and Convex Sets* — `[CONCEPT]` convex *sets* vs convex
-      *functions*. Skim; know the distinction, don't grind the topology.
-- [ ] `T10.2` *Lagrange multipliers* — `[DRILL]` build the Lagrangian, equality constraints only.
-- [ ] `D10.3` *KKT-conditions* — `[EXAM]` full KKT system with inequalities and the
-      tight/not-tight case split. The core rep.
-- [ ] `T10.3` *Non-linear optimization – KKT conditions* — `[EXAM]` second rep.
-- [ ] Skip `T11.3` *Hedge Algorithm* and all of CE-11 — online optimization, dropped.
+## Day 4 — Tue 4 Aug — **E2: Sensitivity** + **rest of E6** (~30 pts)
 
-**Then the papers, timeboxed**
-- [ ] SS25 E7 *Minimal Circle Enclosure*, all of a–e. It is the model question:
-      define convexity → prove a norm is convex → formulate → verify Slater → Lagrangian →
-      KKT → interpret `λᵢ > 0`.
-- [ ] SS24 P7b — KKT with a single linear constraint, Slater verified. Shorter, second rep.
-- [ ] **End-of-day test.** Without notes:
-  - prove a given function is convex from the definition
-  - write the Lagrangian, then the KKT system, then the tight / not-tight case split
-  - state: **Slater ⇒ a KKT point is a global optimum**; **LICQ ⇒ candidates only**
-
-## Day 5 — Wed 5 Aug — **E2: Sensitivity** + **E6: Combinatorial** (~30 pts)
-
-**Morning — E2 (16 pts).** Your simplex mechanics are already in from Day 2 of the old plan;
+**Morning — E2 (16 pts).** Your simplex mechanics are already in from Day 2;
 this is the layer on top.
 - [ ] `theory/03` — `B⁻¹`, `Row0 = c_B B⁻¹A − c`, reduced costs, shadow prices, cost ranging,
       RHS ranging, pricing a new column.
@@ -266,15 +249,10 @@ this is the layer on top.
 - [ ] Memorise the Row 0 formula and the reduced cost of a new column. These two carry the
       whole question.
 
-**Afternoon — E6 speedrun (14 pts).** Five topics rotate through this slot and you cannot
-learn all five properly. Learn the **mechanical core of each**, skip every proof.
-Each block below is *one* warm-up then straight to the paper question. No ladders — there
-isn't time.
+**Afternoon — rest of E6 (14 pts).** Flow is done. Four topics still rotate through this slot
+and you cannot learn all four properly. Learn the **mechanical core of each**, skip every proof.
+Each block is *one* warm-up then straight to the paper question. No ladders — there isn't time.
 
-- [ ] **Max-flow / min-cut** — 45 min. Ford-Fulkerson, residual network, cut capacity counts
-      **forward arcs only**.
-      → **`S8.3`** `[SAME]` — **this is SS25 E6 word-for-word, same graphs.** Do it first.
-      → `T8.2` *Maximum Flow* `[DRILL]` if Ford-Fulkerson itself is shaky. Paper: SS21 A5.
 - [ ] **Matroids** — 45 min. The three axioms, verbatim; all bases equicardinal.
       → `D8.3` *Matroids* `[EXAM]`, then `T8.1` *Matroids* `[EXAM]`. Papers: SS24 P5, SS23 E5.
 - [ ] **Total unimodularity** — 30 min. The three sufficient conditions verbatim; TU + integral
@@ -291,10 +269,45 @@ isn't time.
       which asks "which problem class is this?" — the exact SS24 P6b question type.
       Papers: SS24 P6, SS23 E6.
 - [ ] Skip `T8.3` *Dredgers* (Hungarian), `S8.2` / `D8.2` *DGS* — never examined.
-- [ ] `D8.4` *Tips and tricks for network modeling* — `[CONCEPT]`, 10 min skim. The five
-      transformations (node splitting, lower bounds, multiple sources) in `theory/09`.
-- [ ] Note the recurring verb: **"give a counterexample"**. You are usually disproving, not
-      proving. Practise producing a small graph that breaks a statement.
+
+**Evening — convexity only, no KKT (~1h).** This is the cheap half of tomorrow's topic, and
+doing it tonight means Wednesday isn't first contact with anything.
+- [ ] `theory/11b` **Parts 1–2 only** — convex sets vs convex functions, and the four routes to
+      proving convexity. Stop before Part 3.
+- [ ] `T11.1` *Convex Functions – Examples* — `[DRILL]` decide convexity for a list.
+- [ ] `T11.2` *Convex functions* — `[EXAM]` **prove convexity from the definition.** This is
+      SS25 E7b's task. Drill until the `f(λx+(1−λ)y) ≤ …` chain is muscle memory.
+- [ ] `D10.1` *Topological Properties and Convex Sets* — `[CONCEPT]` skim. Know convex set vs
+      convex function, and closed + bounded ⟹ compact.
+
+## Day 5 — Wed 5 Aug — **E7b: Slater and KKT** (the last new topic)
+
+Moved to the end deliberately: it is the hardest block on the paper. Convexity is already in
+from last night, so today is only the KKT machinery.
+
+- [ ] `theory/11b` **Parts 3–9** — standard form, the Lagrangian, the four KKT blocks, the
+      complementary-slackness case split, Slater vs LICQ, worked SS25 E7.
+- [ ] `theory/11` second half — the reference. Procedures 4–7 and the Formula box.
+
+**Warm-up ladder — sheet 10 + CE-10, ~2h**
+- [ ] `T10.2` *Lagrange multipliers* — `[DRILL]` build the Lagrangian, equalities only. Start here.
+- [ ] `D10.3` *KKT-conditions* — `[EXAM]` full system with inequalities and the tight/not-tight
+      case split. The core rep.
+- [ ] `T10.3` *Non-linear optimization – KKT conditions* — `[EXAM]` second rep.
+- [ ] Skip `T11.3` *Hedge Algorithm* and all of CE-11 — online optimization, dropped.
+
+**Then the papers, timeboxed**
+- [ ] SS25 E7 *Minimal Circle Enclosure*, all parts. The model question.
+- [ ] SS24 P7b — KKT with a single linear constraint, Slater verified. Shorter, second rep.
+
+**If KKT does not fully land, bank the parts that don't need it.** SS25 E7 parts (a), (b) and
+(c) are *definition, norm proof, formulate* — pure convexity, no KKT, and they were roughly a
+third of the marks. Write those cold and move on rather than stalling on the Lagrangian.
+
+- [ ] **End-of-day test.** Without notes:
+  - prove a given function is convex from the definition
+  - write the Lagrangian, then the KKT system, then the tight / not-tight case split
+  - state: **Slater ⇒ a KKT point is a global optimum**; **LICQ ⇒ candidates only**
 
 ## Day 6 — Thu 6 Aug — **E1: Multiple choice** + final rehearsal
 
@@ -377,10 +390,10 @@ Scan all exercises first, then work in this order regardless of their numbering:
 E1  Multiple choice   ~15 pts / 12 min   ← best pts/min, and never leave one blank
 E3  Duality           ~15 pts / 15 min   ← most procedural, banks points early
 E5  Branch & Bound    ~14 pts / 14 min
+E6  Combinatorial     ~14 pts / 14 min   ← flow/counterexamples, your strongest of these
 E4  IP modelling      ~22 pts / 25 min   ← largest; do it while you're still sharp
-E7  Nonlinear         ~20 pts / 22 min
 E2  Simplex/sens      ~16 pts / 18 min
-E6  Combinatorial     ~14 pts / 14 min
+E7  Nonlinear         ~20 pts / 22 min   ← LAST. Write the convexity parts first, then KKT
                                 ~20 min spare — spend it on E4 and E7
 ```
 
