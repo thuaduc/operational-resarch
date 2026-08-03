@@ -208,8 +208,10 @@ The highest points-per-hour day of the plan. Both are short procedures with fixe
 Max-flow / min-cut is the cheapest 14 points on the paper and the demo *is* the exam question.
 Do it while the day still has hours in it.
 
-- [ ] `theory/09` — conservation, residual network, Ford-Fulkerson, max-flow = min-cut.
-      Cut capacity counts **forward arcs only**.
+- [ ] `theory/09a` — the lesson: flows and cuts from zero, why cut capacity is forward-only,
+      max-flow/min-cut as the LP duality you did on Day 2, why the residual backward arc
+      exists, Ford-Fulkerson, worked SS25 E6 counterexamples. Read this first.
+- [ ] `theory/09` — the reference. Procedures 1–3 and the Formula box.
 - [ ] **`S8.3`** *Max-flow and min-cut counterexamples* — `[SAME]` **this is SS25 E6
       word-for-word, same graphs.** Do it properly, then check against the SS25 solutions.
 - [ ] `T8.2` *Maximum Flow* — `[DRILL]` only if Ford-Fulkerson itself is shaky.

@@ -27,6 +27,7 @@ pruned to what the past papers actually test. Every file has the same six sectio
 | 07 | [column-generation](07-column-generation.md) | RMP, pricing problem, termination |
 | 08 | [total-unimodularity-and-matroids](08-total-unimodularity-and-matroids.md) | Knapsack DP + FPTAS, TU, matroids + greedy |
 | 09 | [network-flow](09-network-flow.md) | Conservation, residual networks, Ford-Fulkerson, max-flow/min-cut |
+| 09a | [network-flow-lesson](09a-network-flow-lesson.md) | **Teaching companion to 09, assumes no prior knowledge** — flows and cuts from zero, why cut capacity is forward-only, max-flow/min-cut as LP duality, why the residual backward arc exists, Ford-Fulkerson, worked SS25 E6 counterexamples |
 | 10 | [tsp-and-approximation](10-tsp-and-approximation.md) | Euler/Hamilton, SEC + MTZ, heuristics, MST-doubling vs Christofides |
 | 11 | [nonlinear-and-convex-kkt](11-nonlinear-and-convex-kkt.md) | Hessians, convexity, Lagrange, KKT, Slater vs LICQ |
 | 11a | [nonlinear-unconstrained-lesson](11a-nonlinear-unconstrained-lesson.md) | **Teaching companion to 11, first half, assumes no prior knowledge** — gradient and Hessian from the one-variable case, definiteness via det/trace, minors and the eigenvalue fallback, the convexity shortcut, worked SS24 P7a and SS23 E7 |
