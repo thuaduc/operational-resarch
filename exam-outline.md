@@ -1,7 +1,7 @@
 # Endterm outline — what Exercises 1–8 will look like
 
 **Format:** 120 minutes, ~120 points, **7 exercises** (SS23, SS24, SS25 all had exactly 7;
-the SS21 retake had 8). One point ≈ one minute. Aids: non-programmable calculator, analog
+the SS21 retake, now out of scope, had 8). One point ≈ one minute. Aids: non-programmable calculator, analog
 dictionary, ruler. No cheat sheet.
 
 Below: 8 slots. Slots 1–7 are the reliable skeleton. Slot 8 is the rotating one — in a
@@ -11,20 +11,24 @@ Below: 8 slots. Slots 1–7 are the reliable skeleton. Slot 8 is the rotating on
 
 ## What actually appeared
 
-| # | SS21 endterm | SS21 retake | SS23 | SS24 | SS25 |
-|---|---|---|---|---|---|
-| 1 | Sensitivity (16) | Graphical LP (7) | Duality (19) | **Multiple choice (14)** | **Multiple choice (16)** |
-| 2 | Duality (6) | Simplex (14) | IP modelling (22) | Duality (16) | Simplex/sensitivity (16) |
-| 3 | IP modelling (35) | Sensitivity (19) | Branch & Bound (16) | Branch & Bound (16) | Duality (15) |
-| 4 | Branch & Bound (13) | Duality + CS (10) | Knapsack DP (14) | IP modelling (22) | IP modelling (21) |
-| 5 | Flow + TU (14) | IP modelling (32) | Matroids (14) | Matroids (14) | Branch & Bound (14) |
-| 6 | Convex functions (13) | Min-cut + complexity (14) | TSP heuristic (12) | IP + NP-hardness (18) | Max-flow/min-cut (14) |
-| 7 | Column generation (23) | Convex functions (12) | Critical points (23) | Nonlinear (20) | Convexity + KKT (20) |
-| 8 | — | Lagrange/KKT (12) | — | — | — |
+The SS21 retake is **out of scope** — too old to be representative — so the four papers below are
+the evidence base.
+
+| # | SS21 endterm | SS23 | SS24 | SS25 |
+|---|---|---|---|---|
+| 1 | Sensitivity (16) | Duality (19) | **Multiple choice (14)** | **Multiple choice (16)** |
+| 2 | Duality (6) | IP modelling (22) | Duality (16) | Simplex/sensitivity (16) |
+| 3 | IP modelling (35) | Branch & Bound (16) | Branch & Bound (16) | Duality (15) |
+| 4 | Branch & Bound (13) | Knapsack DP (14) | IP modelling (22) | IP modelling (21) |
+| 5 | Flow + TU (14) | Matroids (14) | Matroids (14) | Branch & Bound (14) |
+| 6 | Convex functions (13) | TSP heuristic (12) | IP + NP-hardness (18) | Max-flow/min-cut (14) |
+| 7 | Column generation (23) | Critical points (23) | Nonlinear (20) | Convexity + KKT (20) |
 
 **Never absent:** IP modelling, branch & bound, duality, nonlinear.
 **Usually there:** multiple choice (since SS24), simplex/sensitivity, one combinatorial topic.
 **Rare:** column generation (SS21 only, but 23 points when it came).
+
+All four papers have **exactly 7 exercises**, which strengthens the 7-slot reading below.
 
 ---
 
@@ -77,7 +81,7 @@ d) Which perturbation of the water capacity makes the BFS degenerate — which b
 e) New drink uses 3 L water + 1 kg lemon: write its reduced cost and the condition on `p_S`
    for it to enter the basis.
 
-**Watch.** The sensitivity chain in retake-2021 A3 is the canonical version: shadow price →
+**Watch.** The full sensitivity chain — shadow price →
 validity range → violate the range → recompute the new shadow price after a basis change.
 
 ---
@@ -104,7 +108,7 @@ c) Show `x = (2,2,1)ᵀ` is **not** optimal — build the dual system CS forces,
    feasible solution. You never solve the LP.
 
 **Watch.** Part (c) is worth the most and is pure procedure. Also: "is (D) unbounded,
-infeasible, or finite — *without solving it*" (retake-2021 A4c).
+infeasible, or finite — *without solving it*".
 
 ---
 
@@ -138,7 +142,7 @@ Part (e) is the graded one — the implication pattern:
 ```
 
 **Watch.** Always name your helper variables in words — undocumented variables score zero.
-Past scenarios: beer gardens (SS21), machine scheduling with maintenance windows (retake),
+Past scenarios: beer gardens (SS21),
 ice cream (SS23), Tour d'Allemagne stages (SS24), schools (SS25).
 
 ---
@@ -181,9 +185,9 @@ counterexample" lives.
 | Topic | Year | Shape |
 |---|---|---|
 | Matroids | SS23, SS24 | verify the 3 axioms, or give a set system that violates one |
-| Network flow / min cut | SS21, SS25, retake | Ford–Fulkerson, max-flow = min-cut, counterexamples |
+| Network flow / min cut | SS21, SS25 | Ford–Fulkerson, max-flow = min-cut, counterexamples |
 | Knapsack DP | SS23 | fill the DP table, `O(nW)` vs `O(nV)` |
-| Total unimodularity | SS21, retake | check the 3 sufficient conditions on an incidence matrix |
+| Total unimodularity | SS21 | check the 3 sufficient conditions on an incidence matrix |
 | TSP / approximation | SS23, SS24 | disprove a heuristic, or run MST-doubling |
 
 **Example A** (SS25 E6, max-flow counterexamples). *"Use the given graph to find a
@@ -245,19 +249,19 @@ and people skip it. Know the split: **Slater ⇒ KKT point is a global optimum**
 
 ## Exercise 8 — The wildcard · 12–23 pts
 
-Only appears when the paper runs to 8 problems (retake SS21), otherwise merged upward.
-Three things have filled it:
+**Every in-scope paper runs to 7 exercises**, so treat this slot as unlikely. Historically only
+one thing has filled it:
 
-1. **Column generation** (SS21 E7, 23 pts). Set up the restricted master problem, count the
-   columns of `A`, formulate the pricing problem, argue termination.
-   *Example:* `m` friends with luggage `wᵢ`, cars of capacity `W`, some pairs refuse to
-   share. Columns of `A` = valid fill patterns. "How many columns does `A` have if every
-   pair is feuding?" → exactly `m` (each person alone). "When is column generation
-   especially worthwhile?" → when `|S|` is small, so the pattern count explodes.
-2. **Lagrange multipliers with nonlinear constraints** (retake SS21 A8) — the constrained
-   half of nonlinear split off into its own problem.
-3. **Graphical LP** (retake SS21 A1, 7 pts) — read the vertices off a plotted feasible
-   region, list them lexicographically. Cheap points, appears as a warm-up.
+**Column generation** (SS21 A7, 23 pts). Set up the restricted master problem, count the columns
+of `A`, formulate the pricing problem, argue termination.
+
+*Example:* `m` friends with luggage `wᵢ`, cars of capacity `W`, some pairs refuse to share.
+Columns of `A` = valid fill patterns. "How many columns does `A` have if every pair is feuding?"
+→ exactly `m` (each person alone). "When is column generation especially worthwhile?" → when
+`|S|` is small, so the pattern count explodes.
+
+That question is **CE demo D7.2 word-for-word**, so if it ever reappears the demo is the prep.
+Otherwise this slot merges upward into 6 or 7.
 
 ---
 

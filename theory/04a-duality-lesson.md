@@ -10,7 +10,7 @@ procedural question on the whole exam — it has the same three parts nearly eve
 
 # Part 0 — What the exam actually asks
 
-SS25 E3, SS24 P2, SS23 E1, retake A4 are all the same three parts:
+SS25 E3, SS24 P2 and SS23 E1 share the same three parts:
 
 ```
 a)  Derive the dual linear program (D) corresponding to (P).
@@ -217,7 +217,7 @@ That last point is a standard multiple-choice trap (it was SS25 1a).
 ## Classifying without solving
 
 A recurring sub-question: *"Is (D) unbounded, infeasible, or does it have a finite optimum —
-without solving it?"* (retake A4c)
+without solving it?"* — a recurring sub-question
 
 ```
 1. Exhibit one feasible point of (P).  ⇒ by weak duality, (D) cannot be unbounded.
@@ -409,7 +409,7 @@ section (S4.x) is in the second half of the same file.
 
 ## Then the papers (timed, one minute per point)
 
-SS25 E3 (15) · SS24 P2 (16) · SS23 E1 (19) · retake A4 (10)
+SS25 E3 (15) · SS24 P2 (16) · SS23 E1 (19)
 
 ## Facts that also earn points elsewhere
 

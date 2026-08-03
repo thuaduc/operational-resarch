@@ -46,10 +46,10 @@ CE-8 bundles TU + matroids + network flow; CE-10 includes KKT; CE-11 is online o
 | "Solve using B&B; the LP relaxation is plotted, solve subproblems graphically" | SS21, SS23, SS24 |
 | "The tree is ink-blotted — recover the missing nodes and give FIFO vs LIFO order" | SS25 E5 |
 | "Classify all critical points as a function of the parameter α" | SS23 E7 |
-| "What is the correct Row 0?" / "Reconstruct the LP from this tableau" | SS25 E2a, retake A2c |
+| "What is the correct Row 0?" / "Reconstruct the LP from this tableau" | SS25 E2a |
 | "Show or disprove / give a counterexample" | matroids, TSP heuristics, max-flow, convexity |
-| "Show `x*` is not optimal" via a CS certificate rather than solving | SS24 P2, SS25 E3, retake A4 |
-| Sensitivity chain: shadow price → validity range → range violated → new shadow price | retake A3 |
+| "Show `x*` is not optimal" via a CS certificate rather than solving | SS24 P2, SS25 E3 |
+| Sensitivity chain: shadow price → validity range → range violated → new shadow price | D3.2, midterm SS25 P5 |
 
 ---
 
@@ -78,7 +78,7 @@ Out loud, without notes:
 Verified, and flagged in the relevant files:
 
 1. **Midterm SS26 P2d** gives `{λ₁n₁+λ₂n₂ : λᵢ>0}` as the `c` making the LP *unbounded*. That cone is exactly where it is **bounded** — `c=(−1,−1)` is inside it and bounded; `c=(1,1)` is unbounded and outside it. → `01` Traps.
-2. **retake-2021 A7 and ce-09-demo D9.1** both call MST-doubling "Christofides' 2-approximation". Christofides is the 3/2 algorithm with the odd-degree matching. If an exam phrases it their way, **execute MST-doubling** — that is what gets graded. → `10` Traps #1.
+2. **ce-09-demo D9.1** calls MST-doubling "Christofides' 2-approximation". Christofides is the 3/2 algorithm with the odd-degree matching. If an exam phrases it their way, **execute MST-doubling** — that is what gets graded. → `10` Traps #1.
 3. **The TU sufficient condition is never named in the lecture.** Reproduce the three numbered conditions; citing "Ghouila-Houri" earns nothing. → `08`.
 
 ---

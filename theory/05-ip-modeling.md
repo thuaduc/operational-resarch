@@ -250,7 +250,7 @@ Flip the sign of whichever objective disagrees with the chosen sense, then weigh
 
 ### 23. Goal programming with deviation variables
 
-> **Not in `lecture-08-ip.pdf`.** It appears in `sheet-05-solutions.pdf` T5.3h and in `retake-2021-solutions.pdf` A5h. Kept because it is worth ~5 pts when it shows up; do not cite it as lecture material.
+> **Not in `lecture-08-ip.pdf`.** It appears in `sheet-05-solutions.pdf` T5.3h. Kept because it is worth ~5 pts when it shows up; do not cite it as lecture material.
 
 **Target form:**
 

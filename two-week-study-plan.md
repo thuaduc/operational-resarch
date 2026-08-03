@@ -86,8 +86,10 @@ Not "if there's time" — **dropped**, so you don't feel the pull:
 - **Hungarian method** — T8.3 Dredgers. **DGS auction** — S8.2, D8.2. Never examined.
 - **Online optimization** — T11.3, all of CE-11 (D11.1–D11.3). Never examined.
 - **Two-phase and Big-M simplex from scratch.** Never asked — the exam hands you a tableau.
-- **Gomory cuts** beyond recognising them in a multiple-choice item.
-- Hungarian method, DGS auction, online optimization. Never examined.
+- **The SS21 retake paper, entirely.** Too old to be representative; the file has been removed
+  from the repo. The evidence base is now SS21 endterm, SS23, SS24, SS25 — all seven-exercise
+  papers. Where the retake was the only source for a drill, a replacement is named in place
+  (Day 5's sensitivity chain moves to `D3.2`, `S3.5` and the midterms).
 
 ## Corrections to carry into the exam
 
@@ -125,7 +127,7 @@ The largest block on every single paper, and it depends on nothing else. Start h
 - [x] SS25 E4 *School Planning* (21 pts / 21 min) — now a re-run of D5.2 under the clock
 - [x] SS24 P4 *Tour d'Allemagne* (22 pts / 22 min)
 - [x] SS23 E2 *Ice cream production* (22 pts / 22 min)
-- [ ] Then the two monsters, for stamina: SS21 A3 *Biergärten* (35 pts), retake A5 (32 pts).
+- [ ] Then the monster, for stamina: SS21 A3 *Biergärten* (35 pts).
 - [ ] **End-of-day test.** From blank paper, write the encoding for each:
   1. assignment — "each `j` to exactly one `i`"
   2. capacity linked to an open decision — `Σⱼ x_{i,j} ≤ cᵢ yᵢ`
@@ -157,7 +159,7 @@ The highest points-per-hour day of the plan. Both are short procedures with fixe
       asked for one. `D4.3` *Transportation Problem* — `[CONCEPT]`, same call.
 
 *Then the papers, timeboxed*
-- [x] SS25 E3 (15), SS24 P2 (16), SS23 E1 (19), retake A4 (10).
+- [x] SS25 E3 (15), SS24 P2 (16), SS23 E1 (19).
 - [x] Memorise the 4-step optimality certificate: assume optimal → CS forces which duals are
       zero → solve the reduced dual system → show it's infeasible or violates a dual constraint.
 - [x] Know the answer to *"is (D) unbounded, infeasible, or finite — without solving it?"*
@@ -228,7 +230,7 @@ The highest points-per-hour day of the plan. Both are short procedures with fixe
 - [ ] SS25 E7 *Minimal Circle Enclosure*, all of a–e. It is the model question:
       define convexity → prove a norm is convex → formulate → verify Slater → Lagrangian →
       KKT → interpret `λᵢ > 0`.
-- [ ] retake A8 (Lagrange with nonlinear constraints).
+- [ ] SS24 P7b — KKT with a single linear constraint, Slater verified. Shorter, second rep.
 - [ ] **End-of-day test.** Without notes:
   - prove a given function is convex from the definition
   - write the Lagrangian, then the KKT system, then the tight / not-tight case split
@@ -246,17 +248,21 @@ this is the layer on top.
 - [ ] `T3.2` *Lemonade Production* — `[EXAM]` **closest match on the sheets to SS25 E2** — a
       lemonade factory, an optimal tableau handed to you, questions read off it. Different
       numbers, same task.
-- [ ] `D3.2` *Waldgeist Distillery* — `[EXAM]` the full sensitivity chain in a story wrapper,
-      the retake A3 shape.
-- [ ] `S3.5` *PopCo* — `[EXAM]` extra rep if the chain still breaks down.
+- [ ] `D3.2` *Waldgeist Distillery* — `[EXAM]` the full sensitivity chain in a story wrapper.
+      **With retake-2021 out of scope this is now your main source for the complete chain** —
+      shadow price → validity range → range violated → new shadow price. Do it properly.
+- [ ] `S3.5` *PopCo* — `[EXAM]` second rep of the chain. Promoted from optional.
 - [ ] `D3.1` / `T3.1` / `S3.2` *Revised Simplex* — `[CONCEPT]` **you need the Row 0 formula,
       not the algorithm.** No endterm has ever asked for a revised-simplex iteration; the SS25
       solution merely *cites* `Row0 = c_B B⁻¹A − c`. Read for the formula, don't drill iterations.
 
 *Then the papers, timeboxed*
-- [ ] SS25 E2 (the tableau with deliberately wrong Row 0 — current format), then
-      retake A3, which is the full chain: shadow price → validity range → violate the range →
-      recompute the new shadow price after the basis change.
+- [ ] SS25 E2 (16) — the tableau with deliberately wrong Row 0. The current format.
+- [ ] SS21 A1 *Backmischung* (16) — sensitivity from an optimal tableau, including the
+      RHS-range question ("within what limits can the flour stock move without changing the
+      basis?").
+- [ ] Midterm SS25 P5 and midterm SS26 P4, both *Sensitivity Analysis* — the midterms carry
+      more sensitivity than the endterms do, and they are the same task.
 - [ ] Memorise the Row 0 formula and the reduced cost of a new column. These two carry the
       whole question.
 
@@ -331,14 +337,14 @@ MC free-rides on all five previous days, which is why it is last, not first.
 | E4 | `S5.1` Logic · `T5.1` Modelling Tricks – OR | `[DRILL]` | the SS24 P4e pattern |
 | E4 | `T6.3` Staff Scheduling | `[DRILL]` | IP model, doubles as revision |
 | **E3** | `T4.1` · `S4.2` Duality & Compl. Slackness | `[EXAM]` | SS25 E3, SS24 P2, SS23 E1 |
-| E3 | `D4.2` Primal-Dual | `[EXAM]` | retake A4 |
+| E3 | `D4.2` Primal-Dual | `[EXAM]` | extra CS-certificate rep |
 | E3 | `D4.1` Dual Problem · `T4.2` Duality | `[DRILL]` | SOB table only |
 | E3 | `T4.3` Rock-Paper-Scissors · `D4.3` Transportation | `[CONCEPT]` | no endterm has asked |
 | **E5** | `D6.1` · `S6.1` Branch-and-Bound | `[EXAM]` | SS25 E5, SS24 P3, SS23 E3 |
 | E5 | `T6.1` Knapsack B&B | `[EXAM]` | greedy-ratio relaxation variant |
 | E5 | `T6.2` · `S6.2` · `D6.2` · `D6.3` Cuts | `[SKIP]` | MC items only |
 | **E2** | `T3.2` Lemonade Production | `[EXAM]` | closest sheet match to **SS25 E2** |
-| E2 | `D3.2` Waldgeist Distillery · `S3.5` PopCo | `[EXAM]` | retake A3 chain |
+| E2 | `D3.2` Waldgeist Distillery · `S3.5` PopCo | `[EXAM]` | the full sensitivity chain |
 | E2 | `T3.3` Sensitivity | `[DRILL]` | ranging in isolation |
 | E2 | `D3.1` · `T3.1` · `S3.2` Revised Simplex | `[CONCEPT]` | formula yes, iterations no |
 | **E6** | `S8.3` Max-flow/min-cut counterexamples | `[SAME]` | **SS25 E6, word-for-word** |
@@ -352,7 +358,7 @@ MC free-rides on all five previous days, which is why it is last, not first.
 | E6 | `D8.4` Network modelling tricks | `[CONCEPT]` | `theory/09` transformations |
 | E6 | `T8.3` Dredgers · `S8.2` · `D8.2` DGS | `[SKIP]` | Hungarian / DGS |
 | **E7** | `T11.2` Convex functions | `[EXAM]` | **SS25 E7a**, prove from definition |
-| E7 | `D10.3` · `T10.3` KKT conditions | `[EXAM]` | SS25 E7d, retake A8 |
+| E7 | `D10.3` · `T10.3` KKT conditions | `[EXAM]` | SS25 E7d–f, SS24 P7b |
 | E7 | `D10.2` Unconstrained Optimization | `[EXAM]` | SS24 P7a, SS23 E7, SS21 A6 |
 | E7 | `T11.1` Convex Functions – Examples · `T10.2` Lagrange multipliers | `[DRILL]` | components |
 | E7 | `D10.1` Topological Properties | `[CONCEPT]` | sets vs functions |

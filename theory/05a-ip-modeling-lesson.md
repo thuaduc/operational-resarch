@@ -806,7 +806,6 @@ min  Σ_i f_i y_i − Σ_i Σ_j s_{i,j} x_{i,j}
 2. SS24 P4 *Tour d'Allemagne* (22 min)
 3. SS23 E2 *Ice cream production* (22 min)
 4. SS21 A3 *Biergärten* (35 min) — stamina
-5. retake-2021 A5 (32 min) — stamina
 
 ## End-of-day test — from blank paper
 

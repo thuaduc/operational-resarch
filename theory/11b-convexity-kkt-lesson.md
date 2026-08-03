@@ -24,8 +24,8 @@ g) Suppose λᵢ > 0. What does that imply about pᵢ?
 ```
 
 That's the full arc: **define → prove convex → formulate → verify a constraint qualification →
-write KKT → extract a conclusion → interpret a multiplier.** SS24 P7b and retake A8 are shorter
-versions of the same arc.
+write KKT → extract a conclusion → interpret a multiplier.** SS24 P7b is a shorter version of
+the same arc.
 
 Notice how much of it is *definitions and verification* rather than calculation. Parts (a), (b),
 (d) and (g) need almost no arithmetic — and they're the ones people skip.
@@ -459,7 +459,7 @@ Sheet 10 and 11 are in `exercises/11-nonlinear-convex-optimization/`; CE-10 is i
 
 - **SS25 E7** *Minimal Circle Enclosure*, all parts. The model question — do it properly.
 - **SS24 P7b** — KKT with a single linear constraint `x + y − 2 ≤ 0`, Slater verified. Shorter.
-- **retake A8** — Lagrange with nonlinear constraints.
+- `T10.2` / `D10.3` for a third rep if the case split still feels shaky.
 
 ## Why this day matters more than its point count suggests
 
