@@ -157,25 +157,25 @@ The highest points-per-hour day of the plan. Both are short procedures with fixe
       asked for one. `D4.3` *Transportation Problem* — `[CONCEPT]`, same call.
 
 *Then the papers, timeboxed*
-- [ ] SS25 E3 (15), SS24 P2 (16), SS23 E1 (19), retake A4 (10).
-- [ ] Memorise the 4-step optimality certificate: assume optimal → CS forces which duals are
+- [x] SS25 E3 (15), SS24 P2 (16), SS23 E1 (19), retake A4 (10).
+- [x] Memorise the 4-step optimality certificate: assume optimal → CS forces which duals are
       zero → solve the reduced dual system → show it's infeasible or violates a dual constraint.
-- [ ] Know the answer to *"is (D) unbounded, infeasible, or finite — without solving it?"*
+- [x] Know the answer to *"is (D) unbounded, infeasible, or finite — without solving it?"*
 
 **Afternoon — E5 (14 pts)**
-- [ ] `theory/06a` — the lesson: why the relaxation bounds, why branching loses no integer
+- [x] `theory/06a` — the lesson: why the relaxation bounds, why branching loses no integer
       point, the three pruning rules, a full worked tree, FIFO/LIFO traced, worked SS25 E5.
       Read this first.
-- [ ] `theory/06` — the reference. Procedures + Formula box only.
+- [x] `theory/06` — the reference. Procedures + Formula box only.
 
 *Warm-up ladder — sheet 6 + CE-06, ~1h*
-- [ ] `D6.1` *Branch-and-Bound* — `[EXAM]` a full worked tree. Do this one first and slowly;
+- [x] `D6.1` *Branch-and-Bound* — `[EXAM]` a full worked tree. Do this one first and slowly;
       it is the template for everything else.
-- [ ] `T6.1` *Knapsack Branch-and-Bound* — `[EXAM]` B&B on a knapsack, so the relaxation is
+- [x] `T6.1` *Knapsack Branch-and-Bound* — `[EXAM]` B&B on a knapsack, so the relaxation is
       solved by the greedy ratio rule rather than graphically. Good second angle.
-- [ ] `S6.1` *Branch-and-Bound* — `[EXAM]` third rep. Stop here if the pruning rules are solid.
-- [ ] `T6.3` *Staff Scheduling* — `[DRILL]` an IP model, so it doubles as Day 1 revision.
-- [ ] Skip `T6.2`, `S6.2`, `D6.2`, `D6.3` — all Gomory cuts, dropped.
+- [x] `S6.1` *Branch-and-Bound* — `[EXAM]` third rep. Stop here if the pruning rules are solid.
+- [x] `T6.3` *Staff Scheduling* — `[DRILL]` an IP model, so it doubles as Day 1 revision.
+- [x] Skip `T6.2`, `S6.2`, `D6.2`, `D6.3` — all Gomory cuts, dropped.
 
 *Then the papers, timeboxed*
 - [ ] SS25 E5 (the ink-blot reconstruction — this is the current format), SS24 P3,
@@ -185,8 +185,10 @@ The highest points-per-hour day of the plan. Both are short procedures with fixe
 
 ## Day 3 — Mon 3 Aug — **E7a: Nonlinear, unconstrained** (12–23 pts)
 
-- [ ] `theory/11` first half — gradient, Hessian, definiteness by leading principal minors,
-      and the **eigenvalue fallback** when the minors are inconclusive.
+- [ ] `theory/11a` — the lesson: gradient and Hessian built from the one-variable case,
+      definiteness by det/trace and by minors, the eigenvalue fallback, the convexity
+      shortcut, worked SS24 P7a and SS23 E7. Read this first.
+- [ ] `theory/11` first half — the reference. Procedures 1–2 and the Formula box.
 
 **Warm-up ladder — CE-10 + sheet 10, ~1h**
 - [ ] `D10.2` *Unconstrained Optimization* — `[SAME-TYPE]` gradient → critical points → Hessian
