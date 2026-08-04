@@ -4,8 +4,7 @@ Teaching companion to [11-nonlinear-and-convex-kkt](11-nonlinear-and-convex-kkt.
 That file is the reference; **this one assumes you know nothing**. Day 3's unconstrained half is
 [11a](11a-nonlinear-unconstrained-lesson.md).
 
-Exam slot **E7b**. This is where the recent papers put their weight: **SS25's entire 20-point
-nonlinear question was constrained**, with no gradient/Hessian classification at all.
+Exam slot **E7b**. This is where the recent papers put their weight: **SS25's entire 20-point nonlinear question was constrained**, with no gradient/Hessian classification at all.
 
 ---
 
@@ -23,8 +22,7 @@ f) Use KKT to show 1 = Σλᵢ and c* = Σλᵢpᵢ.
 g) Suppose λᵢ > 0. What does that imply about pᵢ?
 ```
 
-That's the full arc: **define → prove convex → formulate → verify a constraint qualification →
-write KKT → extract a conclusion → interpret a multiplier.** SS24 P7b is a shorter version of
+That's the full arc: **define → prove convex → formulate → verify a constraint qualification → write KKT → extract a conclusion → interpret a multiplier.** SS24 P7b is a shorter version of
 the same arc.
 
 Notice how much of it is *definitions and verification* rather than calculation. Parts (a), (b),

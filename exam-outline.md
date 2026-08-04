@@ -14,15 +14,15 @@ Below: 8 slots. Slots 1–7 are the reliable skeleton. Slot 8 is the rotating on
 The SS21 retake is **out of scope** — too old to be representative — so the four papers below are
 the evidence base.
 
-| # | SS21 endterm | SS23 | SS24 | SS25 |
-|---|---|---|---|---|
-| 1 | Sensitivity (16) | Duality (19) | **Multiple choice (14)** | **Multiple choice (16)** |
-| 2 | Duality (6) | IP modelling (22) | Duality (16) | Simplex/sensitivity (16) |
-| 3 | IP modelling (35) | Branch & Bound (16) | Branch & Bound (16) | Duality (15) |
-| 4 | Branch & Bound (13) | Knapsack DP (14) | IP modelling (22) | IP modelling (21) |
-| 5 | Flow + TU (14) | Matroids (14) | Matroids (14) | Branch & Bound (14) |
-| 6 | Convex functions (13) | TSP heuristic (12) | IP + NP-hardness (18) | Max-flow/min-cut (14) |
-| 7 | Column generation (23) | Critical points (23) | Nonlinear (20) | Convexity + KKT (20) |
+| #   | SS21 endterm           | SS23                 | SS24                     | SS25                     |
+| --- | ---------------------- | -------------------- | ------------------------ | ------------------------ |
+| 1   | Sensitivity (16)       | Duality (19)         | **Multiple choice (14)** | **Multiple choice (16)** |
+| 2   | Duality (6)            | IP modelling (22)    | Duality (16)             | Simplex/sensitivity (16) |
+| 3   | IP modelling (35)      | Branch & Bound (16)  | Branch & Bound (16)      | Duality (15)             |
+| 4   | Branch & Bound (13)    | Knapsack DP (14)     | IP modelling (22)        | IP modelling (21)        |
+| 5   | Flow + TU (14)         | Matroids (14)        | Matroids (14)            | Branch & Bound (14)      |
+| 6   | Convex functions (13)  | TSP heuristic (12)   | IP + NP-hardness (18)    | Max-flow/min-cut (14)    |
+| 7   | Column generation (23) | Critical points (23) | Nonlinear (20)           | Convexity + KKT (20)     |
 
 **Never absent:** IP modelling, branch & bound, duality, nonlinear.
 **Usually there:** multiple choice (since SS24), simplex/sensitivity, one combinatorial topic.
