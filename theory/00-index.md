@@ -15,6 +15,7 @@ pruned to what the past papers actually test. Every file has the same six sectio
 
 | # | File | Topic |
 |---|---|---|
+| 00a | [notation-and-revised-simplex](00a-notation-and-revised-simplex.md) | **Symbol dictionary** — `c`, `b`, `A`, `a_j`, `B`, `c_B`, `B⁻¹`, `b'`, `N'`, `y`, `z`, Row 0, all with a worked instance; where the tableau comes from; why Row 0 ≥ 0 means optimal; revised simplex trimmed to what E2 needs; letters that clash between chapters |
 | 01 | [lp-modeling-and-geometry](01-lp-modeling-and-geometry.md) | Standard form, polyhedra, vertices, graphical solution, the four outcomes |
 | 02 | [simplex](02-simplex.md) | Tableau, pivoting, degeneracy, Big-M, two-phase, tableau forensics |
 | 03 | [revised-simplex-and-sensitivity](03-revised-simplex-and-sensitivity.md) | `B⁻¹`, Row 0, reduced costs, shadow prices, cost/RHS ranging |

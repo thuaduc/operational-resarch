@@ -224,6 +224,8 @@ Do it while the day still has hours in it.
 
 **Morning — E2 (16 pts).** Your simplex mechanics are already in from Day 2;
 this is the layer on top.
+- [ ] `theory/00a` — the symbol dictionary: what c, b, A, B, c_B, y, b', Row 0 each mean,
+      where the tableau comes from, and revised simplex trimmed to what E2 needs.
 - [x] `theory/03a` — the lesson: tableau anatomy, which half of the tableau each change
       breaks, the sign convention, shadow prices as Day 2's dual solution, RHS and cost
       ranging, pricing a new column, worked SS25 E2. Read this first.
