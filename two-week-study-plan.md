@@ -1,4 +1,4 @@
-# Operations Research — endterm plan (final 6 days)
+ # Operations Research — endterm plan (final 6 days)
 
 **Exam: Friday 7 August 2026, 120 min, ~120 points, 7 exercises.**
 Remaining study days: Sat 1 Aug → Thu 6 Aug.
@@ -259,6 +259,8 @@ and you cannot learn all four properly. Learn the **mechanical core of each**, s
 Each block is *one* warm-up then straight to the paper question. No ladders — there isn't time.
 
 - [ ] **Matroids** — 45 min. The three axioms, verbatim; all bases equicardinal.
+      → `theory/08a` — the lesson: what matroids are for, the three axioms, prove and
+      disprove procedures, worked SS24 P5 and SS23 E5. Read this first.
       → `D8.3` *Matroids* `[EXAM]`, then `T8.1` *Matroids* `[EXAM]`. Papers: SS24 P5, SS23 E5.
 - [ ] **Total unimodularity** — 30 min. The three sufficient conditions verbatim; TU + integral
       `b` ⇒ integral polyhedron ⇒ IP in P.

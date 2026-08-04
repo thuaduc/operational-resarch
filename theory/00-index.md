@@ -28,6 +28,7 @@ pruned to what the past papers actually test. Every file has the same six sectio
 | 06a | [branch-and-bound-lesson](06a-branch-and-bound-lesson.md) | **Teaching companion to 06, assumes no prior knowledge** — why the relaxation bounds, why branching loses nothing, the three pruning rules, a full worked tree, FIFO/LIFO traced, worked SS25 E5 |
 | 07 | [column-generation](07-column-generation.md) | RMP, pricing problem, termination |
 | 08 | [total-unimodularity-and-matroids](08-total-unimodularity-and-matroids.md) | Knapsack DP + FPTAS, TU, matroids + greedy |
+| 08a | [matroids-lesson](08a-matroids-lesson.md) | **Teaching companion to 08's matroid half, assumes no prior knowledge** — what matroids are for (greedy), the three axioms with the exchange direction spelled out, prove/disprove procedures, worked SS24 P5 and SS23 E5, the SS25 MC item resolved |
 | 09 | [network-flow](09-network-flow.md) | Conservation, residual networks, Ford-Fulkerson, max-flow/min-cut |
 | 09a | [network-flow-lesson](09a-network-flow-lesson.md) | **Teaching companion to 09, assumes no prior knowledge** — flows and cuts from zero, why cut capacity is forward-only, max-flow/min-cut as LP duality, why the residual backward arc exists, Ford-Fulkerson, worked SS25 E6 counterexamples |
 | 10 | [tsp-and-approximation](10-tsp-and-approximation.md) | Euler/Hamilton, SEC + MTZ, heuristics, MST-doubling vs Christofides |
