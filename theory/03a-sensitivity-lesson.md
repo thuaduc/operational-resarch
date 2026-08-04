@@ -1,343 +1,435 @@
 # Sensitivity analysis — from scratch
 
 Teaching companion to [03-revised-simplex-and-sensitivity](03-revised-simplex-and-sensitivity.md).
-That file is the reference; **this one assumes you know nothing** beyond what a simplex tableau
-looks like.
+That file is the reference; **this one assumes you know nothing**.
 
-Exam slot **E2**, worth **14–19 points**. On most papers. You are never asked to *run* simplex —
-you're handed a finished tableau and asked what happens when the data changes.
+Exam slot **E2**, worth **14–19 points**. You are never asked to *run* simplex — you're handed a
+finished tableau and asked what happens when the data changes.
 
----
-
-# Part 0 — What the exam actually asks
-
-**SS25 E2** *Lemonade or Iced Tea* is the current format. You get a tableau that is **feasible
-but has deliberately wrong Row 0**, then:
-
-```
-a) What is the correct Row 0?
-b) After the correction, is the tableau optimal? Why?
-c) Derive the range of the price p₁ for which the current basis stays optimal.
-d) Under what perturbation of the water capacity does the BFS become degenerate?
-   Show which basic variable first hits zero.
-e) A new drink uses 3 L water and 1 kg lemon. Write its reduced cost and state
-   the condition on p_S for it to enter the basis.
-```
-
-Five sub-questions, all read off one tableau. **No LP is ever solved.**
-
-The other recurring shape is the **sensitivity chain**: shadow price → validity range → push
-past the range → recompute the new shadow price.
+**One example runs through this entire file.** Parts 1–8 use the same little factory throughout,
+with real numbers you can check by hand. Only at Part 10 do we switch to the actual exam question.
 
 ---
 
-# Part 1 — Anatomy of a tableau
+# Part 0 — What sensitivity analysis even is
 
-```
- Basis │  x₁   x₂    s₁     s₂    s₃   s₄ │ RHS
-───────┼─────────────────────────────────┼──────
- Row 0 │   0    0    ...   ...    0    0 │   z      ← the PRICES
-───────┼─────────────────────────────────┼──────
-   x₁  │   1    0   1/3   −1/3    0    0 │  20      ┐
-   x₂  │   0    1  −1/6    2/3    0    0 │  10      │ the PLAN
-   s₃  │   0    0  −1/3    1/3    1    0 │  10      │
-   s₄  │   0    0  1/12   −1/3    0    1 │  15      ┘
-```
+You've solved an LP. You know the best plan and the best profit. Then the boss asks:
 
-**The Basis column** lists which variables are currently *in use* (non-zero). Everything not
-listed is **non-basic** and equals **zero**. So this tableau says: make 20 of `x₁`, 10 of `x₂`,
-and `s₁ = s₂ = 0`.
+- *"We could buy more wood. Is it worth it? How much would you pay per unit?"*
+- *"What if the price of tables drops — do we change what we make?"*
+- *"A supplier offers a new product line. Should we take it?"*
 
-**The RHS column** is the plan: `b' = B⁻¹b`. Those are the actual values of the basic variables.
-A basis is **feasible** exactly when every RHS entry is `≥ 0`.
+**Re-solving the LP from scratch for each question would be madness.** Sensitivity analysis
+answers all of them by reading numbers off the *final tableau you already have*.
 
-**Row 0** is the price information — reduced costs and shadow prices. It's what tells you whether
-you can do better.
-
-**Under each basic column** you see a column of the identity matrix. That's what "basic" means.
+That's the whole subject. Not new theory — extracting more value from a solved problem.
 
 ---
 
-# Part 2 — The one idea that organises everything
+# Part 1 — The running example
 
-Two halves of the tableau, and **each kind of change breaks only one of them**:
+A workshop makes **tables** and **chairs**.
 
 ```
-Change the RHS b       →  the PLAN moves  (x_B = B⁻¹b)
-                          Row 0 is untouched
-                          ⟹ only FEASIBILITY can break
+each table  uses 1 unit of wood, 1 hour of labour, earns €3
+each chair  uses 1 unit of wood, 2 hours of labour, earns €4
 
-Change a cost c        →  ROW 0 moves
-                          the plan b' is untouched
-                          ⟹ only OPTIMALITY can break
+available:  4 units of wood,  6 hours of labour
 ```
 
-That's it. Every ranging procedure below is just "push until the half that can break, breaks."
+Write `x₁` = tables made, `x₂` = chairs made:
 
-- **RHS ranging** → keep pushing `δ` until some `b'ᵣ` would go negative.
-- **Cost ranging** → keep pushing `Δ` until some Row-0 entry would go negative.
+```
+max  3x₁ + 4x₂                    ← profit
+s.t.  x₁ +  x₂ ≤ 4                ← wood
+      x₁ + 2x₂ ≤ 6                ← labour
+      x₁, x₂ ≥ 0
+```
 
-If you remember nothing else, remember which half moves.
+## Solving it (just this once)
+
+Add **slack variables** — the unused amount of each resource:
+
+```
+x₁ +  x₂ + s₁     = 4        s₁ = leftover wood
+x₁ + 2x₂     + s₂ = 6        s₂ = leftover labour
+```
+
+Check the corners of the feasible region:
+
+| plan | wood used | labour used | profit |
+|---|---|---|---|
+| `(0,0)` | 0 | 0 | 0 |
+| `(4,0)` | 4 | 4 | 12 |
+| `(0,3)` | 3 | 6 | 12 |
+| **`(2,2)`** | **4** | **6** | **14** ← best |
+
+**Optimum: 2 tables, 2 chairs, profit €14.** Both resources are fully used — `s₁ = s₂ = 0`.
+
+---
+
+# Part 2 — Where the tableau comes from
+
+The variables that are non-zero at the optimum are **basic**: here `x₁` and `x₂`. The zero ones
+(`s₁`, `s₂`) are **non-basic**.
+
+**`B` is the matrix of the basic columns** — take the `x₁` and `x₂` columns out of the
+constraints:
+
+```
+        x₁  x₂                    ⎡ 1   1 ⎤
+wood     1   1        so    B  =  ⎢       ⎥
+labour   1   2                    ⎣ 1   2 ⎦
+```
+
+Its inverse (det = 2·1 − 1·1 = 1, so no fractions appear):
+
+```
+        ⎡  2   −1 ⎤
+B⁻¹  =  ⎢         ⎥
+        ⎣ −1    1 ⎦
+```
+
+Now three quantities, each with a plain meaning:
+
+**The plan.** `b' = B⁻¹b` — how much of each basic variable to make:
+```
+B⁻¹ · (4, 6)ᵀ  =  (2·4 − 1·6,  −1·4 + 1·6)  =  (2, 2)      ✓ 2 tables, 2 chairs
+```
+
+**The prices.** `yᵀ = c_Bᵀ B⁻¹`, where `c_B = (3, 4)` are the profits of the basic variables:
+```
+y₁ = 3·2 + 4·(−1) = 2
+y₂ = 3·(−1) + 4·1 = 1          so  y = (2, 1)
+```
+
+**The profit.** `z = yᵀb = 2·4 + 1·6 = 14` ✓ — matches the table above.
+
+## The finished tableau
+
+```
+ Basis │ x₁  x₂   s₁   s₂ │ RHS
+───────┼──────────────────┼─────
+ Row 0 │  0   0    2    1 │  14      ← prices, and total profit
+───────┼──────────────────┼─────
+   x₁  │  1   0    2   −1 │   2      ┐ the plan
+   x₂  │  0   1   −1    1 │   2      ┘
+```
+
+Every number in it you just computed:
+
+- the **RHS column** `(2, 2)` is `b' = B⁻¹b` — the plan
+- the **body under `s₁, s₂`** is exactly `B⁻¹` — because the slack columns form an identity matrix
+- **Row 0 under `s₁, s₂`** is `(2, 1) = y` — the prices
+- **Row 0 under `x₁, x₂`** is `(0, 0)` — always zero under basic columns
+
+**Keep this tableau in view. Everything from here on reads off it.**
 
 ---
 
 # Part 3 — Row 0 and the sign convention
 
-**The course's convention, and the exam grades it:**
-
 ```
-Row0_j  =  c_Bᵀ B⁻¹ a_j  −  c_j   =   yᵀa_j − c_j
+Row0_j  =  yᵀa_j − c_j
 ```
 
-Consequences for a **max** problem:
+For a **max** problem:
 
 ```
-optimal          ⟺   every Row-0 entry ≥ 0
-attractive to enter  ⟺   Row-0 entry < 0     (most negative enters)
+optimal              ⟺  every Row-0 entry ≥ 0
+worth bringing in    ⟺  Row-0 entry < 0
 ```
 
-> **Warning.** Many textbooks define the reduced cost the other way round
-> (`c̄_j = c_j − yᵀa_j`), so their rule is "optimal ⟺ all ≤ 0". **The course uses the negated
-> one.** Use the course sign and you'll match the mark scheme.
+Our Row 0 is `(0, 0, 2, 1)` — all `≥ 0`, so the tableau is optimal. ✓
 
-Two facts that follow immediately:
+> **Warning.** Many textbooks define the reduced cost as `c_j − yᵀa_j`, the exact negation, and
+> read optimality as "all `≤ 0`". **This course uses the version above.** Write the convention at
+> the top of your answer so the marker knows which you mean.
 
-- **Under a basic column, Row 0 is always 0.** Because `c_Bᵀ B⁻¹B − c_Bᵀ = 0`.
-- **Under a slack column, Row 0 is exactly `yᵢ`.** A slack has `c_j = 0` and `a_j = eᵢ`, so
+Two facts drop out:
+
+- **Under a basic column Row 0 is always 0** — `c_BᵀB⁻¹B − c_Bᵀ = 0`.
+- **Under a slack column Row 0 is exactly `yᵢ`** — a slack has `c_j = 0` and `a_j = eᵢ`, so
   `Row0 = yᵀeᵢ − 0 = yᵢ`. Nothing to subtract.
 
-That second one is how you read shadow prices off a tableau — no computation at all.
+That second fact is why you can read shadow prices straight off the tableau.
 
 ---
 
-# Part 4 — Shadow prices
+# Part 4 — Shadow prices, and proof they mean what I say
 
+**`yᵢ` = how much extra profit one more unit of resource `i` would earn you.**
+
+From our Row 0:
 ```
-yᵀ = c_Bᵀ B⁻¹
-```
-
-**The shadow price `yᵢ` is the marginal value of one more unit of resource `i`.** Increase `bᵢ`
-by 1 and the objective improves by `yᵢ` — as long as the basis stays optimal.
-
-Why: `z = yᵀb`, so `∂z/∂bᵢ = yᵢ`. That's the whole content.
-
-**Where to find them:** Row 0, under the slack variables. `y₁` sits under `s₁`, `y₂` under `s₂`,
-and so on.
-
-## This is Day 2's duality, seen from the other side
-
-`y` **is the optimal dual solution.** The same numbers you'd get by solving (D) directly. And the
-complementary-slackness statements you learned then reappear here as facts about tableaux:
-
-```
-constraint i is SLACK (sᵢ > 0, so sᵢ is basic)   ⟹   yᵢ = 0
-constraint i is BINDING (sᵢ = 0, non-basic)      ⟹   yᵢ ≥ 0, usually > 0
+y₁ = 2      one more unit of WOOD is worth €2
+y₂ = 1      one more hour of LABOUR is worth €1
 ```
 
-A resource you aren't fully using is worth nothing at the margin. Same sentence as Sunday.
+## Let's verify that
+
+Re-solve with **5 units of wood** instead of 4:
+
+```
+max 3x₁ + 4x₂   s.t.  x₁ + x₂ ≤ 5,   x₁ + 2x₂ ≤ 6
+```
+New plan: `B⁻¹(5,6)ᵀ = (2·5 − 6, −5 + 6) = (4, 1)`. Profit `= 3·4 + 4·1 = 16`.
+
+```
+14  →  16      exactly +2, exactly y₁      ✓
+```
+
+The shadow price is not an analogy. It's the literal derivative: `z = yᵀb`, so `∂z/∂bᵢ = yᵢ`.
+
+**So you'd pay up to €2 per extra unit of wood** — above that it isn't worth it. That's the
+business answer sensitivity analysis exists to give.
+
+## This is Day 2's duality
+
+`y` **is** the optimal dual solution — the same numbers you'd get solving (D). And the
+complementary-slackness rules reappear as tableau facts:
+
+```
+resource not fully used  (sᵢ > 0, sᵢ basic)      ⟹  yᵢ = 0
+resource fully used      (sᵢ = 0, non-basic)     ⟹  yᵢ ≥ 0
+```
+
+Here both resources are exhausted, so both prices are positive. Had we 100 units of wood, `s₁`
+would be basic and `y₁ = 0` — spare wood is worth nothing at the margin.
 
 ---
 
-# Part 5 — RHS ranging: how far can a capacity move?
+# Part 5 — The idea that organises everything
 
-**Question:** `bᵢ → bᵢ + δ`. For which `δ` does the current basis stay optimal?
-
-Row 0 doesn't move, so optimality is safe. Only feasibility can break — some basic variable might
-be driven negative.
+Two halves of the tableau. **Each kind of change breaks only one of them:**
 
 ```
-1. Take the tableau COLUMN OF THE SLACK sᵢ. That column is B⁻¹eᵢ.
-2. New plan:   x_B(δ) = b' + δ · (that column)
-3. Require every entry ≥ 0. That gives one inequality per row.
-4. Intersect them → δ ∈ [δ_min, δ_max].
-5. Inside the range:  z(δ) = z + yᵢ·δ
-6. At each endpoint, name the basic variable that hits exactly zero.
+Change a RESOURCE amount b   →  the PLAN moves     (x_B = B⁻¹b)
+                                Row 0 doesn't
+                                ⟹ only FEASIBILITY can break
+                                   (a basic variable might go negative)
+
+Change a PRICE c             →  ROW 0 moves
+                                the plan doesn't
+                                ⟹ only OPTIMALITY can break
+                                   (a Row-0 entry might go negative)
 ```
 
-Step 1 is the trick worth memorising: **the slack's column *is* `B⁻¹eᵢ`**, already sitting in the
-tableau. You never invert anything.
-
-Step 6 is asked explicitly (SS25 E2d) — see Part 9.
+Both ranging procedures below are just: **push until the half at risk breaks.**
 
 ---
 
-# Part 6 — Cost ranging: how far can a price move?
+# Part 6 — RHS ranging: how much wood before the plan changes?
 
-**Question:** `c_k → c_k + Δ`. Now the plan is safe and Row 0 is at risk. Two cases, and they
-behave differently.
-
-## Case A — `x_k` is BASIC
-
-Changing a basic variable's cost disturbs **all of Row 0**, because `y = c_Bᵀ B⁻¹` depends on it.
+The shadow price `y₁ = 2` is only valid while the current basis stays optimal. Beyond some point
+the plan itself must change. Where?
 
 ```
-1. Take the tableau ROW of x_k.
-2. New Row 0:   c'_j(Δ) = c'_j + Δ · (row of x_k)_j     for every non-basic j
-3. Require all ≥ 0 → intersect → Δ interval.
-4. Inside:  z(Δ) = z + Δ · x_k      (the plan is unchanged, so z moves with the amount made)
-5. Outside: the first Row-0 entry to go negative names the entering variable — one pivot
-   gives the new plan.
+1. Take the tableau COLUMN of the slack s₁ — that column is B⁻¹e₁.
+2. New plan:  x_B(δ) = b' + δ · (that column)
+3. Require every entry ≥ 0.
+4. Intersect → δ range.
 ```
 
-## Case B — `x_j` is NON-BASIC
-
-Only *its own* Row-0 entry moves:
+From our tableau, the `s₁` column is `(2, −1)`:
 
 ```
-c'_j(Δ) = c'_j − Δ ≥ 0    ⟹    Δ ≤ c'_j    ⟹    c_j ≤ yᵀa_j
+x₁(δ) = 2 + 2δ  ≥ 0    ⟹   δ ≥ −1
+x₂(δ) = 2 −  δ  ≥ 0    ⟹   δ ≤  2
 ```
 
-One-sided. And **neither `z` nor `x*` changes inside the range** — you're not making any of `x_j`
-anyway, so its price is irrelevant until it becomes attractive enough to enter.
+**`δ ∈ [−1, 2]`, so wood ∈ [3, 6].** Inside that range:
 
-| | basic `x_k` | non-basic `x_j` |
+```
+z(δ) = 14 + 2δ           the shadow price of 2 stays valid
+```
+
+## What happens at the endpoints
+
+```
+δ = −1   (wood = 3)   →  x₁ = 0   the workshop stops making tables
+δ = +2   (wood = 6)   →  x₂ = 0   the workshop stops making chairs
+```
+
+Check `δ = 2`: with wood 6 and labour 6, `B⁻¹(6,6)ᵀ = (6, 0)` — six tables, no chairs, profit
+`3·6 = 18 = 14 + 2·2` ✓.
+
+**Those endpoints are exactly where the basis becomes *degenerate*** — a basic variable sitting at
+zero. That's Part 8, and it's what SS25 E2d asks.
+
+---
+
+# Part 7 — Cost ranging: how much can a price move?
+
+Now Row 0 is at risk. **Two cases, and they behave differently.**
+
+## Case A — the variable is BASIC (like our `x₁`)
+
+Changing a basic variable's profit disturbs **all** of Row 0, because `y = c_BᵀB⁻¹` depends on it.
+
+```
+1. Take the tableau ROW of x₁ under the non-basic columns → (2, −1)
+2. New Row 0 = old Row 0 + Δ · (that row)
+3. Require ≥ 0.
+```
+
+Table profit `3 → 3 + Δ`:
+```
+under s₁:   2 + 2Δ ≥ 0   ⟹   Δ ≥ −1
+under s₂:   1 −  Δ ≥ 0   ⟹   Δ ≤  1
+```
+
+**`Δ ∈ [−1, 1]`, so the table price can range over `[€2, €4]`** with the plan `(2,2)` staying
+optimal. Inside the range the plan is unchanged and only the profit moves:
+```
+z(Δ) = 14 + Δ·x₁ = 14 + 2Δ
+```
+
+**Sanity check at €5** (`Δ = 2`, outside the range): Row 0 under `s₂` becomes `1 − 2 = −1 < 0`, so
+`s₂` enters and the basis changes. Does that make sense? At €5 a table, making 4 tables and no
+chairs gives `5·4 = 20`, beating `(2,2)`'s `5·2 + 4·2 = 18`. Yes — the plan really should change. ✓
+
+## Case B — the variable is NON-BASIC
+
+Only its own Row-0 entry moves:
+```
+c'_j − Δ ≥ 0    ⟹    c_j ≤ yᵀa_j
+```
+One-sided, and **neither the plan nor the profit changes inside the range** — you're making none
+of it anyway, so its price is irrelevant until it becomes attractive enough to enter.
+
+| | basic | non-basic |
 |---|---|---|
-| what moves | **all** of Row 0, via the `x_k` row | **one** Row-0 entry |
-| range | two-sided | one-sided, `c_j ≤ yᵀa_j` |
+| what moves | **all** of Row 0, via that variable's row | **one** Row-0 entry |
+| range | two-sided | one-sided |
 | `z` inside | `z + Δ·x_k` | unchanged |
-| `x*` inside | unchanged | unchanged |
+| plan inside | unchanged | unchanged |
 
 ---
 
-# Part 7 — Pricing a new column
+# Part 8 — A new product
 
-**Question:** a new product needs `a_new` of the resources and sells at `c_new`. Worth making?
+*"A stool needs 1 wood and 1 labour and would sell for `p`. Worth making?"*
 
 ```
-Opportunity cost  =  yᵀa_new        what those resources are already worth to you
-Row-0 entry       =  c'_new = yᵀa_new − c_new
-
-Enters the basis  ⟺   c'_new < 0   ⟺   c_new > yᵀa_new
+opportunity cost  =  yᵀa_new  =  2·1 + 1·1  =  3
 ```
 
-In words: **make it only if it sells for more than the resources it consumes are already earning
-you.** If there's also a production cost `k`, the minimum viable price is `p ≥ yᵀa_new + k`.
+Those resources are **already earning €3** in the current plan. So:
 
-That's SS25 E2e, and it needs no new computation — just the `y` you already read off Row 0.
+```
+Row-0 entry:  c'_new = yᵀa_new − c_new = 3 − p
+Enters  ⟺  c'_new < 0  ⟺  p > 3
+```
+
+**Make stools only if they sell above €3.** No new computation — just the `y` you already have.
+
+If making one also costs `k` in labour charges, the break-even price is `p ≥ yᵀa_new + k`.
+
+## Degeneracy, in one line
+
+A basic feasible solution is **degenerate** when a basic variable equals **zero** in the RHS
+column. From Part 6: the endpoints of an RHS range are precisely the perturbations that make the
+basis degenerate, because that's where a basic variable hits zero.
 
 ---
 
-# Part 8 — Degeneracy
+# Part 9 — The sensitivity chain
 
-A basic feasible solution is **degenerate** when some basic variable equals **zero** in the RHS
-column.
+The second recurring exam format links four steps:
 
-Why it matters: it's the boundary case of RHS ranging. Push `δ` to an endpoint of the validity
-range and, by construction, some basic variable hits exactly 0 — **the endpoints of the range are
-precisely the perturbations that make the BFS degenerate.**
+```
+1. What is the shadow price of resource i?
+      → Row 0 under sᵢ                                    [Part 4]
 
-That's what SS25 E2d is really asking, in disguise.
+2. Over what range of bᵢ is it valid?
+      → RHS ranging                                       [Part 6]
+
+3. Push bᵢ PAST the range. Now what?
+      → the basic variable that hit zero LEAVES
+      → entering variable by the DUAL ratio test: in the leaving row,
+        among entries < 0, pick the one minimising |c'_j / row_j|
+      → one pivot
+
+4. New shadow price and its new range?
+      → read the new Row 0; re-run step 2 on the new basis
+```
+
+**Sanity check for step 4:** in a max problem, *reducing* a resource can only *raise* its shadow
+price. Scarcer means more valuable at the margin. If yours moved the other way, you've slipped.
 
 ---
 
-# Part 9 — Worked example: SS25 E2
+# Part 10 — The exam question: SS25 E2
+
+Now the real thing. **It looks strange, and here's why:**
 
 ```
-max 0x₁ + 0x₂                          ← note: a FEASIBILITY problem, all costs zero
+max 0x₁ + 0x₂                      ← every profit is ZERO
 s.t. 4x₁ + 2x₂ ≤ 100    (water)
      1x₁ + 2x₂ ≤  40    (sugar)
      1x₁      ≤  30    (lemons)
-          0.5x₂ ≤  20    (tea leaves)
+          0.5x₂ ≤ 20    (tea leaves)
 ```
 
-Given tableau, basis `{x₁, x₂, s₃, s₄}`, with **wrong Row 0**:
+The café gives its drinks away free, so this is a **feasibility problem** — "find any workable
+plan", not "maximise". Since `c_B = 0`, everything price-related collapses:
+
+```
+y = c_BᵀB⁻¹ = 0        every shadow price is zero
+Row 0 = 0              every entry
+```
+
+**Don't let that confuse you** — it's the same machinery as our workshop, with the prices switched
+off. The questions still probe the structure.
+
+Given tableau, basis `{x₁, x₂, s₃, s₄}`, with deliberately **wrong** Row 0:
 
 ```
  Basis │ x₁  x₂    s₁     s₂   s₃  s₄ │ RHS
- Row 0 │  0  −1     2      1    0   0 │   0     ← wrong
+ Row 0 │  0  −1     2      1    0   0 │   0     ← sabotaged
    x₁  │  1   0   1/3   −1/3    0   0 │  20
    x₂  │  0   1  −1/6    2/3    0   0 │  10
    s₃  │  0   0  −1/3    1/3    1   0 │  10
    s₄  │  0   0  1/12   −1/3    0   1 │  15
 ```
 
-**(a) Correct Row 0.** All objective coefficients are zero, so `c_B = (0,0,0,0)` and therefore
-`yᵀ = c_BᵀB⁻¹ = 0`. Every Row-0 entry is `yᵀa_j − c_j = 0 − 0 = 0`:
-
+**(a) Correct Row 0.** All costs are zero, so `y = 0`, so every entry is `yᵀa_j − c_j = 0`:
 ```
- Row 0 │  0   0    0     0    0   0 │  0
+ Row 0 │  0   0    0    0    0   0 │  0
 ```
 
-**(b) Optimal?** Yes — every Row-0 entry is `≥ 0` (all zero), so no variable is attractive to
-enter. Optimal.
+**(b) Optimal?** Yes — every entry is `≥ 0`. Nothing is attractive to enter.
 
-**(c) Range of `p₁` (price of Lemonade) keeping this basis optimal.**
-
-Now `c_B = (p₁, 0, 0, 0)` since `x₁` is basic. `x₁` is basic, so this is **Case A** — all of
-Row 0 moves, via the `x₁` row. The `x₁` row under `(s₁, s₂)` is `(1/3, −1/3)`, so:
-
+**(c) Range of the Lemonade price `p₁`.** Now `c_B = (p₁, 0, 0, 0)`. `x₁` is basic, so this is
+**Case A** — use the `x₁` row under the non-basic columns `(s₁, s₂)`, which is `(1/3, −1/3)`:
 ```
-c'_{s₁} = p₁/3        c'_{s₂} = −p₁/3
+under s₁:   p₁/3  ≥ 0   ⟹   p₁ ≥ 0
+under s₂:  −p₁/3  ≥ 0   ⟹   p₁ ≤ 0
 ```
+Both together force **`p₁ = 0`**. So no — you can't charge for Lemonade and keep this basis, i.e.
+keep giving Iced Tea away free.
 
-Optimality needs both `≥ 0`:
+**(d) Perturbing the water capacity until the BFS is degenerate.** Water is constraint 1, so use
+the **`s₁` column** — exactly Part 6:
 ```
-p₁/3  ≥ 0   ⟹   p₁ ≥ 0
-−p₁/3 ≥ 0   ⟹   p₁ ≤ 0
+x₁ :  20 + δ/3   ≥ 0   ⟹   δ ≥ −60
+x₂ :  10 − δ/6   ≥ 0   ⟹   δ ≤  60
+s₃ :  10 − δ/3   ≥ 0   ⟹   δ ≤  30
+s₄ :  15 + δ/12  ≥ 0   ⟹   δ ≥ −180
 ```
-
-Together: **`p₁ = 0` and nothing else.** So no, you cannot charge for Lemonade and keep this
-basis. Answering the question as asked: it is *not* possible to sell Lemonade at a positive price
-while keeping Iced Tea free.
-
-**(d) Perturbation of water capacity making the BFS degenerate.**
-
-Water is constraint 1, so take the **`s₁` column** and add `δ` times it to the RHS:
-
+**`δ ∈ [−60, 30]`**, i.e. water between 40 and 130. At the endpoints:
 ```
- x₁ :  20 + δ/3   ≥ 0   ⟹   δ ≥ −60
- x₂ :  10 − δ/6   ≥ 0   ⟹   δ ≤  60
- s₃ :  10 − δ/3   ≥ 0   ⟹   δ ≤  30
- s₄ :  15 + δ/12  ≥ 0   ⟹   δ ≥ −180
+δ = −60  (water 40)   →  x₁ hits zero
+δ = +30  (water 130)  →  s₃ hits zero
 ```
 
-Intersecting: **`δ ∈ [−60, 30]`**, i.e. water capacity between 40 and 130.
-
-At the endpoints the BFS goes degenerate:
+**(e) New drink** using 3 L water and 1 kg lemon at price `p_S`. Exactly Part 8, with `y = 0`:
 ```
-δ = −60  (water = 40)   →  x₁ hits zero
-δ = +30  (water = 130)  →  s₃ hits zero
+c'_S = yᵀa_new − p_S = 0 − p_S = −p_S
 ```
-
-Notice the binding constraints: `x₁` is the tightest going down, `s₃` the tightest going up. That
-pair *is* the answer to "which basic variable first hits zero".
-
-**(e) New drink, 3 L water and 1 kg lemon, price `p_S`.**
-
-The column is `a_new = (3, 0, 1, 0)`. Since `y = 0`:
-
-```
-c'_S  =  yᵀa_new − p_S  =  0 − p_S  =  −p_S
-```
-
-Enters iff `c'_S < 0`, i.e. **`p_S > 0`**. Any positive price makes it worth introducing — which
-makes sense, since with all current prices at zero the resources have no opportunity cost.
-
----
-
-# Part 10 — The sensitivity chain
-
-The other recurring format, in four linked steps:
-
-```
-1. What is the shadow price of resource i?
-      → read Row 0 under sᵢ
-
-2. Over what range of bᵢ does that price stay valid?
-      → RHS ranging (Part 5)
-
-3. Now push bᵢ past the range. What happens?
-      → the basic variable that hit zero LEAVES the basis
-      → find the entering variable by the DUAL ratio test: in the leaving row,
-        among entries < 0, pick the one minimising |c'_j / row_j|
-      → one pivot
-
-4. What is the new shadow price, and its new range?
-      → read the new Row 0; re-run Part 5 on the new basis
-```
-
-Sanity check for step 4: in a **max** problem, decreasing `bᵢ` can only *increase* `yᵢ`. Scarcer
-resource, higher marginal value. If your new shadow price moved the other way, you've slipped.
+Enters iff `c'_S < 0`, i.e. **`p_S > 0`**. Any positive price works — with all current prices at
+zero, the resources have no opportunity cost.
 
 ---
 
@@ -345,52 +437,55 @@ resource, higher marginal value. If your new shadow price moved the other way, y
 
 ## Where points are lost
 
-1. **Wrong sign convention.** The course's Row 0 is `yᵀa_j − c_j`, so **optimal ⟺ all ≥ 0**.
-   Textbooks often use the negation. Write the convention at the top of your answer.
-2. **Using the wrong tableau slice.** RHS ranging uses the *slack's column*; cost ranging for a
-   basic variable uses that variable's *row*. Column vs row.
-3. **Applying `Δz = yᵢδ` outside the validity range.** The shadow price is only valid while the
-   basis is optimal. Past the endpoint it changes.
-4. **Confusing basic and non-basic cost ranging.** Basic → whole Row 0, two-sided. Non-basic →
+1. **Wrong sign convention.** Course: `Row0 = yᵀa_j − c_j`, optimal ⟺ all `≥ 0`.
+2. **Wrong tableau slice.** RHS ranging uses the slack's **column**; cost ranging for a basic
+   variable uses that variable's **row**. Column vs row.
+3. **Using `Δz = yᵢδ` outside the validity range.** The price is only valid while the basis is.
+4. **Mixing up basic and non-basic cost ranging.** Basic → whole Row 0, two-sided. Non-basic →
    one entry, one-sided.
-5. **Forgetting to name the variable that hits zero** at a range endpoint.
-6. **Trying to run simplex.** You're not asked to. Everything is read off.
+5. **Not naming the variable that hits zero** at a range endpoint.
+6. **Trying to run simplex.** You're not asked to.
 
-## Say these without looking
+## The six lines to have cold
 
 ```
-yᵀ = c_Bᵀ B⁻¹                       shadow prices
-Row0_j = yᵀa_j − c_j                 optimal ⟺ all ≥ 0 (max)
-Row 0 under slack sᵢ = yᵢ
-x_B(δ) = b' + δ·(column of sᵢ) ≥ 0   RHS ranging
+yᵀ = c_Bᵀ B⁻¹                        shadow prices
+Row0_j = yᵀa_j − c_j                  optimal ⟺ all ≥ 0 (max)
+Row 0 under slack sᵢ  =  yᵢ
+x_B(δ) = b' + δ·(column of sᵢ) ≥ 0    RHS ranging
 z(δ) = z + yᵢ·δ
-c'_new = yᵀa_new − c_new             enters iff c_new > yᵀa_new
+c'_new = yᵀa_new − c_new              enters iff c_new > yᵀa_new
 ```
+
+## Test yourself on the workshop
+
+Cover the answers and redo it from the tableau alone:
+
+```
+ Basis │ x₁  x₂   s₁   s₂ │ RHS
+ Row 0 │  0   0    2    1 │  14
+   x₁  │  1   0    2   −1 │   2
+   x₂  │  0   1   −1    1 │   2
+```
+
+1. What is one extra hour of labour worth? *(→ `y₂ = 1`)*
+2. Over what range of **labour** does that stay valid? *(use the `s₂` column `(−1, 1)`)*
+3. A new product needs 2 wood and 1 labour. Minimum viable price? *(→ `2·2 + 1·1 = 5`)*
+4. How far can the **chair** price move before the plan changes? *(Case A, `x₂` row `(−1, 1)`)*
+
+Answers to 2 and 4: labour `∈ [4, 8]`; chair price `∈ [3, 6]`.
 
 ## Warm-up ladder (untimed)
 
 1. `T3.3` *Sensitivity* — `[DRILL]` ranging in isolation, no story. Start here.
-2. `T3.2` *Lemonade Production* — `[EXAM]` closest sheet match to SS25 E2 — a lemonade factory,
-   an optimal tableau handed over, questions read off it.
-3. `D3.2` *Waldgeist Distillery* — `[EXAM]` **your main source for the full chain** now that the
-   retake is out of scope. Do it properly.
+2. `T3.2` *Lemonade Production* — `[EXAM]` closest sheet match to SS25 E2.
+3. `D3.2` *Waldgeist Distillery* — `[EXAM]` **your main source for the full chain.**
 4. `S3.5` *PopCo* — `[EXAM]` second rep of the chain.
-5. `D3.1` / `T3.1` / `S3.2` *Revised Simplex* — `[CONCEPT]` **you need the Row 0 formula, not the
-   algorithm.** No endterm has asked for a revised-simplex iteration; SS25 merely *cites*
-   `Row0 = c_BᵀB⁻¹A − c`. Read for the formula, don't drill iterations.
+5. `D3.1` / `T3.1` / `S3.2` *Revised Simplex* — `[CONCEPT]` you need the Row 0 formula, not the
+   algorithm. No endterm has asked for a revised-simplex iteration.
 
-Sheet 3 is `exercises/03-linear-programming-revised-simplex/sheet-03-exercises.pdf`; the
-self-study section (S3.x) is in the second half of the same file.
-
-## Then the papers (timed, one minute per point)
+## Then the papers (timed)
 
 - **SS25 E2** (16) — the wrong-Row-0 format. Current.
-- **SS21 A1** *Backmischung* (16) — sensitivity from an optimal tableau, including RHS ranging.
-- **Midterm SS25 P5** and **midterm SS26 P4**, both *Sensitivity Analysis* — the midterms carry
-  more of this than the endterms do, and it's the same task.
-
-## Connections
-
-- `y` **is** the optimal dual solution from Day 2. E2 and E3 are the same numbers from two sides.
-  → [04a-duality-lesson](04a-duality-lesson.md)
-- Slack constraint ⟹ zero shadow price **is** complementary slackness.
+- **SS21 A1** *Backmischung* (16) — includes RHS ranging.
+- **Midterm SS25 P5** and **SS26 P4** — the midterms carry more sensitivity than the endterms.
