@@ -224,10 +224,10 @@ Do it while the day still has hours in it.
 
 **Morning — E2 (16 pts).** Your simplex mechanics are already in from Day 2;
 this is the layer on top.
-- [ ] `theory/03a` — the lesson: tableau anatomy, which half of the tableau each change
+- [x] `theory/03a` — the lesson: tableau anatomy, which half of the tableau each change
       breaks, the sign convention, shadow prices as Day 2's dual solution, RHS and cost
       ranging, pricing a new column, worked SS25 E2. Read this first.
-- [ ] `theory/03` — the reference. Procedures 2–6 and the Formula box.
+- [x] `theory/03` — the reference. Procedures 2–6 and the Formula box.
 
 *Warm-up ladder — sheet 3 + CE-03, ~1h15*
 - [ ] `T3.3` *Sensitivity* — `[DRILL]` ranging in isolation, no story. Start here.
