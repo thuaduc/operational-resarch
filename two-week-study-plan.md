@@ -62,16 +62,16 @@ If you are short on time, do the `[SAME]` and `[EXAM]` items and skip the rest.
 
 ## The triage logic
 
-| Slot | Topic | Pts | Cost from cold | Verdict |
-|---|---|---|---|---|
-| E5 | Branch & Bound | 13–16 | half day | **do first** — pure mechanics |
-| E3 | Duality + CS | 6–19 | half day | **do first** — 3 procedures, done |
-| E4 | IP modelling | 21–35 | full day | **do first** — biggest block on every paper |
-| E7 | Nonlinear + KKT | 12–23 | 1.5 days | **do** — second largest, but expensive |
-| E2 | Sensitivity | 14–19 | half day | **do** — fiddly, and simplex half is already in |
-| E6 | Combinatorial | 12–18 | half day | **do the mechanics only**, skip the proofs |
-| E1 | Multiple choice | 14–16 | free | **last** — it free-rides on everything above |
-| E8 | Column generation | 0–23 | full day | **dropped** — absent since SS21 |
+| Slot | Topic             | Pts   | Cost from cold | Verdict                                         |
+| ---- | ----------------- | ----- | -------------- | ----------------------------------------------- |
+| E5   | Branch & Bound    | 13–16 | half day       | **do first** — pure mechanics                   |
+| E3   | Duality + CS      | 6–19  | half day       | **do first** — 3 procedures, done               |
+| E4   | IP modelling      | 21–35 | full day       | **do first** — biggest block on every paper     |
+| E7   | Nonlinear + KKT   | 12–23 | 1.5 days       | **do** — second largest, but expensive          |
+| E2   | Sensitivity       | 14–19 | half day       | **do** — fiddly, and simplex half is already in |
+| E6   | Combinatorial     | 12–18 | half day       | **do the mechanics only**, skip the proofs      |
+| E1   | Multiple choice   | 14–16 | free           | **last** — it free-rides on everything above    |
+| E8   | Column generation | 0–23  | full day       | **dropped** — absent since SS21                 |
 
 E3 + E4 + E5 alone is ~52 points of mechanical procedure. That's the floor this plan
 protects. E7 takes you to ~72. Everything after is upside.
@@ -208,25 +208,26 @@ The highest points-per-hour day of the plan. Both are short procedures with fixe
 Max-flow / min-cut is the cheapest 14 points on the paper and the demo *is* the exam question.
 Do it while the day still has hours in it.
 
-- [ ] `theory/09a` — the lesson: flows and cuts from zero, why cut capacity is forward-only,
+- [x] `theory/09a` — the lesson: flows and cuts from zero, why cut capacity is forward-only,
       max-flow/min-cut as the LP duality you did on Day 2, why the residual backward arc
       exists, Ford-Fulkerson, worked SS25 E6 counterexamples. Read this first.
-- [ ] `theory/09` — the reference. Procedures 1–3 and the Formula box.
-- [ ] **`S8.3`** *Max-flow and min-cut counterexamples* — `[SAME]` **this is SS25 E6
+- [x] `theory/09` — the reference. Procedures 1–3 and the Formula box.
+- [x] **`S8.3`** *Max-flow and min-cut counterexamples* — `[SAME]` **this is SS25 E6
       word-for-word, same graphs.** Do it properly, then check against the SS25 solutions.
 - [ ] `T8.2` *Maximum Flow* — `[DRILL]` only if Ford-Fulkerson itself is shaky.
 - [ ] `D8.4` *Tips and tricks for network modeling* — `[CONCEPT]`, 10 min skim. The five
       transformations (node splitting, lower bounds, multiple sources) in `theory/09`.
 - [ ] Paper: SS21 A5 (flow part).
-- [ ] Note the recurring verb: **"give a counterexample"**. You are usually disproving, not
-      proving. Practise producing a small graph that breaks a statement.
+- [ ] Note the recurring verb: **"give a counterexample"**. You are usually disproving, not proving. Practise producing a small graph that breaks a statement.
 
 ## Day 4 — Tue 4 Aug — **E2: Sensitivity** + **rest of E6** (~30 pts)
 
 **Morning — E2 (16 pts).** Your simplex mechanics are already in from Day 2;
 this is the layer on top.
-- [ ] `theory/03` — `B⁻¹`, `Row0 = c_B B⁻¹A − c`, reduced costs, shadow prices, cost ranging,
-      RHS ranging, pricing a new column.
+- [ ] `theory/03a` — the lesson: tableau anatomy, which half of the tableau each change
+      breaks, the sign convention, shadow prices as Day 2's dual solution, RHS and cost
+      ranging, pricing a new column, worked SS25 E2. Read this first.
+- [ ] `theory/03` — the reference. Procedures 2–6 and the Formula box.
 
 *Warm-up ladder — sheet 3 + CE-03, ~1h15*
 - [ ] `T3.3` *Sensitivity* — `[DRILL]` ranging in isolation, no story. Start here.

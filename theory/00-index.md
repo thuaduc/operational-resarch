@@ -18,6 +18,7 @@ pruned to what the past papers actually test. Every file has the same six sectio
 | 01 | [lp-modeling-and-geometry](01-lp-modeling-and-geometry.md) | Standard form, polyhedra, vertices, graphical solution, the four outcomes |
 | 02 | [simplex](02-simplex.md) | Tableau, pivoting, degeneracy, Big-M, two-phase, tableau forensics |
 | 03 | [revised-simplex-and-sensitivity](03-revised-simplex-and-sensitivity.md) | `B⁻¹`, Row 0, reduced costs, shadow prices, cost/RHS ranging |
+| 03a | [sensitivity-lesson](03a-sensitivity-lesson.md) | **Teaching companion to 03, assumes no prior knowledge** — tableau anatomy, which half each change breaks, the sign convention, shadow prices as the dual solution, RHS and cost ranging, pricing a new column, worked SS25 E2 |
 | 04 | [duality](04-duality.md) | SOB table, weak/strong duality, complementary slackness, zero-sum games |
 | 04a | [duality-lesson](04a-duality-lesson.md) | **Teaching companion to 04, assumes no prior knowledge** — where the dual comes from (the bounding argument), the transpose, SOB, CS derived from strong duality, the refutation procedure, worked SS25 E3 |
 | 05 | [ip-modeling](05-ip-modeling.md) | The full modelling-trick catalogue |
