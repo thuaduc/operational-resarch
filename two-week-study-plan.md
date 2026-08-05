@@ -224,7 +224,7 @@ Do it while the day still has hours in it.
 
 **Morning — E2 (16 pts).** Your simplex mechanics are already in from Day 2;
 this is the layer on top.
-- [ ] `theory/00a` — the symbol dictionary: what c, b, A, B, c_B, y, b', Row 0 each mean,
+- [x] `theory/00a` — the symbol dictionary: what c, b, A, B, c_B, y, b', Row 0 each mean,
       where the tableau comes from, and revised simplex trimmed to what E2 needs.
 - [x] `theory/03a` — the lesson: tableau anatomy, which half of the tableau each change
       breaks, the sign convention, shadow prices as Day 2's dual solution, RHS and cost
@@ -232,27 +232,22 @@ this is the layer on top.
 - [x] `theory/03` — the reference. Procedures 2–6 and the Formula box.
 
 *Warm-up ladder — sheet 3 + CE-03, ~1h15*
-- [ ] `T3.3` *Sensitivity* — `[DRILL]` ranging in isolation, no story. Start here.
-- [ ] `T3.2` *Lemonade Production* — `[EXAM]` **closest match on the sheets to SS25 E2** — a
+- [x] `T3.3` *Sensitivity* — `[DRILL]` ranging in isolation, no story. Start here.
+- [x] `T3.2` *Lemonade Production* — `[EXAM]` **closest match on the sheets to SS25 E2** — a
       lemonade factory, an optimal tableau handed to you, questions read off it. Different
       numbers, same task.
-- [ ] `D3.2` *Waldgeist Distillery* — `[EXAM]` the full sensitivity chain in a story wrapper.
+- [x] `D3.2` *Waldgeist Distillery* — `[EXAM]` the full sensitivity chain in a story wrapper.
       **With retake-2021 out of scope this is now your main source for the complete chain** —
       shadow price → validity range → range violated → new shadow price. Do it properly.
-- [ ] `S3.5` *PopCo* — `[EXAM]` second rep of the chain. Promoted from optional.
-- [ ] `D3.1` / `T3.1` / `S3.2` *Revised Simplex* — `[CONCEPT]` **you need the Row 0 formula,
+- [x] `S3.5` *PopCo* — `[EXAM]` second rep of the chain. Promoted from optional.
+- [x] `D3.1` / `T3.1` / `S3.2` *Revised Simplex* — `[CONCEPT]` **you need the Row 0 formula,
       not the algorithm.** No endterm has ever asked for a revised-simplex iteration; the SS25
       solution merely *cites* `Row0 = c_B B⁻¹A − c`. Read for the formula, don't drill iterations.
 
 *Then the papers, timeboxed*
-- [ ] SS25 E2 (16) — the tableau with deliberately wrong Row 0. The current format.
-- [ ] SS21 A1 *Backmischung* (16) — sensitivity from an optimal tableau, including the
-      RHS-range question ("within what limits can the flour stock move without changing the
-      basis?").
-- [ ] Midterm SS25 P5 and midterm SS26 P4, both *Sensitivity Analysis* — the midterms carry
-      more sensitivity than the endterms do, and they are the same task.
-- [ ] Memorise the Row 0 formula and the reduced cost of a new column. These two carry the
-      whole question.
+- [x] SS25 E2 (16)
+- [ ] SS21 A1 *Backmischung* (16
+- [ ] Midterm SS25 P5 and midterm SS26 P4
 
 **Afternoon — rest of E6 (14 pts).** Flow is done. Four topics still rotate through this slot
 and you cannot learn all four properly. Learn the **mechanical core of each**, skip every proof.
@@ -264,13 +259,17 @@ Each block is *one* warm-up then straight to the paper question. No ladders — 
       → `D8.3` *Matroids* `[EXAM]`, then `T8.1` *Matroids* `[EXAM]`. Papers: SS24 P5, SS23 E5.
 - [ ] **Total unimodularity** — 30 min. The three sufficient conditions verbatim; TU + integral
       `b` ⇒ integral polyhedron ⇒ IP in P.
+      → `theory/08b` **Part One** — the lesson. Read this first.
       → `D8.1` *Unimodularity* `[EXAM]`, then `S8.1` *TU and dual of a Matroid* `[EXAM]` —
       that one covers TU and matroids together. Paper: SS21 A5b.
 - [ ] **Knapsack DP** — 30 min. Fill the table; know `O(nW)` vs `O(nV)` and run the smaller.
+      → `theory/08b` **Part Two** — the lesson, with SS23 E4 worked. Read this first.
       → `D7.1` / `T7.1` *Cutting* `[EXAM]` — the DP table drill. `S7.2` *Bin Packing* `[DRILL]`
       is modelling, not DP; skip unless Day 1 felt weak. Paper: SS23 E4.
 - [ ] **TSP** — 30 min. MST-doubling procedure; Christofides = 3/2 vs doubling = 2; both need
       the triangle inequality.
+      → `theory/10a` — the lesson: Euler vs Hamilton, SEC vs MTZ, both ratios, how to break a
+      heuristic, how to classify a problem. Read this first.
       → `D9.1` *TSP-Approximation* `[EXAM]` — execute the approximation. Then `T9.1`
       *Euler vs Hamilton* `[DRILL]` for the definitions, and `T9.2` *Filling of ATMs* `[EXAM]`,
       which asks "which problem class is this?" — the exact SS24 P6b question type.
