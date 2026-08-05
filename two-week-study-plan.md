@@ -16,9 +16,9 @@ days left that spends your time in the wrong places. New rules:
 
 - **Theory file → warm-up ladder → past papers.** Never straight from theory to a paper.
   The ladder builds the component skills; the paper tests them under exam conditions.
-- **Days 1–3 are recorded as days; everything remaining is split into independent topic
-  blocks** (B1–B10). Each block stands alone, so you can reorder or drop one without
-  unpicking the rest.
+- **Days 1–3 are recorded as days; everything remaining is seven independent blocks**
+  (B1–B7), cut to what the four in-scope papers say is most likely. Each block stands
+  alone, so you can reorder or drop one without unpicking the rest.
 - **Theory file first, but only the Procedures + Formula box.** Definitions sections are
   reference, not reading.
 - **Timebox every past-paper problem to its point count in minutes.** 22 points = 22 minutes,
@@ -210,185 +210,161 @@ The highest points-per-hour day of the plan. Both are short procedures with fixe
 Days 1–3 are done. Everything below is restructured into standalone blocks.
 
 ---
+# Remaining work — cut to what pays
 
-# Remaining work — isolated topic blocks
+Three days left. This is **not** everything that could appear — it is what the four in-scope
+papers say is most likely, in points-per-hour order.
 
-Everything left is broken into **self-contained blocks**. Each has its own lesson, warm-ups,
-papers and a done-when test, and **none depends on another** except where noted. Do them in any
-order, stop mid-block without losing your place, and drop a whole block if time runs out.
-
-| Block | Topic | Slot | Pts | Time |
-|---|---|---|---|---|
-| **B1** | Network flow *(finish)* | E6 | part of 14 | 30 min |
-| **B2** | Sensitivity *(finish)* | E2 | 16 | 45 min |
-| **B3** | Matroids | E6 | part of 14 | 45 min |
-| **B4** | Total unimodularity | E6 | part of 14 | 30 min |
-| **B5** | Knapsack DP | E6 | part of 14 | 30 min |
-| **B6** | TSP | E6 | part of 14 | 30 min |
-| **B7** | Convexity | E7 | part of 20 | 1 h |
-| **B8** | Slater and KKT | E7 | part of 20 | 2.5 h |
-| **B9** | Multiple choice | E1 | 14–16 | 1.5 h |
-| **B10** | Final rehearsal | — | — | 2 h |
-
-**Suggested schedule** — a hint, not a constraint:
+| Block | Topic | Slot | Pts | Time | Why |
+|---|---|---|---|---|---|
+| **B1** | Sensitivity — papers only | E2 | 16 | 45 min | lessons + warm-ups already done |
+| **B2** | Matroids | E6 | 14 | 45 min | full question on **SS23 and SS24** |
+| **B3** | E6 insurance — TU · DP · TSP | E6 | 14 | 45 min | facts only, no exercises |
+| **B4** | Convexity | E7 | ~7 of 20 | 1 h | cheap, and scores even if B5 fails |
+| **B5** | Slater and KKT | E7 | ~13 of 20 | 2.5 h | SS25 put all 20 nonlinear pts here |
+| **B6** | Multiple choice | E1 | 14–16 | 1.5 h | free-rides on all of the above |
+| **B7** | Final rehearsal | — | — | 2 h | no new topics |
 
 ```
-Tue 4 Aug   B1  B2  B3  B4  B5  B6  B7
-Wed 5 Aug   B8                              ← the hardest block, alone on its own day
-Thu 6 Aug   B9  B10                         ← no new topics
+Tue 4 Aug   B1  B2  B3  B4
+Wed 5 Aug   B5
+Thu 6 Aug   B6  B7
 ```
 
-**Only ordering rule:** B7 before B8, and B8 before B10. Everything else is free.
+**Ordering rule:** B4 before B5, B5 before B7. Everything else is free.
+
+## What I cut, and the risk
+
+- **Network flow tail** (`T8.2`, `D8.4`, SS21 A5). `S8.3` *is* SS25 E6 word-for-word and you've
+  done it. The rest is polish.
+- **Full TU / knapsack-DP / TSP blocks** — exercises and papers dropped, headline facts kept in
+  B3. **Only one E6 topic appears per paper**, and matroids is the one that has appeared twice.
+- **Everything already marked `[SKIP]`** — Gomory cuts, Hungarian, DGS, online optimization,
+  column generation.
+
+**The risk, stated plainly:** if E6 turns out to be a full TU, DP or TSP question, B3 gets you
+partial credit, not full. That's the trade — matroids at depth beats four topics at a skim.
 
 ---
 
-## B1 — Network flow *(finish)* · E6 · 30 min
+## B1 — Sensitivity, papers only · E2 · 16 pts · 45 min
 
-The lesson and `S8.3` are already done; this is the tail.
+- [ ] **SS25 E2** (16) — done already? If not, do it first; it's the current format.
+- [ ] **SS21 A1** *Backmischung* (16) — sensitivity from an optimal tableau, with RHS ranging.
+- [ ] **Midterm SS25 P5** / **SS26 P4** — the midterms carry more sensitivity than the endterms.
 
-- [ ] `T8.2` *Maximum Flow* — `[DRILL]` only if Ford-Fulkerson itself is shaky.
-- [ ] `D8.4` *Tips and tricks for network modeling* — `[CONCEPT]`, 10 min skim. Node splitting,
-      lower bounds, multiple sources.
-- [ ] Paper: **SS21 A5** (flow part).
-
-**Done when** you can run Ford-Fulkerson, read the min cut off the final residual network, and
-verify `cap(S) = val(f)`.
-
----
-
-## B2 — Sensitivity *(finish)* · E2 · 16 pts · 45 min
-
-Lessons and the whole warm-up ladder are done. Papers only.
-
-- [ ] **SS21 A1** *Backmischung* (16) — sensitivity from an optimal tableau, including RHS ranging.
-- [ ] **Midterm SS25 P5** and **midterm SS26 P4**, both *Sensitivity Analysis* — the midterms
-      carry more of this than the endterms do, same task.
-
-**Done when** you can read shadow prices off Row 0, do RHS ranging from a slack column, and price
+**Done when** you can read shadow prices off Row 0, range the RHS from a slack column, and price
 a new column, without notes.
 
 ---
 
-## B3 — Matroids · E6 · 45 min
+## B2 — Matroids · E6 · 14 pts · 45 min
 
-- [ ] `theory/08a` — the lesson: what matroids are for, the three axioms, prove/disprove
-      procedures, worked SS24 P5 and SS23 E5.
-- [ ] `D8.3` *Matroids* `[EXAM]`, then `T8.1` *Matroids* `[EXAM]`.
-- [ ] Papers: **SS24 P5** (14), **SS23 E5** (14).
+The most repeated E6 topic: a full 14-pointer on **both SS23 and SS24**, plus an SS25 MC item.
 
-**Done when** you can write the three axioms verbatim with the exchange direction right, and
-build a three-element counterexample.
+- [ ] `theory/08a` — the lesson.
+- [ ] `D8.3` *Matroids*, then `T8.1` *Matroids*.
+- [ ] Papers: **SS24 P5** (prove one, disprove one), **SS23 E5** (basis, equicardinality,
+      symmetric difference).
 
----
-
-## B4 — Total unimodularity · E6 · 30 min
-
-- [ ] `theory/08b` **Part One** — the lesson.
-- [ ] `D8.1` *Unimodularity* `[EXAM]`, then `S8.1` *TU and dual of a Matroid* `[EXAM]` — that one
-      covers TU and matroids together, so it doubles as B3 revision.
-- [ ] Paper: **SS21 A5b**.
-
-**Done when** you can state the three sufficient conditions *without naming them*, and disprove TU
-by finding a zero-free `2×2` with `|det| ≥ 2`.
+**Done when** you can write the three axioms verbatim with the exchange direction right
+(*smaller set grows, element comes from the larger*), and build a three-element counterexample.
 
 ---
 
-## B5 — Knapsack DP · E6 · 30 min
+## B3 — E6 insurance · 45 min · facts only
 
-- [ ] `theory/08b` **Part Two** — the lesson, with SS23 E4 worked.
-- [ ] `D7.1` / `T7.1` *Cutting* `[EXAM]` — the table drill.
-- [ ] Paper: **SS23 E4** (14).
+No exercises, no papers. Fifteen minutes each so you can **write something worth partial credit**
+if the combinatorial slot isn't matroids.
 
-**Done when** you can justify `O(nW)` vs `O(nV)`, fill the table, and backtrack to the item set.
+**Total unimodularity** — `theory/08b` Part One, skim:
+```
+TU ⟺ every square submatrix has det ∈ {−1,0,+1}
+TU + b integral ⟹ integral polyhedron ⟹ IP solvable in poly time
+incidence matrix of a BIPARTITE or DIRECTED graph is TU     ← usually the whole answer
+to disprove: find a ZERO-FREE 2×2 with |det| ≥ 2
+```
 
----
+**Knapsack DP** — `theory/08b` Part Two, skim + fill one small table:
+```
+B[i,w] = max{ B[i−1,w] , vᵢ + B[i−1, w−wᵢ] }
+index by weight O(nW) or value O(nV) — run the SMALLER, and say why
+backtrack: B[i,w] = B[i−1,w] ⟹ item i not taken
+```
 
-## B6 — TSP · E6 · 30 min
+**TSP** — `theory/10a`, skim:
+```
+Euler = every EDGE once (easy)     Hamilton = every NODE once (NP-complete)
+degree constraints alone = assignment problem, allows SUBTOURS
+SEC: exponential, tight            MTZ: polynomial, weak
+MST-doubling = 2                   Christofides = 3/2 (odd-degree matching)
+both need the triangle inequality; papers mislabel doubling as Christofides
+```
 
-- [ ] `theory/10a` — the lesson: Euler vs Hamilton, SEC vs MTZ, both ratios, breaking a
-      heuristic, classifying a problem.
-- [ ] `D9.1` *TSP-Approximation* `[EXAM]`, `T9.1` *Euler vs Hamilton* `[DRILL]`,
-      `T9.2` *Filling of ATMs* `[EXAM]` — "which problem class?", the SS24 P6b type.
-- [ ] Papers: **SS24 P6** (18), **SS23 E6** (12).
-
-**Done when** you can execute MST-doubling, state both ratios with the triangle-inequality
-caveat, and name the SEC/MTZ trade-off.
-
-> Skip across B1–B6: `T8.3` *Dredgers* (Hungarian), `S8.2` / `D8.2` *DGS*. Never examined.
-
----
-
-## B7 — Convexity · E7 · 1 h
-
-The cheap half of the nonlinear block. **Do this before B8** so KKT day isn't first contact.
-
-- [ ] `theory/11b` **Parts 1–2 only** — convex sets vs convex functions, and the four routes to
-      proving convexity. Stop before Part 3.
-- [ ] `T11.1` *Convex Functions – Examples* — `[DRILL]` decide convexity for a list.
-- [ ] `T11.2` *Convex functions* — `[EXAM]` **prove convexity from the definition.** SS25 E7b's
-      task. Drill until the `f(λx+(1−λ)y) ≤ …` chain is muscle memory.
-- [ ] `D10.1` *Topological Properties and Convex Sets* — `[CONCEPT]` skim. Convex set vs convex
-      function; closed + bounded ⟹ compact.
-
-**Done when** you can prove a norm is convex from the definition in three lines.
+**Done when** you can write those three boxes from memory.
 
 ---
 
-## B8 — Slater and KKT · E7 · 2.5 h
+## B4 — Convexity · E7 · 1 h
 
-**The hardest block on the paper.** Deliberately last among the new topics.
+The cheap half of the nonlinear block, and **it scores even if B5 never lands** — SS25 E7 parts
+(a), (b), (c) are definition, norm proof and formulate, with no KKT at all.
 
-- [ ] `theory/11b` **Parts 3–9** — standard form, the Lagrangian, the four KKT blocks, the
-      complementary-slackness case split, Slater vs LICQ, worked SS25 E7.
-- [ ] `theory/11` second half — the reference. Procedures 4–7 and the Formula box.
-- [ ] `T10.2` *Lagrange multipliers* — `[DRILL]` build the Lagrangian, equalities only. Start here.
-- [ ] `D10.3` *KKT-conditions* — `[EXAM]` full system with the tight/not-tight case split. Core rep.
-- [ ] `T10.3` *Non-linear optimization – KKT conditions* — `[EXAM]` second rep.
+- [ ] `theory/11b` **Parts 1–2 only**. Stop before Part 3.
+- [ ] `T11.2` *Convex functions* — **prove convexity from the definition.** SS25 E7b's task.
+- [ ] `T11.1` *Convex Functions – Examples* if the definition still feels slow.
+
+**Done when** you can prove a norm is convex from the definition in three lines, and say why
+`|λ| = λ` needs `λ ∈ [0,1]`.
+
+---
+
+## B5 — Slater and KKT · E7 · 2.5 h
+
+The hardest block, alone on its own day. **SS25 put its entire 20-point nonlinear question here.**
+
+- [ ] `theory/11b` **Parts 3–9**.
+- [ ] `T10.2` *Lagrange multipliers* — build the Lagrangian, equalities only. Start here.
+- [ ] `D10.3` *KKT-conditions* — full system with the tight/not-tight case split. The core rep.
+- [ ] `T10.3` — second rep, only if D10.3 felt shaky.
 - [ ] Paper: **SS25 E7** *Minimal Circle Enclosure*, all parts. The model question.
-- [ ] Paper: **SS24 P7b** — KKT with one linear constraint, Slater verified. Shorter.
-- [ ] Skip `T11.3` *Hedge Algorithm* and all of CE-11 — online optimization, dropped.
+- [ ] Paper: **SS24 P7b** — shorter, one linear constraint.
 
-**If KKT does not fully land, bank the parts that don't need it.** SS25 E7 (a), (b), (c) are
-definition, norm proof, formulate — pure convexity from B7, roughly a third of the marks. Write
-those cold rather than stalling on the Lagrangian.
-
-**Done when**, without notes, you can write the Lagrangian, the four KKT blocks and the case
-split, and state: **Slater ⇒ global optimum**; **LICQ ⇒ candidates only, compare them**.
+**Done when**, without notes: the Lagrangian, the four blocks, the case split, and
+**Slater ⇒ global optimum** vs **LICQ ⇒ candidates only, compare them**.
 
 ---
 
-## B9 — Multiple choice · E1 · 14–16 pts · 1.5 h
+## B6 — Multiple choice · E1 · 14–16 pts · 1.5 h
 
-Free-rides on every block above, which is why it's last.
+- [ ] **SS24 P1** and **SS25 E1**. For *every* option, write one line on why it's true or false.
+- [ ] Read the **True/false facts** section of the `theory/` files you've actually covered.
 
-- [ ] Drill **SS24 P1** and **SS25 E1**. For *every* option, write one line on why it's true or false.
-- [ ] Read the **True/false facts** section of all eleven `theory/` files (~120 statements).
-- [ ] 20-minute column-generation skim (`theory/07` Formula box only) — enough to write the RMP
-      and one sentence on the pricing problem if it appears. Then let it go.
-
-**Done when** you can justify both papers' options out loud. Scoring: all-correct 2 pts, one
-error 1 pt, blank 0 — **never leave one blank.**
+**Never leave one blank** — all-correct 2 pts, one error 1 pt, blank 0. Guessing dominates.
 
 ---
 
-## B10 — Final rehearsal · 2 h
+## B7 — Final rehearsal · 2 h
 
-- [ ] Read the **Formula box** of all eleven `theory/` files. Nothing else.
+- [ ] **Formula box** of the covered `theory/` files. Nothing else.
 - [ ] Recall out loud, no notes:
-  1. Standard form; what slack / surplus / artificial variables do
+  1. Standard form; what slack variables do
   2. Simplex optimality and unboundedness criteria
   3. The SOB primal→dual table
   4. Complementary slackness, both directions
-  5. B&B pruning rules — for max **and** for min
+  5. B&B pruning rules — max **and** min
   6. TU + integral `b` ⇒ integral polyhedron ⇒ IP in P
   7. Knapsack DP: `O(nW)` vs `O(nV)`
-  8. Matroid axioms; bases are equicardinal
+  8. Matroid axioms; bases equicardinal
   9. Max-flow = min-cut; cut capacity counts forward arcs only
   10. SEC (exponential, tight) vs MTZ (polynomial, weak)
   11. Christofides 3/2 vs MST-doubling 2
   12. Hessian classification + the eigenvalue fallback
   13. KKT's four blocks; Slater ⇒ global, LICQ ⇒ candidates
 - [ ] **No new topics.** Pack calculator, ruler, analog dictionary, ID. Sleep.
+
+---
+
 
 
 ---
