@@ -16,6 +16,9 @@ days left that spends your time in the wrong places. New rules:
 
 - **Theory file → warm-up ladder → past papers.** Never straight from theory to a paper.
   The ladder builds the component skills; the paper tests them under exam conditions.
+- **Days 1–3 are recorded as days; everything remaining is split into independent topic
+  blocks** (B1–B10). Each block stands alone, so you can reorder or drop one without
+  unpicking the rest.
 - **Theory file first, but only the Procedures + Formula box.** Definitions sections are
   reference, not reading.
 - **Timebox every past-paper problem to its point count in minutes.** 22 points = 22 minutes,
@@ -203,127 +206,174 @@ The highest points-per-hour day of the plan. Both are short procedures with fixe
 - [x] SS24 P7a (`x² + y² + e^{2x} − (8x+6y) + 2xy`), SS21 A6.
 - [x] Then the parameterised one: SS23 E7 — classify all critical points of
       `f_α(x,y) = −¼x⁴ − ¼y⁴ + αxy` **as a function of α**. Expect a case split, not one answer.
-**Rest of today — the graph block** (moved up from Day 5)
 
-Max-flow / min-cut is the cheapest 14 points on the paper and the demo *is* the exam question.
-Do it while the day still has hours in it.
+Days 1–3 are done. Everything below is restructured into standalone blocks.
 
-- [x] `theory/09a` — the lesson: flows and cuts from zero, why cut capacity is forward-only,
-      max-flow/min-cut as the LP duality you did on Day 2, why the residual backward arc
-      exists, Ford-Fulkerson, worked SS25 E6 counterexamples. Read this first.
-- [x] `theory/09` — the reference. Procedures 1–3 and the Formula box.
-- [x] **`S8.3`** *Max-flow and min-cut counterexamples* — `[SAME]` **this is SS25 E6
-      word-for-word, same graphs.** Do it properly, then check against the SS25 solutions.
+---
+
+# Remaining work — isolated topic blocks
+
+Everything left is broken into **self-contained blocks**. Each has its own lesson, warm-ups,
+papers and a done-when test, and **none depends on another** except where noted. Do them in any
+order, stop mid-block without losing your place, and drop a whole block if time runs out.
+
+| Block | Topic | Slot | Pts | Time |
+|---|---|---|---|---|
+| **B1** | Network flow *(finish)* | E6 | part of 14 | 30 min |
+| **B2** | Sensitivity *(finish)* | E2 | 16 | 45 min |
+| **B3** | Matroids | E6 | part of 14 | 45 min |
+| **B4** | Total unimodularity | E6 | part of 14 | 30 min |
+| **B5** | Knapsack DP | E6 | part of 14 | 30 min |
+| **B6** | TSP | E6 | part of 14 | 30 min |
+| **B7** | Convexity | E7 | part of 20 | 1 h |
+| **B8** | Slater and KKT | E7 | part of 20 | 2.5 h |
+| **B9** | Multiple choice | E1 | 14–16 | 1.5 h |
+| **B10** | Final rehearsal | — | — | 2 h |
+
+**Suggested schedule** — a hint, not a constraint:
+
+```
+Tue 4 Aug   B1  B2  B3  B4  B5  B6  B7
+Wed 5 Aug   B8                              ← the hardest block, alone on its own day
+Thu 6 Aug   B9  B10                         ← no new topics
+```
+
+**Only ordering rule:** B7 before B8, and B8 before B10. Everything else is free.
+
+---
+
+## B1 — Network flow *(finish)* · E6 · 30 min
+
+The lesson and `S8.3` are already done; this is the tail.
+
 - [ ] `T8.2` *Maximum Flow* — `[DRILL]` only if Ford-Fulkerson itself is shaky.
-- [ ] `D8.4` *Tips and tricks for network modeling* — `[CONCEPT]`, 10 min skim. The five
-      transformations (node splitting, lower bounds, multiple sources) in `theory/09`.
-- [ ] Paper: SS21 A5 (flow part).
-- [ ] Note the recurring verb: **"give a counterexample"**. You are usually disproving, not proving. Practise producing a small graph that breaks a statement.
+- [ ] `D8.4` *Tips and tricks for network modeling* — `[CONCEPT]`, 10 min skim. Node splitting,
+      lower bounds, multiple sources.
+- [ ] Paper: **SS21 A5** (flow part).
 
-## Day 4 — Tue 4 Aug — **E2: Sensitivity** + **rest of E6** (~30 pts)
+**Done when** you can run Ford-Fulkerson, read the min cut off the final residual network, and
+verify `cap(S) = val(f)`.
 
-**Morning — E2 (16 pts).** Your simplex mechanics are already in from Day 2;
-this is the layer on top.
-- [x] `theory/00a` — the symbol dictionary: what c, b, A, B, c_B, y, b', Row 0 each mean,
-      where the tableau comes from, and revised simplex trimmed to what E2 needs.
-- [x] `theory/03a` — the lesson: tableau anatomy, which half of the tableau each change
-      breaks, the sign convention, shadow prices as Day 2's dual solution, RHS and cost
-      ranging, pricing a new column, worked SS25 E2. Read this first.
-- [x] `theory/03` — the reference. Procedures 2–6 and the Formula box.
+---
 
-*Warm-up ladder — sheet 3 + CE-03, ~1h15*
-- [x] `T3.3` *Sensitivity* — `[DRILL]` ranging in isolation, no story. Start here.
-- [x] `T3.2` *Lemonade Production* — `[EXAM]` **closest match on the sheets to SS25 E2** — a
-      lemonade factory, an optimal tableau handed to you, questions read off it. Different
-      numbers, same task.
-- [x] `D3.2` *Waldgeist Distillery* — `[EXAM]` the full sensitivity chain in a story wrapper.
-      **With retake-2021 out of scope this is now your main source for the complete chain** —
-      shadow price → validity range → range violated → new shadow price. Do it properly.
-- [x] `S3.5` *PopCo* — `[EXAM]` second rep of the chain. Promoted from optional.
-- [x] `D3.1` / `T3.1` / `S3.2` *Revised Simplex* — `[CONCEPT]` **you need the Row 0 formula,
-      not the algorithm.** No endterm has ever asked for a revised-simplex iteration; the SS25
-      solution merely *cites* `Row0 = c_B B⁻¹A − c`. Read for the formula, don't drill iterations.
+## B2 — Sensitivity *(finish)* · E2 · 16 pts · 45 min
 
-*Then the papers, timeboxed*
-- [x] SS25 E2 (16)
-- [ ] SS21 A1 *Backmischung* (16
-- [ ] Midterm SS25 P5 and midterm SS26 P4
+Lessons and the whole warm-up ladder are done. Papers only.
 
-**Afternoon — rest of E6 (14 pts).** Flow is done. Four topics still rotate through this slot
-and you cannot learn all four properly. Learn the **mechanical core of each**, skip every proof.
-Each block is *one* warm-up then straight to the paper question. No ladders — there isn't time.
+- [ ] **SS21 A1** *Backmischung* (16) — sensitivity from an optimal tableau, including RHS ranging.
+- [ ] **Midterm SS25 P5** and **midterm SS26 P4**, both *Sensitivity Analysis* — the midterms
+      carry more of this than the endterms do, same task.
 
-- [ ] **Matroids** — 45 min. The three axioms, verbatim; all bases equicardinal.
-      → `theory/08a` — the lesson: what matroids are for, the three axioms, prove and
-      disprove procedures, worked SS24 P5 and SS23 E5. Read this first.
-      → `D8.3` *Matroids* `[EXAM]`, then `T8.1` *Matroids* `[EXAM]`. Papers: SS24 P5, SS23 E5.
-- [ ] **Total unimodularity** — 30 min. The three sufficient conditions verbatim; TU + integral
-      `b` ⇒ integral polyhedron ⇒ IP in P.
-      → `theory/08b` **Part One** — the lesson. Read this first.
-      → `D8.1` *Unimodularity* `[EXAM]`, then `S8.1` *TU and dual of a Matroid* `[EXAM]` —
-      that one covers TU and matroids together. Paper: SS21 A5b.
-- [ ] **Knapsack DP** — 30 min. Fill the table; know `O(nW)` vs `O(nV)` and run the smaller.
-      → `theory/08b` **Part Two** — the lesson, with SS23 E4 worked. Read this first.
-      → `D7.1` / `T7.1` *Cutting* `[EXAM]` — the DP table drill. `S7.2` *Bin Packing* `[DRILL]`
-      is modelling, not DP; skip unless Day 1 felt weak. Paper: SS23 E4.
-- [ ] **TSP** — 30 min. MST-doubling procedure; Christofides = 3/2 vs doubling = 2; both need
-      the triangle inequality.
-      → `theory/10a` — the lesson: Euler vs Hamilton, SEC vs MTZ, both ratios, how to break a
-      heuristic, how to classify a problem. Read this first.
-      → `D9.1` *TSP-Approximation* `[EXAM]` — execute the approximation. Then `T9.1`
-      *Euler vs Hamilton* `[DRILL]` for the definitions, and `T9.2` *Filling of ATMs* `[EXAM]`,
-      which asks "which problem class is this?" — the exact SS24 P6b question type.
-      Papers: SS24 P6, SS23 E6.
-- [ ] Skip `T8.3` *Dredgers* (Hungarian), `S8.2` / `D8.2` *DGS* — never examined.
+**Done when** you can read shadow prices off Row 0, do RHS ranging from a slack column, and price
+a new column, without notes.
 
-**Evening — convexity only, no KKT (~1h).** This is the cheap half of tomorrow's topic, and
-doing it tonight means Wednesday isn't first contact with anything.
+---
+
+## B3 — Matroids · E6 · 45 min
+
+- [ ] `theory/08a` — the lesson: what matroids are for, the three axioms, prove/disprove
+      procedures, worked SS24 P5 and SS23 E5.
+- [ ] `D8.3` *Matroids* `[EXAM]`, then `T8.1` *Matroids* `[EXAM]`.
+- [ ] Papers: **SS24 P5** (14), **SS23 E5** (14).
+
+**Done when** you can write the three axioms verbatim with the exchange direction right, and
+build a three-element counterexample.
+
+---
+
+## B4 — Total unimodularity · E6 · 30 min
+
+- [ ] `theory/08b` **Part One** — the lesson.
+- [ ] `D8.1` *Unimodularity* `[EXAM]`, then `S8.1` *TU and dual of a Matroid* `[EXAM]` — that one
+      covers TU and matroids together, so it doubles as B3 revision.
+- [ ] Paper: **SS21 A5b**.
+
+**Done when** you can state the three sufficient conditions *without naming them*, and disprove TU
+by finding a zero-free `2×2` with `|det| ≥ 2`.
+
+---
+
+## B5 — Knapsack DP · E6 · 30 min
+
+- [ ] `theory/08b` **Part Two** — the lesson, with SS23 E4 worked.
+- [ ] `D7.1` / `T7.1` *Cutting* `[EXAM]` — the table drill.
+- [ ] Paper: **SS23 E4** (14).
+
+**Done when** you can justify `O(nW)` vs `O(nV)`, fill the table, and backtrack to the item set.
+
+---
+
+## B6 — TSP · E6 · 30 min
+
+- [ ] `theory/10a` — the lesson: Euler vs Hamilton, SEC vs MTZ, both ratios, breaking a
+      heuristic, classifying a problem.
+- [ ] `D9.1` *TSP-Approximation* `[EXAM]`, `T9.1` *Euler vs Hamilton* `[DRILL]`,
+      `T9.2` *Filling of ATMs* `[EXAM]` — "which problem class?", the SS24 P6b type.
+- [ ] Papers: **SS24 P6** (18), **SS23 E6** (12).
+
+**Done when** you can execute MST-doubling, state both ratios with the triangle-inequality
+caveat, and name the SEC/MTZ trade-off.
+
+> Skip across B1–B6: `T8.3` *Dredgers* (Hungarian), `S8.2` / `D8.2` *DGS*. Never examined.
+
+---
+
+## B7 — Convexity · E7 · 1 h
+
+The cheap half of the nonlinear block. **Do this before B8** so KKT day isn't first contact.
+
 - [ ] `theory/11b` **Parts 1–2 only** — convex sets vs convex functions, and the four routes to
       proving convexity. Stop before Part 3.
 - [ ] `T11.1` *Convex Functions – Examples* — `[DRILL]` decide convexity for a list.
-- [ ] `T11.2` *Convex functions* — `[EXAM]` **prove convexity from the definition.** This is
-      SS25 E7b's task. Drill until the `f(λx+(1−λ)y) ≤ …` chain is muscle memory.
-- [ ] `D10.1` *Topological Properties and Convex Sets* — `[CONCEPT]` skim. Know convex set vs
-      convex function, and closed + bounded ⟹ compact.
+- [ ] `T11.2` *Convex functions* — `[EXAM]` **prove convexity from the definition.** SS25 E7b's
+      task. Drill until the `f(λx+(1−λ)y) ≤ …` chain is muscle memory.
+- [ ] `D10.1` *Topological Properties and Convex Sets* — `[CONCEPT]` skim. Convex set vs convex
+      function; closed + bounded ⟹ compact.
 
-## Day 5 — Wed 5 Aug — **E7b: Slater and KKT** (the last new topic)
+**Done when** you can prove a norm is convex from the definition in three lines.
 
-Moved to the end deliberately: it is the hardest block on the paper. Convexity is already in
-from last night, so today is only the KKT machinery.
+---
+
+## B8 — Slater and KKT · E7 · 2.5 h
+
+**The hardest block on the paper.** Deliberately last among the new topics.
 
 - [ ] `theory/11b` **Parts 3–9** — standard form, the Lagrangian, the four KKT blocks, the
       complementary-slackness case split, Slater vs LICQ, worked SS25 E7.
 - [ ] `theory/11` second half — the reference. Procedures 4–7 and the Formula box.
-
-**Warm-up ladder — sheet 10 + CE-10, ~2h**
 - [ ] `T10.2` *Lagrange multipliers* — `[DRILL]` build the Lagrangian, equalities only. Start here.
-- [ ] `D10.3` *KKT-conditions* — `[EXAM]` full system with inequalities and the tight/not-tight
-      case split. The core rep.
+- [ ] `D10.3` *KKT-conditions* — `[EXAM]` full system with the tight/not-tight case split. Core rep.
 - [ ] `T10.3` *Non-linear optimization – KKT conditions* — `[EXAM]` second rep.
+- [ ] Paper: **SS25 E7** *Minimal Circle Enclosure*, all parts. The model question.
+- [ ] Paper: **SS24 P7b** — KKT with one linear constraint, Slater verified. Shorter.
 - [ ] Skip `T11.3` *Hedge Algorithm* and all of CE-11 — online optimization, dropped.
 
-**Then the papers, timeboxed**
-- [ ] SS25 E7 *Minimal Circle Enclosure*, all parts. The model question.
-- [ ] SS24 P7b — KKT with a single linear constraint, Slater verified. Shorter, second rep.
+**If KKT does not fully land, bank the parts that don't need it.** SS25 E7 (a), (b), (c) are
+definition, norm proof, formulate — pure convexity from B7, roughly a third of the marks. Write
+those cold rather than stalling on the Lagrangian.
 
-**If KKT does not fully land, bank the parts that don't need it.** SS25 E7 parts (a), (b) and
-(c) are *definition, norm proof, formulate* — pure convexity, no KKT, and they were roughly a
-third of the marks. Write those cold and move on rather than stalling on the Lagrangian.
+**Done when**, without notes, you can write the Lagrangian, the four KKT blocks and the case
+split, and state: **Slater ⇒ global optimum**; **LICQ ⇒ candidates only, compare them**.
 
-- [ ] **End-of-day test.** Without notes:
-  - prove a given function is convex from the definition
-  - write the Lagrangian, then the KKT system, then the tight / not-tight case split
-  - state: **Slater ⇒ a KKT point is a global optimum**; **LICQ ⇒ candidates only**
+---
 
-## Day 6 — Thu 6 Aug — **E1: Multiple choice** + final rehearsal
+## B9 — Multiple choice · E1 · 14–16 pts · 1.5 h
 
-MC free-rides on all five previous days, which is why it is last, not first.
+Free-rides on every block above, which is why it's last.
 
-- [ ] Drill SS24 P1 and SS25 E1. For **every** option, write one line on why it is true or false.
+- [ ] Drill **SS24 P1** and **SS25 E1**. For *every* option, write one line on why it's true or false.
 - [ ] Read the **True/false facts** section of all eleven `theory/` files (~120 statements).
-- [ ] Read the **Formula box** of all eleven files. Nothing else.
 - [ ] 20-minute column-generation skim (`theory/07` Formula box only) — enough to write the RMP
       and one sentence on the pricing problem if it appears. Then let it go.
+
+**Done when** you can justify both papers' options out loud. Scoring: all-correct 2 pts, one
+error 1 pt, blank 0 — **never leave one blank.**
+
+---
+
+## B10 — Final rehearsal · 2 h
+
+- [ ] Read the **Formula box** of all eleven `theory/` files. Nothing else.
 - [ ] Recall out loud, no notes:
   1. Standard form; what slack / surplus / artificial variables do
   2. Simplex optimality and unboundedness criteria
@@ -338,7 +388,8 @@ MC free-rides on all five previous days, which is why it is last, not first.
   11. Christofides 3/2 vs MST-doubling 2
   12. Hessian classification + the eigenvalue fallback
   13. KKT's four blocks; Slater ⇒ global, LICQ ⇒ candidates
-- [ ] No new topics. Pack calculator, ruler, analog dictionary, ID. Sleep.
+- [ ] **No new topics.** Pack calculator, ruler, analog dictionary, ID. Sleep.
+
 
 ---
 
