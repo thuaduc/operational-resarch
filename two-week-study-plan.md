@@ -333,7 +333,8 @@ The hardest block, alone on its own day. **SS25 put its entire 20-point nonlinea
 ## B6 — Multiple choice · E1 · 14–16 pts · 1.5 h
 
 - [ ] **[mc-question-bank.md](mc-question-bank.md)** — 47 questions, 188 statements, every
-      topic. Answers with one-line justifications under each.
+      topic. Answers are in **[mc-answers.md](mc-answers.md)**, so this is a real test —
+      sit it closed-book first, then mark it.
 - [ ] **SS24 P1** and **SS25 E1**. For *every* option, write one line on why it's true or false.
 - [ ] Read the **True/false facts** section of the `theory/` files you've actually covered.
 
