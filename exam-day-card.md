@@ -1,46 +1,3 @@
-# Exam-day card
-
-Decision rules only. Explanations live in the `theory/*a` lessons.
-
-| Slot | Sections |
-|---|---|
-| **E1** multiple choice | §0, plus everything |
-| **E2** simplex / sensitivity | §1 · §2 · §3 |
-| **E3** duality | §4 |
-| **E4** IP modelling | §5 |
-| **E5** branch & bound | §6 |
-| **E6** combinatorial | §7 · §8 · §9 · §10 · §11 |
-| **E7** nonlinear | §12 · §13 · §14 |
-
-**Work the paper in this order:** E1 → E3 → E5 → E6 → E4 → E2 → E7.
-
----
-
-# §0 · Multiple choice
-
-| Answer | Score |
-|---|---|
-| all correct, none wrong | **2** |
-| exactly one deviation | **1** |
-| two or more, **or blank** | **0** |
-
-**Always guess.** A blank scores the same as a wrong answer.
-
-### Facts they trap on
-
-| Statement | Truth |
-|---|---|
-| P infeasible ⟹ D unbounded | ✗ — unbounded **or** infeasible |
-| P unbounded ⟹ D infeasible | ✓ |
-| Constraint not tight ⟹ its dual variable is 0 | ✓ complementary slackness |
-| Simplex can cycle because of degeneracy | ✓ — and only that |
-| Cutting planes remove integer solutions | ✗ — never |
-| A KKT point is always a local optimum | ✗ |
-| KKT + Slater ⟹ global optimum | ✓ |
-| Gradient descent always converges for strictly convex `f` | ✗ — step size matters |
-| Every square submatrix of a TU matrix has det in `{−1,0,1}` | ✓ |
-
----
 
 # §1 · LP basics and simplex
 
@@ -353,6 +310,8 @@ Find a **zero-free `2×2`** with `|det| ≥ 2`. Any `2×2` containing a zero alw
 
 # §8 · Matroids
 
+### The axioms
+
 ```
 (1)  ∅ ∈ ℐ
 (2)  B ∈ ℐ, A ⊆ B  ⟹  A ∈ ℐ                        hereditary
@@ -361,6 +320,24 @@ Find a **zero-free `2×2`** with `|det| ≥ 2`. Any `2×2` containing a zero alw
 
 > Axiom 3: the **smaller** set grows, the element comes from the **larger**.
 
+`ℐ` is just "the selections the problem calls allowed". `E` is the pile you choose from.
+
+### A concrete one to hold onto
+
+```
+       a          E = { ab, ac, bc }
+      / \         ℐ = all edge sets with NO CYCLE
+     b───c        so every set except {ab, ac, bc} itself
+```
+
+| | |
+|---|---|
+| independent | `∅`, `{ab}`, `{ac}`, `{bc}`, `{ab,ac}`, `{ab,bc}`, `{ac,bc}` |
+| **not** independent | `{ab,ac,bc}` — a triangle |
+| **bases** | the three 2-edge sets — note they all have size **2** |
+
+### Prove / disprove
+
 | Task | Method |
 |---|---|
 | **prove** | all three bullets, in order — (1) and (2) are one line each |
@@ -368,11 +345,62 @@ Find a **zero-free `2×2`** with `|det| ≥ 2`. Any `2×2` containing a zero alw
 
 For exchange you must refute **every** `x ∈ B \ A` — so keep the example to 2–3 elements.
 
+### Bases
+
+**A basis is a MAXIMAL independent set** — independent, and you cannot add anything to it and
+stay independent. *Maximal*, not maximum: nothing bigger contains it.
+
+> **All bases of a matroid have the same size.**
+
+**Proof** (SS23 E5b — four lines, pure axiom 3):
+
+1. Suppose not. Take bases `B₁, B₂` with `|B₁| < |B₂|`.
+2. Axiom 3 applies to them: there is an `e ∈ B₂ \ B₁` with `B₁ ∪ {e} ∈ ℐ`.
+3. So `B₁ ∪ {e}` is independent and **strictly bigger** than `B₁`.
+4. That contradicts `B₁` being **maximal**. Hence `|B₁| = |B₂|`. ∎
+
+> The whole proof is: *a smaller basis could still grow, so it wasn't maximal.*
+
+### SS23 E5c — the symmetric-difference trap
+
+> Show or disprove: for two distinct bases, `(B₁ ∪ B₂) \ (B₁ ∩ B₂)` is a basis.
+
+First, what that set **is** — the **symmetric difference**: everything in exactly one of the two,
+with the shared part removed.
+
+```
+B₁ = {a}   B₂ = {b}      union {a,b} · intersection ∅ · difference {a,b}
+B₁ = {1,2} B₂ = {2,3}    union {1,2,3} · intersection {2} · difference {1,3}
+```
+
+**The claim is FALSE.** Counterexample, two elements:
+
+```
+E = {a, b}        ℐ = { ∅, {a}, {b} }        "pick at most one"
+```
+
+Check it really is a matroid: `∅ ∈ ℐ` ✓ · hereditary ✓ · exchange — the only case is
+`A = ∅`, `B = {a}` or `{b}`, and `∅ ∪ {x} ∈ ℐ` ✓.
+
+```
+bases:  B₁ = {a},  B₂ = {b}
+(B₁ ∪ B₂) \ (B₁ ∩ B₂)  =  {a,b} \ ∅  =  {a,b}
+but {a,b} ∉ ℐ  —  not even independent, let alone a basis.  ∎
+```
+
+> **Move to steal:** when a "show or disprove" asks about a *constructed* set, try the smallest
+> matroid you can write down before attempting a proof. Two elements was enough here; three
+> nodes was enough for SS24 P5b.
+
+### Rank and greedy
+
 | Term | Definition |
 |---|---|
-| basis | a **maximal** independent set — all bases are equicardinal |
 | rank | `r(B) = max{|A| : A ⊆ B, A ∈ ℐ}`; connected graphic: `r(E) = |V| − 1` |
-| greedy | increasing order → **min** basis · decreasing → **max** basis |
+| greedy | increasing weight → **min** basis · decreasing → **max** basis |
+
+Greedy is optimal for **every** weight function **iff** the system is a matroid. That's why the
+concept exists — Kruskal's MST is exactly greedy on the graphic matroid.
 
 ---
 
