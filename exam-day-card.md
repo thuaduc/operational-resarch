@@ -1,561 +1,591 @@
-# Exam-day card — every decision rule, by topic
+# Exam-day card
 
-Rules only. No explanations — those are in the `theory/*a` lessons.
-Read this on Thursday and again on Friday morning.
+Decision rules only. Explanations live in the `theory/*a` lessons.
 
-## Which topic serves which exercise
-
-| Slot | Topics below |
+| Slot | Sections |
 |---|---|
-| **E1** multiple choice | all of them — see §0 for the trap facts |
-| **E2** simplex / sensitivity | §1 LP + simplex · §2 reading a tableau · §3 sensitivity |
+| **E1** multiple choice | §0, plus everything |
+| **E2** simplex / sensitivity | §1 · §2 · §3 |
 | **E3** duality | §4 |
 | **E4** IP modelling | §5 |
 | **E5** branch & bound | §6 |
-| **E6** combinatorial | §7 TU · §8 matroids · §9 knapsack DP · §10 flow · §11 TSP |
-| **E7** nonlinear | §12 unconstrained · §13 convexity · §14 KKT |
+| **E6** combinatorial | §7 · §8 · §9 · §10 · §11 |
+| **E7** nonlinear | §12 · §13 · §14 |
 
-**Order to work the paper:** E1 → E3 → E5 → E6 → E4 → E2 → E7.
-**Never leave a multiple-choice item blank.** All right = 2, one error = 1, blank = 0.
-**Document every approach.** An undocumented correct answer scores zero.
+**Work the paper in this order:** E1 → E3 → E5 → E6 → E4 → E2 → E7.
 
 ---
 
-# §0 — Multiple choice: scoring and trap facts
+# §0 · Multiple choice
 
-```
-all correct options, no wrong ones   →  2 pts
-exactly one deviation                →  1 pt
-more than one deviation, or blank    →  0 pts
-⟹ ALWAYS GUESS
-```
+| Answer | Score |
+|---|---|
+| all correct, none wrong | **2** |
+| exactly one deviation | **1** |
+| two or more, **or blank** | **0** |
 
-**Facts they trap on:**
-```
-P infeasible        →  D unbounded OR infeasible     (not "unbounded")
-P unbounded         →  D infeasible
-constraint slack    →  its dual variable = 0          (complementary slackness)
-simplex cycles      ⟸  DEGENERACY only
-cutting planes      →  NEVER remove integer solutions
-KKT point           →  local optimum? NO
-KKT + Slater        →  global optimum? YES
-gradient descent    →  step size matters; convergence not automatic
-TU submatrix dets   →  in {−1,0,+1}
-```
+**Always guess.** A blank scores the same as a wrong answer.
 
----
+### Facts they trap on
 
-# §1 — LP basics and simplex
-
-## Forms and conversions
-```
-normal     max cᵀx, Ax ≤ b, x ≥ 0
-standard   max cᵀx, Ax = b ≥ 0, x ≥ 0
-canonical  standard + a visible identity submatrix (a basis)
-
-aᵀx ≤ b   →  aᵀx + s = b, s ≥ 0      SLACK      (+1 column, IS a basis column)
-aᵀx ≥ b   →  aᵀx − s = b, s ≥ 0      SURPLUS    (−1 column, NOT a basis column)
-aᵀx ≥ b with b < 0  →  multiply the row by −1 FIRST, then add a slack
-aᵀx = b   →  aᵀx + w = b, w ≥ 0      ARTIFICIAL (start basis only)
-x free    →  x = x⁺ − x⁻,  x⁺, x⁻ ≥ 0
-min cᵀx   =  −max(−cᵀx)
-```
-
-## Geometry
-```
-X = {x : Ax ≤ b, x ≥ 0}   convex polyhedron;  polytope = BOUNDED polyhedron
-v is a VERTEX  ⟺  n linearly independent active constraints at v
-               ⟺  v is a basic feasible solution (x_B = B⁻¹b ≥ 0, x_N = 0)
-an optimum, if it exists, is attained at a VERTEX
-```
-
-## The four outcomes
-```
-X = ∅                                  →  INFEASIBLE
-∃ d ∈ rec(X) with cᵀd > 0              →  UNBOUNDED, z → ∞
-c ⊥ an optimal edge                    →  INFINITELY MANY OPTIMA
-                                          report {(1−α)v₁ + αv₂ : α ∈ [0,1]}, one z*
-otherwise                              →  UNIQUE optimum at a vertex
-```
-
-## Simplex iteration (max, z-row holds −c)
-```
-ENTER   j = argmin (z-row)_j ,  require (z-row)_j < 0
-LEAVE   i = argmin { b_i / a_ij : a_ij > 0 }     ← STRICTLY positive only
-PIVOT   R_i ← R_i / a_ij  ;  R_k ← R_k − a_kj·R_i  for all k ≠ i, incl. the z-row
-
-no negative z-row entry            →  OPTIMAL
-entering column has NO positive    →  UNBOUNDED
-                      entry
-tie in the ratio test              →  DEGENERATE next basis
-```
+| Statement | Truth |
+|---|---|
+| P infeasible ⟹ D unbounded | ✗ — unbounded **or** infeasible |
+| P unbounded ⟹ D infeasible | ✓ |
+| Constraint not tight ⟹ its dual variable is 0 | ✓ complementary slackness |
+| Simplex can cycle because of degeneracy | ✓ — and only that |
+| Cutting planes remove integer solutions | ✗ — never |
+| A KKT point is always a local optimum | ✗ |
+| KKT + Slater ⟹ global optimum | ✓ |
+| Gradient descent always converges for strictly convex `f` | ✗ — step size matters |
+| Every square submatrix of a TU matrix has det in `{−1,0,1}` | ✓ |
 
 ---
 
-# §2 — Reading a tableau
+# §1 · LP basics and simplex
 
-## Read the solution off a tableau
-```
-1. all Row-0 entries ≥ 0?           →  optimal (max). Check FIRST.
-2. Basis column ↔ RHS column        →  the basic variables and their values
-3. everything not in Basis          →  = 0.  STATE THESE TOO
-4. Row 0's RHS entry                →  z
-5. sᵢ = 0 → constraint i BINDING    ;  sᵢ > 0 → slack, leftover = sᵢ
-```
-No Basis column? Find **unit columns**; the row of the `1` holds that variable's value.
+### Conversions
 
-## The formulas
-```
-c_B      = objective coefficients of the BASIC variables, in Basis-column order
-yᵀ       = c_Bᵀ B⁻¹                    the shadow prices
-Row0_j   = yᵀa_j − c_j                  optimal ⟺ all ≥ 0  (COURSE SIGN)
-Row 0 under a basic column   = 0
-Row 0 under slack sᵢ         = yᵢ      ← read shadow prices here
-b'       = B⁻¹b                         the plan; feasible ⟺ b' ≥ 0
-z        = c_Bᵀb' = yᵀb
-```
+| From | To | Note |
+|---|---|---|
+| `aᵀx ≤ b` | `aᵀx + s = b`, `s ≥ 0` | **slack** — is a basis column |
+| `aᵀx ≥ b` | `aᵀx − s = b`, `s ≥ 0` | **surplus** — *not* a basis column |
+| `aᵀx ≥ b`, `b < 0` | flip the row by `−1` **first** | then add a slack |
+| `aᵀx = b` | `aᵀx + w = b`, `w ≥ 0` | **artificial** — start basis only |
+| `x` free | `x = x⁺ − x⁻`, both `≥ 0` | |
+| `min cᵀx` | `−max(−cᵀx)` | |
 
----
+### Geometry
 
-# §3 — Sensitivity
+A **vertex** ⟺ `n` linearly independent active constraints ⟺ a basic feasible solution
+(`x_B = B⁻¹b ≥ 0`, `x_N = 0`). An optimum, if one exists, sits at a vertex.
 
-## Which half breaks
-```
-change b (a resource)  →  PLAN moves, Row 0 fixed   →  only FEASIBILITY can break
-change c (a price)     →  ROW 0 moves, plan fixed   →  only OPTIMALITY can break
-```
+### The four outcomes
 
-## RHS ranging — `bᵢ → bᵢ + δ`
+| Situation | Outcome | Report |
+|---|---|---|
+| `X = ∅` | **infeasible** | no `z` |
+| `∃ d` in the recession cone with `cᵀd > 0` | **unbounded** | `z → ∞` |
+| `c ⊥` an optimal edge | **infinitely many optima** | `{(1−α)v₁ + αv₂ : α ∈ [0,1]}`, one `z*` |
+| otherwise | **unique optimum** | at a vertex |
+
+### Simplex iteration — max, z-row holds `−c`
+
 ```
-take the COLUMN of slack sᵢ  (= B⁻¹eᵢ, already in the tableau)
-x_B(δ) = b' + δ·(that column) ≥ 0   →  one inequality per row  →  intersect
-z(δ) = z + yᵢ·δ                      valid ONLY inside the range
-at each endpoint: name the basic variable that hits 0
+ENTER   j = argmin (z-row)_j,  require (z-row)_j < 0
+LEAVE   i = argmin { b_i / a_ij : a_ij > 0 }        strictly positive only
+PIVOT   R_i ← R_i / a_ij ;  R_k ← R_k − a_kj·R_i   for k ≠ i, incl. z-row
 ```
 
-## Cost ranging — `c_k → c_k + Δ`
-```
-BASIC x_k     →  take that variable's ROW; new Row0 = Row0 + Δ·(row) ≥ 0
-                 two-sided range;  z(Δ) = z + Δ·x_k;  plan unchanged
-NON-BASIC x_j →  only its own entry:  c'_j − Δ ≥ 0  ⟺  c_j ≤ yᵀa_j
-                 one-sided;  z and plan both unchanged
-```
-
-## New column · degeneracy · multiple optima
-```
-c'_new = yᵀa_new − c_new      enters ⟺ c_new > yᵀa_new
-                              min viable price with production cost k:  p ≥ yᵀa_new + k
-
-BASIC variable with RHS = 0        →  DEGENERATE   (⟹ simplex can cycle)
-NON-BASIC with Row 0 = 0           →  MULTIPLE OPTIMA
-endpoints of an RHS range          →  exactly where degeneracy occurs
-```
+| Tableau shows | Means |
+|---|---|
+| no negative z-row entry | **optimal** |
+| entering column has no positive entry | **unbounded** |
+| tie in the ratio test | next basis is **degenerate** |
 
 ---
 
-# §4 — Duality
+# §2 · Reading a tableau
 
-## Derive the dual
+1. **All Row-0 entries `≥ 0`?** → optimal (max). Check this *first*.
+2. **Basis column ↔ RHS column**, row by row → the basic variables and their values.
+3. **Everything not in the Basis column = 0.** State these too.
+4. **Row 0's RHS entry** → `z`.
+5. `sᵢ = 0` → constraint binding · `sᵢ > 0` → slack, leftover is `sᵢ`.
+
+No Basis column? Find the **unit columns** — the row holding the `1` gives that variable's value.
+
 ```
-1. max ↔ min
-2. one dual VARIABLE per primal CONSTRAINT   (sign restrictions don't count)
-3. one dual CONSTRAINT per primal VARIABLE
-4. dual constraint j reads DOWN COLUMN j of A
-5. swap c and b
-```
-
-## SOB table
-```
-CLASSIFY
-  variable:  x ≥ 0 → S      x free → O      x ≤ 0 → B
-  constraint in MAX:  ≤ → S      = → O      ≥ → B
-  constraint in MIN:  ≥ → S      = → O      ≤ → B
-
-TRANSLATE  S→S, O→O, B→B
-  primal CONSTRAINT → dual VARIABLE:    S: y ≥ 0    O: y free    B: y ≤ 0
-  primal VARIABLE   → dual CONSTRAINT:  S: sensible  O: =         B: bizarre
-
-  sensible direction = ≥ if the dual is a MIN,  ≤ if the dual is a MAX
+c_B     = objective coefficients of the BASIC variables, in Basis-column order
+yᵀ      = c_Bᵀ B⁻¹                shadow prices
+Row0_j  = yᵀa_j − c_j             optimal ⟺ all ≥ 0     ← COURSE sign convention
+b'      = B⁻¹b                    the plan; feasible ⟺ b' ≥ 0
+z       = c_Bᵀ b' = yᵀb
 ```
 
-## Theorems and outcomes
-```
-weak:    cᵀx ≤ bᵀy   for ALL feasible x, y
-strong:  cᵀx* = bᵀy* at optimality
-
-P unbounded   ⟹  D infeasible
-P infeasible  ⟹  D unbounded OR infeasible
-both feasible ⟹  both have finite optima
-```
-
-## Complementary slackness
-```
-primal CS:  ((Aᵀy)_j − c_j)·x_j = 0      for each variable j
-dual CS:    ((Ax)_i − b_i)·y_i = 0       for each constraint i
-
-slack constraint  ⟹  yᵢ = 0
-non-zero variable ⟹  its dual constraint is TIGHT
-```
-
-## Show `x*` is NOT optimal (the 4 steps)
-```
-1. check x* is primal feasible          not feasible → done immediately
-2. every SLACK constraint  → set its yᵢ = 0
-3. every x_j ≠ 0           → set dual constraint j to EQUALITY; solve for y
-4. test y against the dual's OTHER constraints and SIGN restrictions
-      all satisfied →  x* IS optimal
-      any violation →  x* is NOT optimal          ← this is the answer
-```
+| Where in Row 0 | What it is |
+|---|---|
+| under a **basic** column | always `0` |
+| under **slack `sᵢ`** | `yᵢ` — the shadow price |
 
 ---
 
-# §5 — IP modelling
+# §3 · Sensitivity
 
-## The answer template (this is the rubric)
+### Which half breaks
+
+| You change | What moves | So only this can break |
+|---|---|---|
+| `b` — a resource | the plan `b' = B⁻¹b` | **feasibility** |
+| `c` — a price | Row 0 | **optimality** |
+
+### RHS ranging · `bᵢ → bᵢ + δ`
+
+1. Take the **column** of slack `sᵢ` — it *is* `B⁻¹eᵢ`, already in the tableau.
+2. `x_B(δ) = b' + δ·(that column) ≥ 0` — one inequality per row.
+3. Intersect → the `δ` range. Inside it, `z(δ) = z + yᵢ·δ`.
+4. At each endpoint, **name the basic variable that hits zero**.
+
+### Cost ranging · `c_k → c_k + Δ`
+
+| `x_k` is | Use | Range | `z` inside |
+|---|---|---|---|
+| **basic** | that variable's **row**; new Row 0 = Row 0 + `Δ`·(row) `≥ 0` | two-sided | `z + Δ·x_k` |
+| **non-basic** | its own entry only: `c'_j − Δ ≥ 0` | one-sided, `c_j ≤ yᵀa_j` | unchanged |
+
+The plan is unchanged in both cases.
+
+### New column, and two tableau readings
+
 ```
-Introduce z ∈ {0,1}:  z = 1 ⟺ <MEANING IN A FULL SENTENCE>
+c'_new = yᵀa_new − c_new          enters ⟺ c_new > yᵀa_new
+                                  with production cost k:  p ≥ yᵀa_new + k
+```
+
+| Tableau shows | Means |
+|---|---|
+| a **basic** variable with RHS `= 0` | **degenerate** — and simplex can cycle |
+| a **non-basic** variable with Row 0 `= 0` | **multiple optima** |
+
+The endpoints of an RHS range are exactly where degeneracy occurs.
+
+---
+
+# §4 · Duality
+
+### Deriving the dual
+
+1. `max` ↔ `min`.
+2. One dual **variable** per primal **constraint** — sign restrictions don't count.
+3. One dual **constraint** per primal **variable**.
+4. Dual constraint `j` reads **down column `j`** of `A`.
+5. Swap `c` and `b`.
+
+### SOB — classify, then translate
+
+| | S (sensible) | O (odd) | B (bizarre) |
+|---|---|---|---|
+| **variable** | `x ≥ 0` | `x` free | `x ≤ 0` |
+| **constraint in max** | `≤` | `=` | `≥` |
+| **constraint in min** | `≥` | `=` | `≤` |
+
+| Type | primal **constraint** → dual **variable** | primal **variable** → dual **constraint** |
+|---|---|---|
+| S | `y ≥ 0` | sensible direction |
+| O | `y` free | `=` |
+| B | `y ≤ 0` | bizarre direction |
+
+**Sensible direction** = `≥` if the dual is a min, `≤` if it's a max. Bizarre is the opposite.
+
+### Theorems
+
+```
+weak     cᵀx ≤ bᵀy      for ALL feasible x and y
+strong   cᵀx* = bᵀy*    at optimality
+```
+
+| If the primal is | Then the dual is |
+|---|---|
+| unbounded | infeasible |
+| infeasible | unbounded **or** infeasible |
+| feasible, and so is D | both finite |
+
+### Complementary slackness
+
+```
+primal CS   ((Aᵀy)_j − c_j) · x_j = 0     per variable
+dual CS     ((Ax)_i − b_i) · y_i = 0      per constraint
+```
+
+Slack constraint ⟹ `yᵢ = 0`. Non-zero variable ⟹ its dual constraint is tight.
+
+### Showing `x*` is **not** optimal
+
+1. Check `x*` is primal feasible — if not, you're already done.
+2. Every **slack** constraint forces its `yᵢ = 0`.
+3. Every `x_j ≠ 0` forces dual constraint `j` to **equality** — solve for `y`.
+4. Test that `y` against the dual's **remaining constraints and sign restrictions**.
+
+| Step 4 result | Conclusion |
+|---|---|
+| all satisfied | `x*` **is** optimal, `y` is the dual optimum |
+| any violation | `x*` is **not** optimal ← the answer |
+
+---
+
+# §5 · IP modelling
+
+### The answer template — this is the rubric
+
+```
+Introduce z ∈ {0,1}:  z = 1 ⟺ <meaning, in a full sentence>
     <linking constraint(s)>
 Then:
-    <the requirement, keyed on z>        ∀ i ∈ <EXPLICIT RANGE>
-```
-Three things score separately: **words · linking · ∀ with range.**
-Every auxiliary needs a **domain line** (`z ∈ {0,1}`) — without it the model is broken.
-
-## Indicator — both directions
-```
-want  t = 1 ⟺ X > K       (X integer)
-
-(A)  X ≤ K + M·t          "X > K ⟹ t = 1"    forces t UP
-(B)  X ≥ (K+1)·t          "t = 1 ⟹ X > K"    forces t DOWN
-
-"indicates whether" / "iff"      →  BOTH
-"if more than K, then …"         →  (A) + the consequence keyed on t
-unsure                           →  BOTH
-```
-`M` is a **constant**; justify its size (`M = |J|`, `M = cᵢ`, `M = Σwⱼ`).
-Continuous `X`: `t = 1 ⟺ X > K` is **impossible** (set not closed).
-
-## Patterns
-```
-exactly one          Σ_{i∈I} x_{i,j} = 1              ∀j
-at most k            Σ_i z_i ≤ k
-capacity             Σ_{j∈J} x_{i,j} ≤ c_i            ∀i
-only if built        x_{i,j} ≤ y_i         ∀i,j       ← DISAGGREGATED = stronger
-implication A⇒B      A ≤ B
-  generalised        Σ(premises) − (#premises−1) ≤ Σ(conclusions)
-pairwise conflict    y_i + y_i' ≤ 1        for pairs violating a threshold
-either-or            f₁ ≤ b₁ + Mz  ,  f₂ ≤ b₂ + M(1−z)
-XOR                  build an indicator per block, mirror with z / (1−z)
-rolling window       Σ_{t=k}^{k+6} x_t ≤ 5            ∀k ∈ {1,…,T−6}
-ratio / %            move all left, clear denominators
-product x_k·x_l      Y ≤ x_k , Y ≤ x_l , Y ≥ x_k + x_l − 1
-                     rewarded → first two suffice;  penalised → third suffices
-fixed charge         x ≤ M·y , x ≥ q·y                "nothing or at least q"
-startup              y_t ≥ x_t − x_{t−1}              t ≥ 2
-two objectives       min Σf_i y_i − Σs_{ij} x_{ij}    flip the sign of one
+    <the requirement, keyed on z>        ∀ i ∈ <explicit range>
 ```
 
-## Traps
+Three things score separately: **the words**, **the linking**, **the `∀` with its range**.
+Every auxiliary also needs its **domain line** — without `z ∈ {0,1}` the model is broken.
+
+### Indicator — `t = 1 ⟺ X > K`, `X` integer
+
 ```
-missing ∀ range, or wrong range (J\{21},  t ∈ {4,…,15})
-unnamed auxiliary variable
-M treated as a variable
-one direction of an indicator when "iff" was stated
-a product left non-linear
-merging two sub-questions into one answer
+(A)  X ≤ K + M·t        "X > K ⟹ t = 1"      forces t UP
+(B)  X ≥ (K+1)·t        "t = 1 ⟹ X > K"      forces t DOWN
 ```
+
+| Wording | Write |
+|---|---|
+| "indicates whether", "if and only if" | **both** |
+| "if more than K, then …" | **(A)** plus the consequence keyed on `t` |
+| unsure | **both** — never penalised |
+
+`M` is a **constant** — justify its size (`M = |J|`, `M = cᵢ`, `M = Σwⱼ`).
+For **continuous** `X`, `t = 1 ⟺ X > K` is impossible: the set isn't closed.
+
+### Patterns
+
+| English | Constraint |
+|---|---|
+| exactly one | `Σ_{i∈I} x_{i,j} = 1  ∀j` |
+| at most `k` | `Σ_i z_i ≤ k` |
+| capacity | `Σ_{j∈J} x_{i,j} ≤ c_i  ∀i` |
+| only if built | `x_{i,j} ≤ y_i  ∀i,j` — disaggregated, **stronger** |
+| `A ⇒ B` | `A ≤ B` |
+| several premises | `Σ(premises) − (#premises−1) ≤ Σ(conclusions)` |
+| pairwise conflict | `y_i + y_i' ≤ 1` for pairs violating a threshold |
+| either–or | `f₁ ≤ b₁ + Mz` and `f₂ ≤ b₂ + M(1−z)` |
+| XOR | an indicator per block, mirrored with `z` / `(1−z)` |
+| rolling window | `Σ_{t=k}^{k+6} x_t ≤ 5   ∀k ∈ {1,…,T−6}` |
+| ratio / percentage | move everything left, clear denominators |
+| product `x_k·x_l` | `Y ≤ x_k`, `Y ≤ x_l`, `Y ≥ x_k + x_l − 1` |
+| fixed charge | `x ≤ M·y`, `x ≥ q·y` — nothing, or at least `q` |
+| startup | `y_t ≥ x_t − x_{t−1}`, `t ≥ 2` |
+| two objectives | `min Σf_i y_i − Σs_{ij} x_{ij}` — flip one sign |
+
+On the product: if `Y` is **rewarded**, the first two suffice; if **penalised**, the third does.
+All three is always safe.
+
+### Traps
+
+- missing `∀`, or the wrong range — `J\{21}`, `t ∈ {4,…,15}`
+- an auxiliary variable with no name in words, or no domain line
+- `M` treated as a variable
+- one direction of an indicator when the wording said "iff"
+- a product left non-linear
+- merging two sub-questions into one answer
 
 ---
 
-# §6 — Branch and bound
+# §6 · Branch and bound
 
-```
-LP relaxation:  max → z_LP is an UPPER bound   ;  min → LOWER bound
-integer c and x  →  max: OPT ≤ ⌊z_LP⌋
+### Bounds and branching
 
-branch on FRACTIONAL x_i = f:     x_i ≤ ⌊f⌋   |   x_i ≥ ⌈f⌉
-  → loses NO integer point (none lies strictly between)
-  → children INHERIT all ancestor constraints
-```
+| Problem | Relaxation gives | Integer `c` and `x` |
+|---|---|---|
+| max | an **upper** bound | `OPT ≤ ⌊z_LP⌋` |
+| min | a **lower** bound | `OPT ≥ ⌈z_LP⌉` |
 
-## Three pruning rules
-```
-                        MAXIMISE                MINIMISE
-1. integrality   LP integral; update Z* if Z > Z*      if Z < Z*
-2. infeasible    LP relaxation has no feasible point   same
-3. bound         Z_node ≤ Z*                           Z_node ≥ Z*
-```
-**Write MAX or MIN at the top of your answer.** Ties (`Z_node = Z*`) still prune.
+Branch on a **fractional** `x_i = f` into `x_i ≤ ⌊f⌋` and `x_i ≥ ⌈f⌉`. No integer point is lost —
+none lies strictly between. Children **inherit** every ancestor constraint.
 
-## Solving a node graphically
-```
-branch constraint = a VERTICAL or HORIZONTAL line
-  x₁ ≤ 2 → keep LEFT     x₁ ≥ 3 → keep RIGHT
-  x₂ ≤ 1 → keep BELOW    x₂ ≥ 2 → keep ABOVE
-constraints ACCUMULATE down the path
-empty region → prune by infeasibility, no arithmetic
-otherwise slide the objective line to the last touching vertex
-```
+### The three pruning rules
 
-## Node order
-```
-FIFO = queue  = breadth-first   take the OLDEST open node
-LIFO = stack  = depth-first     take the NEWEST open node
-stop as soon as the incumbent is confirmed
-state which child you push first — the answer depends on it
-```
+| | Maximise | Minimise |
+|---|---|---|
+| **integrality** | LP integral; update `Z*` if `Z > Z*` | update if `Z < Z*` |
+| **infeasibility** | relaxation has no feasible point | same |
+| **bound** | `Z_node ≤ Z*` | `Z_node ≥ Z*` |
 
-## Per node, record
-```
-node │ constraint added │ vertex │ Z │ which rule closed it
-```
+Write **MAX** or **MIN** at the top of your answer. A tie (`Z_node = Z*`) still prunes.
 
----
+### Solving a node on the plot
 
-# §7 — Total unimodularity
+| Branch constraint | Line | Keep |
+|---|---|---|
+| `x₁ ≤ 2` | vertical at 2 | left |
+| `x₁ ≥ 3` | vertical at 3 | right |
+| `x₂ ≤ 1` | horizontal at 1 | below |
+| `x₂ ≥ 2` | horizontal at 2 | above |
 
-```
-TU ⟺ every square submatrix has det ∈ {−1,0,+1}   (⟹ every entry in {−1,0,+1})
-TU + b integral ⟹ integral polyhedron ⟹ IP solvable in polynomial time
+Constraints accumulate down the path. **Empty region → prune by infeasibility**, no arithmetic.
+Otherwise slide the objective line to the last vertex it touches.
 
-PROVE by recognition:  incidence matrix of a BIPARTITE or DIRECTED graph is TU
-                       consecutive-ones (interval matrix) is TU
-PROVE by conditions:   1. entries in {−1,0,+1}
-                       2. ≤ 2 non-zeros per COLUMN
-                       3. split rows into M₁,M₂ — same sign → different parts,
-                          opposite signs → same part
-                       (DO NOT write "Ghouila-Houri" — unnamed in the lecture)
-DISPROVE:  find a ZERO-FREE 2×2 with |det| ≥ 2
-           (any 2×2 containing a 0 always has det ∈ {−1,0,+1})
-closure:   A TU ⟹ −A, Aᵀ, A⁻¹, [A,I] all TU
-```
+### Node order
+
+| | Structure | Takes |
+|---|---|---|
+| **FIFO** | queue — breadth-first | the **oldest** open node |
+| **LIFO** | stack — depth-first | the **newest** open node |
+
+Stop as soon as the incumbent is confirmed. **State which child you push first** — the answer
+depends on it.
+
+For every node record: **node · constraint added · vertex · `Z` · which rule closed it.**
 
 ---
 
-# §8 — Matroids
+# §7 · Total unimodularity
 
-```
-(1) ∅ ∈ ℐ
-(2) B ∈ ℐ, A ⊆ B  ⟹  A ∈ ℐ                          hereditary
-(3) A,B ∈ ℐ, |A| < |B|  ⟹  ∃x ∈ B\A : A∪{x} ∈ ℐ      exchange
-        SMALLER set grows;  element comes from the LARGER
+`A` is **TU** ⟺ every square submatrix has determinant in `{−1, 0, +1}`.
+Hence every entry is in `{−1, 0, +1}`.
 
-PROVE:    all three bullets, in order
-DISPROVE: 1. is ∅ ∈ ℐ?      2. hereditary?     3. exchange?
-          for exchange you must refute EVERY x ∈ B\A  → keep it to 2–3 elements
+> **TU + integral `b` ⟹ integral polyhedron ⟹ the IP is solvable in polynomial time.**
 
-basis = MAXIMAL independent set;  all bases equicardinal
-r(B)  = max{|A| : A ⊆ B, A ∈ ℐ};  connected graphic: r(E) = |V| − 1
-greedy: increasing → MIN basis  ;  decreasing → MAX basis
-```
+### Proving it
 
----
+| Route | What to say |
+|---|---|
+| **recognition** | incidence matrix of a **bipartite** or **directed** graph is TU — usually the whole answer |
+| | consecutive-ones (interval matrix) is TU |
+| **three conditions** | 1. entries in `{−1,0,+1}` · 2. at most 2 non-zeros per **column** · 3. rows split into `M₁, M₂`: same sign → different parts, opposite signs → same part |
 
-# §9 — Knapsack DP
+**Do not write "Ghouila-Houri"** — the lecture never names it. Reproduce the three conditions.
 
-```
-B[i,w] = best value from items 1..i with capacity w
-  w_i ≤ w :  B[i,w] = max{ B[i−1,w] ,  v_i + B[i−1, w−w_i] }
-  else    :  B[i,w] = B[i−1,w]
-row 0 and column 0 are all zeros;  answer = B[n,W]
+### Disproving it
 
-index by weight O(n·W_max)  or  by value O(n·V_max)  →  RUN THE SMALLER, say why
-backtrack: B[i,w] = B[i−1,w] ⟹ item i NOT taken; else taken, w := w − w_i
-pseudopolynomial, not polynomial
-FPTAS: θ = ε·v_max/n,  v_i* = ⌊v_i/θ⌋,  value-DP,  report original values
-       V_approx ≥ (1−ε)·V_opt        P ⊆ FPTAS ⊆ PTAS ⊆ APX
-```
+Find a **zero-free `2×2`** with `|det| ≥ 2`. Any `2×2` containing a zero always has
+`det ∈ {−1,0,+1}`, so only zero-free blocks can break it.
+
+**Closure:** `A` TU ⟹ `−A`, `Aᵀ`, `A⁻¹`, `[A, I]` are all TU.
 
 ---
 
-# §10 — Network flow
+# §8 · Matroids
 
 ```
-0 ≤ f(e) ≤ u(e)          conservation: in = out at every node except s, t
+(1)  ∅ ∈ ℐ
+(2)  B ∈ ℐ, A ⊆ B  ⟹  A ∈ ℐ                        hereditary
+(3)  A,B ∈ ℐ, |A| < |B|  ⟹  ∃x ∈ B\A : A∪{x} ∈ ℐ    exchange
+```
+
+> Axiom 3: the **smaller** set grows, the element comes from the **larger**.
+
+| Task | Method |
+|---|---|
+| **prove** | all three bullets, in order — (1) and (2) are one line each |
+| **disprove** | try in this order: is `∅ ∈ ℐ`? → hereditary? → exchange? |
+
+For exchange you must refute **every** `x ∈ B \ A` — so keep the example to 2–3 elements.
+
+| Term | Definition |
+|---|---|
+| basis | a **maximal** independent set — all bases are equicardinal |
+| rank | `r(B) = max{|A| : A ⊆ B, A ∈ ℐ}`; connected graphic: `r(E) = |V| − 1` |
+| greedy | increasing order → **min** basis · decreasing → **max** basis |
+
+---
+
+# §9 · Knapsack DP
+
+```
+B[i,w] = best value from items 1..i under capacity w
+
+w_i ≤ w :   B[i,w] = max{ B[i−1,w] ,  v_i + B[i−1, w−w_i] }
+w_i > w :   B[i,w] = B[i−1,w]
+```
+
+Row 0 and column 0 are all zeros. The answer is `B[n,W]`.
+
+| Index by | Cost |
+|---|---|
+| weight | `O(n·W_max)` |
+| value | `O(n·V_max)` |
+
+**Run whichever bound is smaller — and say why.**
+
+**Backtrack:** if `B[i,w] = B[i−1,w]` item `i` was not taken; otherwise it was, and `w := w − wᵢ`.
+
+Pseudopolynomial, **not** polynomial. FPTAS: `θ = ε·v_max/n`, scale `vᵢ* = ⌊vᵢ/θ⌋`, run the
+value-DP, report original values. Guarantee `V_approx ≥ (1−ε)·V_opt`. Hierarchy
+`P ⊆ FPTAS ⊆ PTAS ⊆ APX`.
+
+---
+
+# §10 · Network flow
+
+```
+0 ≤ f(e) ≤ u(e)          conservation: in = out everywhere except s and t
 val(f) = Σ_j f(s,j)
+```
 
-cut S = [X, V\X], s ∈ X, t ∉ X
-cap(S) = Σ u(i,j) over i ∈ X, j ∉ X       ← FORWARD ARCS ONLY
+| Object | Rule |
+|---|---|
+| **cut** `S = [X, V\X]` | `s ∈ X`, `t ∉ X` |
+| **cut capacity** | `Σ u(i,j)` over `i ∈ X`, `j ∉ X` — **forward arcs only** |
+| **residual, forward** | `u(e) − f(e)` |
+| **residual, backward** | `f(e)` — the undo button |
 
-residual: forward u(e) − f(e)   ,   backward f(e)      ← backward = the undo button
+### Ford–Fulkerson
 
-FORD-FULKERSON: find any s–t path in the residual net; κ = min residual on it;
-                f += κ forward, f −= κ backward; repeat; none left → maximal
-MIN CUT: X = nodes reachable from s in the FINAL residual network
-VERIFY: cap(S) = val(f)   ← free correctness check, do it every time
+1. Find any `s–t` path in the residual network. None left → the flow is maximal.
+2. `κ` = smallest residual capacity on that path.
+3. `f += κ` on forward arcs, `f −= κ` on backward arcs. Repeat.
 
-val(f) ≤ cap(S) always  ;  max-flow = min-cut at optimum
-node capacity → split v into v_in → v_out with that capacity
+**Min cut:** `X` = the nodes reachable from `s` in the **final** residual network.
+**Always verify `cap(S) = val(f)`** — a free correctness check.
+
+`val(f) ≤ cap(S)` for every flow and cut; **max-flow = min-cut** at the optimum.
+Node capacity → split `v` into `v_in → v_out` joined by an arc of that capacity.
+
+---
+
+# §11 · TSP
+
+| Term | Means | Complexity |
+|---|---|---|
+| **Eulerian** | every **edge** once | polynomial |
+| **Hamiltonian** | every **node** once | NP-complete |
+
+TSP = minimum-weight Hamiltonian cycle. Symmetric: `(n−1)!/2` tours. Asymmetric: `(n−1)!`.
+
+**Degree constraints alone are the assignment problem** — they permit subtours.
+
+| | Constraint | Count | Relaxation |
+|---|---|---|---|
+| **SEC** | `Σ_{i,j∈U} x_ij ≤ |U|−1` for all `U`, `2 ≤ |U| ≤ n−1` | exponential | **tight** |
+| **MTZ** | `u_i − u_j + 1 ≤ (n−1)(1−x_ij)`, `u₁=1`, `2 ≤ u_i ≤ n` | `O(n²)` | **weak** |
+
+Use the lecture's `(n−1)`, not the textbook's `n`.
+
+| Algorithm | Ratio | How |
+|---|---|---|
+| **MST-doubling** | **2** | double every MST edge → Euler tour → shortcut |
+| **Christofides** | **3/2** | MST → min-weight matching on **odd-degree** vertices → Euler → shortcut |
+| nearest neighbour | none | greedy, no guarantee |
+
+Both ratios need the **triangle inequality**.
+
+> ⚠ Papers mislabel MST-doubling as "Christofides". **Execute what is described.**
+
+### Classifying a problem
+
+| Wording | Class |
+|---|---|
+| pair `n` things one-to-one | assignment |
+| one budget, maximise value | knapsack |
+| minimise the number of containers | bin packing |
+| cover every element, minimise cost | set covering |
+| visit every node once and return | TSP |
+| pick nodes so every **edge** is touched | vertex cover |
+
+---
+
+# §12 · Nonlinear, unconstrained
+
+1. Solve `∇f = 0` for **all** critical points — factor, don't divide (`x·(…) = 0` has two branches).
+2. Compute `H_f` symbolically.
+3. **Plug in each critical point separately** — verdicts can differ.
+
+### 2×2 test · `H = [[a,b],[b,d]]`, `det = ad − b²`, `tr = a + d`
+
+| `det` | `tr` | Definiteness | Point is a |
+|---|---|---|---|
+| `> 0` | `> 0` | positive definite | **minimum** |
+| `> 0` | `< 0` | negative definite | **maximum** |
+| `< 0` | — | indefinite | **saddle** |
+| `= 0` | — | — | inconclusive → eigenvalues |
+
+Because `λ₁λ₂ = det` and `λ₁ + λ₂ = tr`.
+
+### Leading principal minors · any size
+
+| Pattern | Verdict |
+|---|---|
+| all `D_k > 0` | positive definite → **minimum** |
+| `D₁ < 0, D₂ > 0, D₃ < 0, …` alternating from negative | negative definite → **maximum** |
+| no `D_k = 0`, but neither pattern | indefinite → **saddle** |
+| any `D_k = 0` | test **inapplicable** → eigenvalues |
+
+### Eigenvalues · the fallback
+
+Solve `det(H − λI) = 0`.
+
+| Roots | Point is a |
+|---|---|
+| all `λ > 0` | **minimum** |
+| all `λ < 0` | **maximum** |
+| mixed signs | **saddle** |
+| some `λ = 0` | genuinely inconclusive |
+
+> **Shortcut:** `H ≻ 0` **everywhere** ⟹ strictly convex ⟹ **no maxima**, and any critical point
+> is the unique global minimum. State this before you find the point.
+> (`H ≻ 0` ⟹ strictly convex, but not conversely — see `x⁴`.)
+
+---
+
+# §13 · Convexity
+
+```
+convex SET        λx + (1−λ)y ∈ C                        ∀x,y ∈ C, λ ∈ [0,1]
+convex FUNCTION   f(λx+(1−λ)y) ≤ λf(x) + (1−λ)f(y)
+```
+
+| Object | Compact | Convex |
+|---|---|---|
+| circle **curve** `x²+y²=r²` | ✓ | **✗** |
+| closed **disk** `x²+y²≤r²` | ✓ | ✓ |
+| halfplane | **✗** unbounded | ✓ |
+
+> Convex objective **+** convex feasible set ⟹ every local minimum is **global**.
+
+### Four routes to proving convexity
+
+| Route | Use when |
+|---|---|
+| **definition** | `f` is abstract or non-differentiable — e.g. a norm |
+| **Hessian** `H_f ⪰ 0` on a convex domain | `f` is differentiable |
+| **rules** — `αf` (`α ≥ 0`), `f+g`, `f(Ax+b)`, `max{f_i}`, `h∘g` (`h` convex non-decreasing) | it's built from known pieces |
+| **counterexample** — one triple `(x, y, λ)` | you need to **dis**prove |
+
+```
+norm:  ‖λx+(1−λ)y‖ ≤ ‖λx‖ + ‖(1−λ)y‖ = |λ|‖x‖ + |1−λ|‖y‖ = λ‖x‖ + (1−λ)‖y‖
+                      triangle            homogeneity          λ ∈ [0,1]  ← say this
 ```
 
 ---
 
-# §11 — TSP
+# §14 · KKT
+
+### Standard form first
 
 ```
-EULER = every EDGE once (polynomial)    HAMILTON = every NODE once (NP-complete)
-TSP = min-weight Hamiltonian cycle;  symmetric (n−1)!/2  ,  asymmetric (n−1)!
+min f(x)   s.t.   g_i(x) ≤ 0 ,   h_j(x) = 0
 
-degree constraints alone = the ASSIGNMENT problem → permits SUBTOURS
-SEC:  Σ_{i,j∈U} x_ij ≤ |U|−1    ∀U, 2≤|U|≤n−1     exponential, TIGHT
-MTZ:  u_i − u_j + 1 ≤ (n−1)(1−x_ij)                polynomial, WEAK
-      u₁ = 1,  2 ≤ u_i ≤ n                          use (n−1), not n
-
-MST-DOUBLING = 2      double MST edges → Euler tour → shortcut
-CHRISTOFIDES = 3/2    MST → min-weight matching on ODD-degree vertices → Euler → shortcut
-both need the TRIANGLE INEQUALITY
-nearest neighbour: NO guarantee
-⚠ papers mislabel MST-doubling as "Christofides" — EXECUTE WHAT IS DESCRIBED
+g ≥ 0  becomes  −g ≤ 0            max f  becomes  min −f
 ```
 
-## Classify a problem into a known class
 ```
-pair n things one-to-one              → assignment
-one budget, maximise value            → knapsack
-minimise number of containers         → bin packing
-cover every element, minimise cost    → set covering
-visit every node once, return         → TSP
-pick nodes so every EDGE is touched   → vertex cover
-```
-
----
-
-# §12 — Nonlinear, unconstrained
-
-```
-1. ∇f = 0  →  ALL critical points     (factor, don't divide — x·(…)=0 has two branches)
-2. H_f symbolically
-3. PLUG IN each critical point separately — verdicts can differ
-```
-
-### 2×2 test — the workhorse
-```
-H = [[a,b],[b,d]]      det = ad − b²     tr = a + d
-
-det > 0, tr > 0   →  positive definite   →  MINIMUM
-det > 0, tr < 0   →  negative definite   →  MAXIMUM
-det < 0           →  indefinite          →  SADDLE
-det = 0           →  inconclusive        →  eigenvalues
-                                   (λ₁λ₂ = det ,  λ₁+λ₂ = tr)
-```
-
-### Leading principal minors — any size
-```
-all D_k > 0                          →  PD → MIN
-D₁ < 0, D₂ > 0, D₃ < 0, …            →  ND → MAX     (alternating, starts NEGATIVE)
-no D_k = 0 but neither pattern       →  indefinite → SADDLE
-any D_k = 0                          →  test INAPPLICABLE → eigenvalues
-```
-
-### Eigenvalues — the fallback
-```
-solve  det(H − λI) = 0
-
-all λ > 0    →  MIN
-all λ < 0    →  MAX
-mixed signs  →  SADDLE
-some λ = 0   →  genuinely inconclusive
-```
-
-### Shortcut
-```
-H ≻ 0 EVERYWHERE  ⟹  strictly convex  ⟹  NO maxima, unique GLOBAL minimum
-(state this before finding the critical point — it's part of the answer)
-H ≻ 0 ⟹ strictly convex, but NOT conversely (x⁴)
-```
-
----
-
-# §13 — Convexity
-
-```
-CONVEX SET       λx + (1−λ)y ∈ C     ∀x,y ∈ C, λ ∈ [0,1]
-CONVEX FUNCTION  f(λx+(1−λ)y) ≤ λf(x) + (1−λ)f(y)
-
-circle CURVE x²+y²=r²  → compact, NOT convex
-closed DISK  x²+y²≤r²  → compact AND convex
-halfplane              → convex, NOT compact (unbounded)
-
-convex f + convex feasible set ⟹ every local min is GLOBAL
-
-PROVE: (a) definition   (b) H_f ⪰ 0 on a convex domain
-       (c) rules: αf (α≥0), f+g, f(Ax+b), max{f_i}, h∘g (h convex non-decreasing)
-       (d) disprove with ONE triple (x,y,λ)
-
-norm is convex:  ‖λx+(1−λ)y‖ ≤ ‖λx‖+‖(1−λ)y‖ = |λ|‖x‖+|1−λ|‖y‖ = λ‖x‖+(1−λ)‖y‖
-                 last step needs λ ∈ [0,1]  ← say it
-```
-
----
-
-# §14 — KKT
-
-```
-STANDARD FORM   min f(x)  s.t.  g_i(x) ≤ 0 ,  h_j(x) = 0
-  g ≥ 0 becomes −g ≤ 0    ;    max f becomes min −f
-
 L = f + Σ λ_i g_i + Σ μ_j h_j        λ_i ≥ 0  (inequalities)
-                                     μ_j FREE (equalities)
-
-1. STATIONARITY   ∇f + Σλ_i∇g_i + Σμ_j∇h_j = 0
-2. PRIMAL FEAS.   g_i ≤ 0 ,  h_j = 0
-3. DUAL FEAS.     λ_i ≥ 0
-4. COMPL. SLACK.  λ_i · g_i = 0        ⟹ λ_i = 0 OR g_i = 0
-
-CASE SPLIT on (4); discard a case if λ_i < 0 or g_i > 0, and SAY WHY
-kill cases early: argue a constraint is active/inactive from the problem statement
+                                     μ_j free (equalities)
 ```
 
-## Constraint qualifications
-```
-SLATER   f, g convex; h affine; ∃x̄ with g_i(x̄) < 0 STRICTLY
-         ⟹  a KKT point IS a GLOBAL optimum. No comparison needed.
-         verify by EXHIBITING the point (e.g. centroid, radius + 1)
+### The four blocks
 
-LICQ     active ∇g_i together with all ∇h_j are linearly independent
-         ⟹  KKT gives CANDIDATES only. COMPARE f values.
-```
+| | Condition |
+|---|---|
+| **stationarity** | `∇f + Σλ_i∇g_i + Σμ_j∇h_j = 0` |
+| **primal feasibility** | `g_i ≤ 0`, `h_j = 0` |
+| **dual feasibility** | `λ_i ≥ 0` |
+| **complementary slackness** | `λ_i · g_i = 0` — so `λ_i = 0` **or** `g_i = 0` |
 
-## Four-step recipe
-```
-1. EXISTENCE  feasible set compact (closed AND bounded, Heine–Borel) + f continuous
-              ⟹ global min and max EXIST (Weierstrass)
-2. CQ         Slater? else LICQ?
-3. SOLVE      Lagrangian → four blocks → case split → discard
-4. COMPARE    evaluate f at survivors — SKIP only if Slater held
-```
+Case-split on complementary slackness. **Discard a case and say why** if `λ_i < 0` (dual
+infeasible) or `g_i > 0` (primal infeasible). Kill cases early by arguing from the problem
+statement that a constraint must be active or inactive.
 
----
+### Constraint qualifications
 
-# Corrections to carry in
+| | Requires | Gives you |
+|---|---|---|
+| **Slater** | `f, g` convex; `h` affine; an `x̄` with every `g_i(x̄) < 0` **strictly** | a KKT point **is a global optimum** — no comparison needed |
+| **LICQ** | active `∇g_i` and all `∇h_j` linearly independent | **candidates only** — you must compare `f` values |
 
-```
-Christofides = 3/2 (odd-degree matching)   MST-doubling = 2
-   papers mislabel doubling as Christofides → execute what is DESCRIBED
+Verify Slater by **exhibiting the point** (centroid, radius `+ 1`, and so on).
 
-TU sufficient condition is UNNAMED in the lecture → reproduce the three conditions
+### The four-step recipe
 
-Row 0 sign is the COURSE convention: Row0 = yᵀa_j − c_j, optimal ⟺ all ≥ 0
-   (textbooks use the negation — state your convention)
-
-midterm SS26 P2d's sample solution is wrong: the cone it gives for unbounded c
-   is where the LP is BOUNDED
-```
-
----
-
-# Timing
-
-```
-E1  Multiple choice   ~15 pts / 12 min   best pts/min, never blank
-E3  Duality           ~15 pts / 15 min   most procedural, banks points early
-E5  Branch & Bound    ~14 pts / 14 min
-E6  Combinatorial     ~14 pts / 14 min
-E4  IP modelling      ~22 pts / 25 min   largest; do it while sharp
-E2  Simplex/sens      ~16 pts / 18 min
-E7  Nonlinear         ~20 pts / 22 min   LAST — convexity parts first, then KKT
-                             ~20 min spare → E4 and E7
-```
-
-Allowed: non-programmable calculator, analog dictionary, ruler. No cheat sheet.
-Partial credit is real on E4 and E7 — **write the setup even if you can't finish.**
+1. **Existence** — feasible set compact (closed **and** bounded, Heine–Borel) and `f` continuous
+   ⟹ a global min and max exist (Weierstrass).
+2. **CQ** — Slater? Otherwise LICQ.
+3. **Solve** — Lagrangian → four blocks → case split → discard.
+4. **Compare** — evaluate `f` at the survivors. Skip only if Slater held.
