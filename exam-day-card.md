@@ -310,31 +310,72 @@ Find a **zero-free `2×2`** with `|det| ≥ 2`. Any `2×2` containing a zero alw
 
 # §8 · Matroids
 
-### The axioms
+### What it is, and what it's for
 
-```
-(1)  ∅ ∈ ℐ
-(2)  B ∈ ℐ, A ⊆ B  ⟹  A ∈ ℐ                        hereditary
-(3)  A,B ∈ ℐ, |A| < |B|  ⟹  ∃x ∈ B\A : A∪{x} ∈ ℐ    exchange
-```
+A matroid is a **finite pile of things**, plus a rule saying which **selections** from that pile count as *allowed*. Nothing more.
 
-> Axiom 3: the **smaller** set grows, the element comes from the **larger**.
+It exists because of one theorem:
 
-`ℐ` is just "the selections the problem calls allowed". `E` is the pile you choose from.
+> **Greedy — sort by weight, take anything that doesn't break the rule — finds the optimum for every weight function, if and only if the system is a matroid.**
 
-### A concrete one to hold onto
+That's why Kruskal's minimum spanning tree works. Everything below is the definition of
+"greedy-friendly".
+
+### The vocabulary
+
+| Symbol | Name | What it means |
+|---|---|---|
+| `E` | **ground set** | the finite pile you're choosing from |
+| `ℐ` | the **independent sets** | the collection of allowed selections, `ℐ ⊆ 2^E` |
+| `A ∈ ℐ` | `A` is **independent** | this particular selection is allowed |
+| basis | a **maximal** independent set | allowed, and nothing can be added to it |
+
+**"Independent" carries no meaning of its own.** It's whatever the problem declares allowed —
+no cycle, no two adjacent nodes, fits inside a fixed set. Read the definition they give you.
+
+### A concrete one — read this before the axioms
+
+Take a triangle. Let `E` be its edges, and call a set of edges **independent** if it contains
+**no cycle**.
 
 ```
        a          E = { ab, ac, bc }
-      / \         ℐ = all edge sets with NO CYCLE
-     b───c        so every set except {ab, ac, bc} itself
+      / \
+     b───c        independent ⟺ no cycle
 ```
 
 | | |
 |---|---|
-| independent | `∅`, `{ab}`, `{ac}`, `{bc}`, `{ab,ac}`, `{ab,bc}`, `{ac,bc}` |
-| **not** independent | `{ab,ac,bc}` — a triangle |
-| **bases** | the three 2-edge sets — note they all have size **2** |
+| independent sets `ℐ` | `∅`, `{ab}`, `{ac}`, `{bc}`, `{ab,ac}`, `{ab,bc}`, `{ac,bc}` |
+| **not** independent | `{ab,ac,bc}` — that's the triangle, a cycle |
+| **bases** | the three 2-edge sets — you can't add a third edge without closing the cycle |
+
+Note the bases all have size **2**. That's not luck — see *Bases* below.
+
+### The axioms
+
+`(E, ℐ)` is a **matroid** when all three hold:
+
+```
+(1)  ∅ ∈ ℐ
+     the empty selection is allowed
+
+(2)  B ∈ ℐ  and  A ⊆ B   ⟹   A ∈ ℐ
+     HEREDITARY — any part of an allowed selection is itself allowed
+     (drop an edge from a forest, still a forest)
+
+(3)  A, B ∈ ℐ  with |A| < |B|   ⟹   ∃ x ∈ B \ A  with  A ∪ {x} ∈ ℐ
+     EXCHANGE — a smaller allowed selection can always grow, using
+     something taken from a bigger one
+```
+
+> **Axiom 3, said carefully:** `A` is the **smaller** set and it's the one that **grows**. The
+> new element `x` comes **from the larger set `B`**, and must not already be in `A`.
+
+Axioms (1) and (2) alone give an **independence system**. Adding (3) makes it a **matroid**.
+
+Why (3) is the interesting one: it says *you can never get stuck at a small maximal selection
+while a bigger one exists* — which is exactly why greedy can't paint itself into a corner.
 
 ### Prove / disprove
 
