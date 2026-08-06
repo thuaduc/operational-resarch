@@ -3,62 +3,22 @@
 
 ### Conversions
 
-| From | To | Note |
-|---|---|---|
-| `aᵀx ≤ b` | `aᵀx + s = b`, `s ≥ 0` | **slack** — is a basis column |
-| `aᵀx ≥ b` | `aᵀx − s = b`, `s ≥ 0` | **surplus** — *not* a basis column |
-| `aᵀx ≥ b`, `b < 0` | flip the row by `−1` **first** | then add a slack |
-| `aᵀx = b` | `aᵀx + w = b`, `w ≥ 0` | **artificial** — start basis only |
-| `x` free | `x = x⁺ − x⁻`, both `≥ 0` | |
-| `min cᵀx` | `−max(−cᵀx)` | |
+| From               | To                                               | Note                               |
+| ------------------ | ------------------------------------------------ | ---------------------------------- |
+| `aᵀx ≤ b`          | `aᵀx + s = b`, `s ≥ 0`                           | **slack** — is a basis column      |
+| `aᵀx ≥ b`          | `aᵀx − s = b`, `s ≥ 0`                           | **surplus** — *not* a basis column |
+| `aᵀx ≥ b`, `b < 0` | flip the row by `−1` **first**, then add a slack |                                    |
+| `aᵀx = b`          | `aᵀx + w = b`, `w ≥ 0`                           | **artificial** — start basis only  |
 
-### Geometry
-
-A **vertex** ⟺ `n` linearly independent active constraints ⟺ a basic feasible solution
-(`x_B = B⁻¹b ≥ 0`, `x_N = 0`). An optimum, if one exists, sits at a vertex.
-
-### The four outcomes
-
-| Situation | Outcome | Report |
-|---|---|---|
-| `X = ∅` | **infeasible** | no `z` |
-| `∃ d` in the recession cone with `cᵀd > 0` | **unbounded** | `z → ∞` |
-| `c ⊥` an optimal edge | **infinitely many optima** | `{(1−α)v₁ + αv₂ : α ∈ [0,1]}`, one `z*` |
-| otherwise | **unique optimum** | at a vertex |
-
-### Simplex iteration — max, z-row holds `−c`
-
-```
-ENTER   j = argmin (z-row)_j,  require (z-row)_j < 0
-LEAVE   i = argmin { b_i / a_ij : a_ij > 0 }        strictly positive only
-PIVOT   R_i ← R_i / a_ij ;  R_k ← R_k − a_kj·R_i   for k ≠ i, incl. z-row
-```
-
-| Tableau shows | Means |
-|---|---|
-| no negative z-row entry | **optimal** |
-| entering column has no positive entry | **unbounded** |
-| tie in the ratio test | next basis is **degenerate** |
 
 ---
 
 # §2 · Reading a tableau
 
-1. **All Row-0 entries `≥ 0`?** → optimal (max). Check this *first*.
+1. **All Row-0 entries `≥ 0`?** → optimal
 2. **Basis column ↔ RHS column**, row by row → the basic variables and their values.
 3. **Everything not in the Basis column = 0.** State these too.
 4. **Row 0's RHS entry** → `z`.
-5. `sᵢ = 0` → constraint binding · `sᵢ > 0` → slack, leftover is `sᵢ`.
-
-No Basis column? Find the **unit columns** — the row holding the `1` gives that variable's value.
-
-```
-c_B     = objective coefficients of the BASIC variables, in Basis-column order
-yᵀ      = c_Bᵀ B⁻¹                shadow prices
-Row0_j  = yᵀa_j − c_j             optimal ⟺ all ≥ 0     ← COURSE sign convention
-b'      = B⁻¹b                    the plan; feasible ⟺ b' ≥ 0
-z       = c_Bᵀ b' = yᵀb
-```
 
 | Where in Row 0 | What it is |
 |---|---|
@@ -68,6 +28,50 @@ z       = c_Bᵀ b' = yᵀb
 ---
 
 # §3 · Sensitivity
+
+### Shadow prices
+
+> **`yᵢ` = the marginal value of one more unit of resource `i`.**
+> Raise `bᵢ` by 1 and the optimal objective improves by `yᵢ` — while the basis stays optimal.
+
+It is a **derivative**, not an analogy: `z = yᵀb`, so `∂z/∂bᵢ = yᵢ`.
+
+```
+yᵀ = c_Bᵀ B⁻¹              compute it
+Row 0 under slack sᵢ       read it off a tableau
+Δz = yᵢ · δ                use it
+```
+
+**The economic reading:** `yᵢ` is the most you would pay for one extra unit of resource `i`.
+Above that price, buying it loses money. That's the business answer the whole topic exists to give.
+
+**Five names, one object.** The exam and the lectures use these interchangeably:
+
+```
+shadow price  ·  dual variable  ·  simplex multiplier  ·  opportunity cost  ·  π
+```
+
+It genuinely **is** the optimal dual solution from §4 — the same numbers you would get by solving
+(D) directly.
+
+| Constraint at the optimum | Slack `sᵢ` | Shadow price |
+|---|---|---|
+| **binding** — fully used | `sᵢ = 0`, non-basic | `yᵢ ≥ 0`, usually `> 0` |
+| **not binding** — spare left | `sᵢ > 0`, basic | **`yᵢ = 0`** |
+
+That second row is complementary slackness: **a resource you aren't fully using is worth nothing
+at the margin.** More wood is useless if wood is already piling up unused.
+
+### Shadow-price notes — where marks go
+
+| Note | Why |
+|---|---|
+| Valid **only inside the RHS range** | past the endpoint the basis changes and `yᵢ` changes with it |
+| Gives the change in **`z`**, not in the basic variables | the plan moves by `B⁻¹Δb`. **SS25 multiple-choice trap.** |
+| A `≤` row in a max problem has `yᵢ ≥ 0` | more resource can't hurt; a `≥` row is bizarre and gives `yᵢ ≤ 0` (§4) |
+| Reducing `bᵢ` can only **raise** `yᵢ` (max problem) | scarcer ⟹ more valuable at the margin — use as a sanity check after re-pivoting |
+| At a **degenerate** optimum it's ambiguous | the marginal value can differ going up vs down; the tableau shows one side |
+| All costs zero ⟹ **every `yᵢ` = 0** | `c_B = 0` ⟹ `yᵀ = c_BᵀB⁻¹ = 0`. This is why SS25 E2 looks so strange |
 
 ### Which half breaks
 
