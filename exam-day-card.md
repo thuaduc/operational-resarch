@@ -1,7 +1,19 @@
-# Exam-day card — every decision rule, one page per slot
+# Exam-day card — every decision rule, by topic
 
 Rules only. No explanations — those are in the `theory/*a` lessons.
 Read this on Thursday and again on Friday morning.
+
+## Which topic serves which exercise
+
+| Slot | Topics below |
+|---|---|
+| **E1** multiple choice | all of them — see §0 for the trap facts |
+| **E2** simplex / sensitivity | §1 LP + simplex · §2 reading a tableau · §3 sensitivity |
+| **E3** duality | §4 |
+| **E4** IP modelling | §5 |
+| **E5** branch & bound | §6 |
+| **E6** combinatorial | §7 TU · §8 matroids · §9 knapsack DP · §10 flow · §11 TSP |
+| **E7** nonlinear | §12 unconstrained · §13 convexity · §14 KKT |
 
 **Order to work the paper:** E1 → E3 → E5 → E6 → E4 → E2 → E7.
 **Never leave a multiple-choice item blank.** All right = 2, one error = 1, blank = 0.
@@ -9,7 +21,7 @@ Read this on Thursday and again on Friday morning.
 
 ---
 
-# E1 — Multiple choice
+# §0 — Multiple choice: scoring and trap facts
 
 ```
 all correct options, no wrong ones   →  2 pts
@@ -33,7 +45,54 @@ TU submatrix dets   →  in {−1,0,+1}
 
 ---
 
-# E2 — Sensitivity
+# §1 — LP basics and simplex
+
+## Forms and conversions
+```
+normal     max cᵀx, Ax ≤ b, x ≥ 0
+standard   max cᵀx, Ax = b ≥ 0, x ≥ 0
+canonical  standard + a visible identity submatrix (a basis)
+
+aᵀx ≤ b   →  aᵀx + s = b, s ≥ 0      SLACK      (+1 column, IS a basis column)
+aᵀx ≥ b   →  aᵀx − s = b, s ≥ 0      SURPLUS    (−1 column, NOT a basis column)
+aᵀx ≥ b with b < 0  →  multiply the row by −1 FIRST, then add a slack
+aᵀx = b   →  aᵀx + w = b, w ≥ 0      ARTIFICIAL (start basis only)
+x free    →  x = x⁺ − x⁻,  x⁺, x⁻ ≥ 0
+min cᵀx   =  −max(−cᵀx)
+```
+
+## Geometry
+```
+X = {x : Ax ≤ b, x ≥ 0}   convex polyhedron;  polytope = BOUNDED polyhedron
+v is a VERTEX  ⟺  n linearly independent active constraints at v
+               ⟺  v is a basic feasible solution (x_B = B⁻¹b ≥ 0, x_N = 0)
+an optimum, if it exists, is attained at a VERTEX
+```
+
+## The four outcomes
+```
+X = ∅                                  →  INFEASIBLE
+∃ d ∈ rec(X) with cᵀd > 0              →  UNBOUNDED, z → ∞
+c ⊥ an optimal edge                    →  INFINITELY MANY OPTIMA
+                                          report {(1−α)v₁ + αv₂ : α ∈ [0,1]}, one z*
+otherwise                              →  UNIQUE optimum at a vertex
+```
+
+## Simplex iteration (max, z-row holds −c)
+```
+ENTER   j = argmin (z-row)_j ,  require (z-row)_j < 0
+LEAVE   i = argmin { b_i / a_ij : a_ij > 0 }     ← STRICTLY positive only
+PIVOT   R_i ← R_i / a_ij  ;  R_k ← R_k − a_kj·R_i  for all k ≠ i, incl. the z-row
+
+no negative z-row entry            →  OPTIMAL
+entering column has NO positive    →  UNBOUNDED
+                      entry
+tie in the ratio test              →  DEGENERATE next basis
+```
+
+---
+
+# §2 — Reading a tableau
 
 ## Read the solution off a tableau
 ```
@@ -55,6 +114,10 @@ Row 0 under slack sᵢ         = yᵢ      ← read shadow prices here
 b'       = B⁻¹b                         the plan; feasible ⟺ b' ≥ 0
 z        = c_Bᵀb' = yᵀb
 ```
+
+---
+
+# §3 — Sensitivity
 
 ## Which half breaks
 ```
@@ -90,7 +153,7 @@ endpoints of an RHS range          →  exactly where degeneracy occurs
 
 ---
 
-# E3 — Duality
+# §4 — Duality
 
 ## Derive the dual
 ```
@@ -146,7 +209,7 @@ non-zero variable ⟹  its dual constraint is TIGHT
 
 ---
 
-# E4 — IP modelling
+# §5 — IP modelling
 
 ## The answer template (this is the rubric)
 ```
@@ -204,7 +267,7 @@ merging two sub-questions into one answer
 
 ---
 
-# E5 — Branch and Bound
+# §6 — Branch and bound
 
 ```
 LP relaxation:  max → z_LP is an UPPER bound   ;  min → LOWER bound
@@ -249,25 +312,8 @@ node │ constraint added │ vertex │ Z │ which rule closed it
 
 ---
 
-# E6 — Combinatorial
+# §7 — Total unimodularity
 
-## Matroids
-```
-(1) ∅ ∈ ℐ
-(2) B ∈ ℐ, A ⊆ B  ⟹  A ∈ ℐ                          hereditary
-(3) A,B ∈ ℐ, |A| < |B|  ⟹  ∃x ∈ B\A : A∪{x} ∈ ℐ      exchange
-        SMALLER set grows;  element comes from the LARGER
-
-PROVE:    all three bullets, in order
-DISPROVE: 1. is ∅ ∈ ℐ?      2. hereditary?     3. exchange?
-          for exchange you must refute EVERY x ∈ B\A  → keep it to 2–3 elements
-
-basis = MAXIMAL independent set;  all bases equicardinal
-r(B)  = max{|A| : A ⊆ B, A ∈ ℐ};  connected graphic: r(E) = |V| − 1
-greedy: increasing → MIN basis  ;  decreasing → MAX basis
-```
-
-## Total unimodularity
 ```
 TU ⟺ every square submatrix has det ∈ {−1,0,+1}   (⟹ every entry in {−1,0,+1})
 TU + b integral ⟹ integral polyhedron ⟹ IP solvable in polynomial time
@@ -284,7 +330,29 @@ DISPROVE:  find a ZERO-FREE 2×2 with |det| ≥ 2
 closure:   A TU ⟹ −A, Aᵀ, A⁻¹, [A,I] all TU
 ```
 
-## Knapsack DP
+---
+
+# §8 — Matroids
+
+```
+(1) ∅ ∈ ℐ
+(2) B ∈ ℐ, A ⊆ B  ⟹  A ∈ ℐ                          hereditary
+(3) A,B ∈ ℐ, |A| < |B|  ⟹  ∃x ∈ B\A : A∪{x} ∈ ℐ      exchange
+        SMALLER set grows;  element comes from the LARGER
+
+PROVE:    all three bullets, in order
+DISPROVE: 1. is ∅ ∈ ℐ?      2. hereditary?     3. exchange?
+          for exchange you must refute EVERY x ∈ B\A  → keep it to 2–3 elements
+
+basis = MAXIMAL independent set;  all bases equicardinal
+r(B)  = max{|A| : A ⊆ B, A ∈ ℐ};  connected graphic: r(E) = |V| − 1
+greedy: increasing → MIN basis  ;  decreasing → MAX basis
+```
+
+---
+
+# §9 — Knapsack DP
+
 ```
 B[i,w] = best value from items 1..i with capacity w
   w_i ≤ w :  B[i,w] = max{ B[i−1,w] ,  v_i + B[i−1, w−w_i] }
@@ -298,7 +366,10 @@ FPTAS: θ = ε·v_max/n,  v_i* = ⌊v_i/θ⌋,  value-DP,  report original value
        V_approx ≥ (1−ε)·V_opt        P ⊆ FPTAS ⊆ PTAS ⊆ APX
 ```
 
-## Network flow
+---
+
+# §10 — Network flow
+
 ```
 0 ≤ f(e) ≤ u(e)          conservation: in = out at every node except s, t
 val(f) = Σ_j f(s,j)
@@ -317,7 +388,10 @@ val(f) ≤ cap(S) always  ;  max-flow = min-cut at optimum
 node capacity → split v into v_in → v_out with that capacity
 ```
 
-## TSP
+---
+
+# §11 — TSP
+
 ```
 EULER = every EDGE once (polynomial)    HAMILTON = every NODE once (NP-complete)
 TSP = min-weight Hamiltonian cycle;  symmetric (n−1)!/2  ,  asymmetric (n−1)!
@@ -334,7 +408,7 @@ nearest neighbour: NO guarantee
 ⚠ papers mislabel MST-doubling as "Christofides" — EXECUTE WHAT IS DESCRIBED
 ```
 
-## Classify a problem
+## Classify a problem into a known class
 ```
 pair n things one-to-one              → assignment
 one budget, maximise value            → knapsack
@@ -346,9 +420,8 @@ pick nodes so every EDGE is touched   → vertex cover
 
 ---
 
-# E7 — Nonlinear
+# §12 — Nonlinear, unconstrained
 
-## Unconstrained
 ```
 1. ∇f = 0  →  ALL critical points     (factor, don't divide — x·(…)=0 has two branches)
 2. H_f symbolically
@@ -391,7 +464,10 @@ H ≻ 0 EVERYWHERE  ⟹  strictly convex  ⟹  NO maxima, unique GLOBAL minimum
 H ≻ 0 ⟹ strictly convex, but NOT conversely (x⁴)
 ```
 
-## Convexity
+---
+
+# §13 — Convexity
+
 ```
 CONVEX SET       λx + (1−λ)y ∈ C     ∀x,y ∈ C, λ ∈ [0,1]
 CONVEX FUNCTION  f(λx+(1−λ)y) ≤ λf(x) + (1−λ)f(y)
@@ -410,7 +486,10 @@ norm is convex:  ‖λx+(1−λ)y‖ ≤ ‖λx‖+‖(1−λ)y‖ = |λ|‖x‖
                  last step needs λ ∈ [0,1]  ← say it
 ```
 
-## KKT
+---
+
+# §14 — KKT
+
 ```
 STANDARD FORM   min f(x)  s.t.  g_i(x) ≤ 0 ,  h_j(x) = 0
   g ≥ 0 becomes −g ≤ 0    ;    max f becomes min −f
