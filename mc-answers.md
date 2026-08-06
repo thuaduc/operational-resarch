@@ -108,8 +108,8 @@ Score yourself with the real rule: **all correct 2 · one deviation 1 · otherwi
 # §8 · Matroids
 
 **Q29** — **2, 3.**
-1 ✗ — not hereditary: `{a,b} ∈ ℐ` but `{a} ∉ ℐ`.
-4 ✗ — `∅ ∉ ℐ`, since `|∅| = 0` is even. Fails axiom 1.
+1 ✗ — not hereditary: `{a,b} ∈ I` but `{a} ∉ I`.
+4 ✗ — `∅ ∉ I`, since `|∅| = 0` is even. Fails axiom 1.
 
 **Q30** — **1, 3, 4.**
 2 ✗ — that's the direction reversed, the standard error.

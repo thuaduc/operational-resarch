@@ -1,7 +1,6 @@
 # Matroids — from scratch
 
-Teaching companion to [08-total-unimodularity-and-matroids](08-total-unimodularity-and-matroids.md).
-That file is the reference; **this one assumes you know nothing**.
+Teaching companion to [08-total-unimodularity-and-matroids](08-total-unimodularity-and-matroids.md). That file is the reference; **this one assumes you know nothing**.
 
 Part of exam slot **E6**. Matroids appeared as a **full 14-point question on SS23 and SS24**, and
 as a multiple-choice item on SS25. Almost all of it is "prove this is a matroid" or "show it
@@ -24,7 +23,7 @@ b) Show or disprove: all bases have the same number of elements.
 c) Show or disprove: (B₁ ∪ B₂) \ (B₁ ∩ B₂) is a basis.
 ```
 
-**SS25 E1e** — multiple choice: *"For which of these collections is `(E, ℐ)` a matroid?"*
+**SS25 E1e** — multiple choice: *"For which of these collections is `(E, I)` a matroid?"*
 
 So: **the three axioms, the basis facts, and the ability to build a small counterexample.**
 
@@ -32,11 +31,8 @@ So: **the three axioms, the basis facts, and the ability to build a small counte
 
 # Part 1 — What a matroid is *for*
 
-Before the definition, the point.
-
 Some optimisation problems are solved correctly by the dumbest possible strategy: **sort by
-weight, take greedily whatever doesn't break anything.** Kruskal's minimum spanning tree is like
-this — sort the edges, add each one if it doesn't create a cycle, done. Optimal.
+weight, take greedily whatever doesn't break anything.** Kruskal's minimum spanning tree is like this — sort the edges, add each one if it doesn't create a cycle, done. Optimal.
 
 For most problems greedy fails badly. So the question is: **what structure makes greedy work?**
 
@@ -51,20 +47,20 @@ That's why the concept exists. Everything below is the definition of "greedy-fri
 
 ```
 E    the GROUND SET — the finite pile of things you're choosing from
-ℐ    a collection of subsets of E, called the INDEPENDENT sets
+I    a collection of subsets of E, called the INDEPENDENT sets
 ```
 
 "Independent" here has no meaning of its own. It's whatever the problem declares to be an
 allowed, non-conflicting selection.
 
 **Example — the graphic matroid.** Let `E` be the edges of a graph, and call a set of edges
-independent if it contains **no cycle**. So `ℐ` = all forests.
+independent if it contains **no cycle**. So `I` = all forests.
 
 ```
        a
       / \          E = { ab, ac, bc }
      b───c
-                   ℐ = { ∅, {ab}, {ac}, {bc}, {ab,ac}, {ab,bc}, {ac,bc} }
+                   I = { ∅, {ab}, {ac}, {bc}, {ab,ac}, {ab,bc}, {ac,bc} }
 
                    NOT independent: {ab, ac, bc}  — that's a triangle, a cycle
 ```
@@ -77,17 +73,17 @@ shows that's no accident.
 
 # Part 3 — The three axioms
 
-`(E, ℐ)` is a **matroid** if:
+`(E, I)` is a **matroid** if:
 
 ```
-(1)  ∅ ∈ ℐ
+(1)  ∅ ∈ I
      the empty selection is allowed
 
-(2)  B ∈ ℐ  and  A ⊆ B   ⟹   A ∈ ℐ
+(2)  B ∈ I  and  A ⊆ B   ⟹   A ∈ I
      HEREDITARY / downward-closed:
      any part of an allowed selection is itself allowed
 
-(3)  A, B ∈ ℐ  with  |A| < |B|   ⟹   ∃ x ∈ B \ A  with  A ∪ {x} ∈ ℐ
+(3)  A, B ∈ I  with  |A| < |B|   ⟹   ∃ x ∈ B \ A  with  A ∪ {x} ∈ I
      EXCHANGE / augmentation:
      a smaller allowed set can always grow using something from a bigger one
 ```
@@ -104,20 +100,9 @@ This is where people go wrong. Watch the direction:
   x ∈ B \ A  the element must be in B and not already in A
 ```
 
-**The smaller set gets augmented. The element comes from the larger set.** Say it out loud once;
-the reversed version is the standard error.
 
-Intuitively: *you can never get stuck at a small maximal set while a bigger one exists.* Which is
+Intuitively: you can never get stuck at a small maximal set while a bigger one exists. Which is
 precisely why greedy can't paint itself into a corner.
-
-## Check it on the triangle
-
-Take `A = {ab}` and `B = {ac, bc}`, both independent, `|A| = 1 < 2 = |B|`.
-Candidates in `B \ A`: `ac` and `bc`.
-```
-A ∪ {ac} = {ab, ac}   no cycle  ✓
-```
-Found one — axiom 3 holds here. (A full proof checks all such pairs, or argues generally.)
 
 ---
 
@@ -126,29 +111,29 @@ Found one — axiom 3 holds here. (A full proof checks all such pairs, or argues
 **Three bullet points, in order. Always all three.**
 
 ```
-1.  ∅ ∈ ℐ                                     usually one line
-2.  hereditary: A ⊆ B ∈ ℐ ⟹ A ∈ ℐ            usually one line
+1.  ∅ ∈ I                                     usually one line
+2.  hereditary: A ⊆ B ∈ I ⟹ A ∈ I            usually one line
 3.  exchange: construct the element x          the real work
 ```
 
 ## Worked: SS24 P5a
 
 > `T = (V, E)` is a **tree**. Fix two distinct nodes `s, t`. Let
-> `ℐ₁ = { F ⊆ E : F is a subset of the edges of an s–t path in T }`.
-> Prove `U₁ = (E, ℐ₁)` is a matroid.
+> `I₁ = { F ⊆ E : F is a subset of the edges of an s–t path in T }`.
+> Prove `U₁ = (E, I₁)` is a matroid.
 
-**(1)** `∅ ∈ ℐ₁` — the empty set is a subset of the edges of the `s–t` path, vacuously. ✓
+**(1)** `∅ ∈ I₁` — the empty set is a subset of the edges of the `s–t` path, vacuously. ✓
 
-**(2)** Let `A ∈ ℐ₁` and `B ⊆ A`. Then `A` is a subset of the path's edges, so `B` is too.
-Hence `B ∈ ℐ₁`. ✓
+**(2)** Let `A ∈ I₁` and `B ⊆ A`. Then `A` is a subset of the path's edges, so `B` is too.
+Hence `B ∈ I₁`. ✓
 
-**(3)** Let `A, B ∈ ℐ₁` with `|A| < |B|`. **In a tree the path between two nodes is unique** —
-call its edge set `P`. So `ℐ₁` is just *all subsets of `P`*. Since `A, B ⊆ P` and `|A| < |B|`,
-there is some `e ∈ B \ A`, and `A ∪ {e} ⊆ P`, so `A ∪ {e} ∈ ℐ₁`. ✓
+**(3)** Let `A, B ∈ I₁` with `|A| < |B|`. **In a tree the path between two nodes is unique** —
+call its edge set `P`. So `I₁` is just *all subsets of `P`*. Since `A, B ⊆ P` and `|A| < |B|`,
+there is some `e ∈ B \ A`, and `A ∪ {e} ⊆ P`, so `A ∪ {e} ∈ I₁`. ✓
 
 Therefore `U₁` is a matroid. ∎
 
-**The key sentence is "the path is unique".** That collapses `ℐ₁` into "all subsets of one fixed
+**The key sentence is "the path is unique".** That collapses `I₁` into "all subsets of one fixed
 set", which makes every axiom trivial. Finding that observation *is* the question.
 
 > A set system of the form "all subsets of a fixed set `P`" is always a matroid. So is "all
@@ -163,9 +148,9 @@ You need **one** concrete counterexample. Try the axioms in this order — the e
 cheaper to break:
 
 ```
-1.  Is ∅ ∈ ℐ?              e.g. "|S| is odd" fails instantly, since |∅| = 0 is even
-2.  Is it hereditary?      find B ∈ ℐ and A ⊆ B with A ∉ ℐ
-3.  Does exchange fail?    find A, B ∈ ℐ, |A| < |B|, where NO x ∈ B \ A works
+1.  Is ∅ ∈ I?              e.g. "|S| is odd" fails instantly, since |∅| = 0 is even
+2.  Is it hereditary?      find B ∈ I and A ⊆ B with A ∉ I
+3.  Does exchange fail?    find A, B ∈ I, |A| < |B|, where NO x ∈ B \ A works
 ```
 
 For (3) you must check **every** `x ∈ B \ A` and show each fails. That's why you keep the example
@@ -174,9 +159,9 @@ tiny — two or three elements.
 ## Worked: SS24 P5b
 
 > `S ⊆ V` is **stable** if no two nodes of `S` are joined by an edge. Let
-> `ℐ₂ = { S ⊆ V : S is stable }`. Show `U₂ = (V, ℐ₂)` is **not** a matroid.
+> `I₂ = { S ⊆ V : S is stable }`. Show `U₂ = (V, I₂)` is **not** a matroid.
 
-Note that `ℐ₂` *is* hereditary — a subset of a stable set is stable. So axiom 2 won't break;
+Note that `I₂` *is* hereditary — a subset of a stable set is stable. So axiom 2 won't break;
 attack axiom 3.
 
 **Counterexample.** A three-node path:
@@ -200,14 +185,14 @@ candidates at once.
 
 ## The SS25 multiple-choice item, resolved
 
-> For which collections `ℐ ⊆ {S : S ⊆ E}` is `(E, ℐ)` a matroid?
+> For which collections `I ⊆ {S : S ⊆ E}` is `(E, I)` a matroid?
 
 | Collection | Verdict | Why |
 |---|---|---|
-| `ℐ = {S ⊆ E : \|S\| is even}` | ✗ | not hereditary — `{a,b} ∈ ℐ` but `{a} ∉ ℐ` |
-| `ℐ = {S ⊆ E : \|S\| is odd}` | ✗ | `∅ ∉ ℐ` — fails axiom 1 immediately |
-| `ℐ = {S : S ⊆ E}` (everything) | ✓ | all three trivially; the **free matroid** |
-| `ℐ = {S ⊆ E : S contains no cycle}` | ✓ | the **graphic matroid** |
+| `I = {S ⊆ E : \|S\| is even}` | ✗ | not hereditary — `{a,b} ∈ I` but `{a} ∉ I` |
+| `I = {S ⊆ E : \|S\| is odd}` | ✗ | `∅ ∉ I` — fails axiom 1 immediately |
+| `I = {S : S ⊆ E}` (everything) | ✓ | all three trivially; the **free matroid** |
+| `I = {S ⊆ E : S contains no cycle}` | ✓ | the **graphic matroid** |
 
 Both false options die on axioms 1 or 2 — you never even reach exchange.
 
@@ -223,7 +208,7 @@ independent set. (SS23 E5a is exactly this one line.)
 That's SS23 E5b, and the proof is four lines of pure axiom 3:
 
 **Proof.** Suppose not. Take bases `B₁, B₂` with `|B₁| < |B₂|`. By axiom 3 there exists
-`e ∈ B₂ \ B₁` with `B₁ ∪ {e} ∈ ℐ`. But then `B₁ ∪ {e}` is independent and strictly larger than
+`e ∈ B₂ \ B₁` with `B₁ ∪ {e} ∈ I`. But then `B₁ ∪ {e}` is independent and strictly larger than
 `B₁`, contradicting the **maximality** of `B₁`. Hence `|B₁| = |B₂|`. ∎
 
 Worth noticing: this is *why* the axiom is called the exchange or augmentation property, and it's
@@ -235,16 +220,16 @@ the fact that makes greedy terminate at the right size.
 
 **No.** Counterexample, two elements:
 ```
-E = {a, b}        ℐ = { ∅, {a}, {b} }
+E = {a, b}        I = { ∅, {a}, {b} }
 ```
-This *is* a matroid (check: `∅ ∈ ℐ` ✓; hereditary ✓; exchange — the only case is `A = ∅`,
-`B = {a}` or `{b}`, and `∅ ∪ {x} ∈ ℐ` ✓).
+This *is* a matroid (check: `∅ ∈ I` ✓; hereditary ✓; exchange — the only case is `A = ∅`,
+`B = {a}` or `{b}`, and `∅ ∪ {x} ∈ I` ✓).
 
 Its bases are `B₁ = {a}` and `B₂ = {b}`. Then:
 ```
 (B₁ ∪ B₂) \ (B₁ ∩ B₂)  =  {a,b} \ ∅  =  {a, b}
 ```
-But `{a,b} ∉ ℐ` — it isn't even independent, let alone a basis. ∎
+But `{a,b} ∉ I` — it isn't even independent, let alone a basis. ∎
 
 **Two elements.** When a "show or disprove" asks about a *constructed* set, try the smallest
 matroid you can write down before attempting a proof.
@@ -252,7 +237,7 @@ matroid you can write down before attempting a proof.
 ## Rank
 
 ```
-r(B) = max{ |A| : A ⊆ B, A ∈ ℐ }
+r(B) = max{ |A| : A ⊆ B, A ∈ I }
 ```
 The size of the largest independent set inside `B`. For a connected graphic matroid,
 `r(E) = |V| − 1` — a spanning tree.
@@ -292,7 +277,7 @@ the system is a matroid. If a set system isn't a matroid, some weight function d
    they're marked.
 3. **For a disproof, not checking every `x ∈ B \ A`.** "No `x` works" needs each one refuted.
 4. **Counterexamples that are too big.** Two or three elements. SS24's uses three nodes.
-5. **Skipping the cheap axioms when disproving.** Test `∅ ∈ ℐ` and heredity first — "`|S| odd`"
+5. **Skipping the cheap axioms when disproving.** Test `∅ ∈ I` and heredity first — "`|S| odd`"
    dies on axiom 1 without any thought.
 6. **Not saying "maximal"** in the basis definition. Maximal, not maximum — though in a matroid
    they coincide, which is Part 6's point.
@@ -300,11 +285,11 @@ the system is a matroid. If a set system isn't a matroid, some weight function d
 ## Say these without looking
 
 ```
-(1) ∅ ∈ ℐ
-(2) B ∈ ℐ, A ⊆ B ⟹ A ∈ ℐ                     hereditary
-(3) A,B ∈ ℐ, |A|<|B| ⟹ ∃x ∈ B\A : A∪{x} ∈ ℐ   exchange
+(1) ∅ ∈ I
+(2) B ∈ I, A ⊆ B ⟹ A ∈ I                     hereditary
+(3) A,B ∈ I, |A|<|B| ⟹ ∃x ∈ B\A : A∪{x} ∈ I   exchange
 basis = maximal independent set; all bases equicardinal
-r(B) = max{|A| : A ⊆ B, A ∈ ℐ}
+r(B) = max{|A| : A ⊆ B, A ∈ I}
 greedy: increasing → min basis, decreasing → max basis
 ```
 

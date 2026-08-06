@@ -56,28 +56,28 @@ Then A is TU.   (Interval matrices, e.g. shift-rostering matrices.)
 incident to `e_j`. **Incidence matrix, directed** — slide 40: for `e_j = (k, i)`,
 `a_kj = −1` (outgoing), `a_ij = +1` (incoming), all other entries 0.
 
-**Independence system** `(E, ℐ)` with `E` finite, `∅ ≠ ℐ ⊆ 𝒫(E)` — CE D8.3:
+**Independence system** `(E, I)` with `E` finite, `∅ ≠ I ⊆ 𝒫(E)` — CE D8.3:
 
 ```
-(1) ∅ ∈ ℐ
-(2) (hereditary / downward closure)  B ∈ ℐ and A ⊆ B  ⇒  A ∈ ℐ
+(1) ∅ ∈ I
+(2) (hereditary / downward closure)  B ∈ I and A ⊆ B  ⇒  A ∈ I
 ```
 
-**Matroid** `(E, ℐ)` — slide 45: an independence system that additionally satisfies
+**Matroid** `(E, I)` — slide 45: an independence system that additionally satisfies
 
 ```
 (3) (exchange / augmentation property)
-    A, B ∈ ℐ  with  |A| < |B|   ⇒   ∃ x ∈ B \ A  with  A ∪ {x} ∈ ℐ
+    A, B ∈ I  with  |A| < |B|   ⇒   ∃ x ∈ B \ A  with  A ∪ {x} ∈ I
 ```
 
-`E` = **ground set**, elements of `ℐ` = **independent sets**, a **maximal** independent set is a
+`E` = **ground set**, elements of `I` = **independent sets**, a **maximal** independent set is a
 **basis**. Warning about the direction: the smaller set `A` is the one that gets augmented, and the
 new element is taken from the *larger* set `B`.
 
 **Rank function** — slide 57:
 
 ```
-r_M : 𝒫(E) → ℕ₀ ,   r(B) = max{ |A| : A ⊆ B, A ∈ ℐ }
+r_M : 𝒫(E) → ℕ₀ ,   r(B) = max{ |A| : A ⊆ B, A ∈ I }
 ```
 
 i.e. the cardinality of the largest independent subset of `B`. For the graphic matroid of a connected
@@ -132,25 +132,25 @@ graph, `r(E) = |V| − 1` (spanning tree).
 
 ### (4) Prove a set system is a matroid
 
-1. **Axiom 1:** show `∅ ∈ ℐ`.
-2. **Axiom 2 (hereditary):** show `B ∈ ℐ, A ⊆ B ⇒ A ∈ ℐ`.
-3. **Axiom 3 (exchange):** for `A, B ∈ ℐ` with `|A| < |B|`, construct `x ∈ B \ A` with `A ∪ {x} ∈ ℐ`.
+1. **Axiom 1:** show `∅ ∈ I`.
+2. **Axiom 2 (hereditary):** show `B ∈ I, A ⊆ B ⇒ A ∈ I`.
+3. **Axiom 3 (exchange):** for `A, B ∈ I` with `|A| < |B|`, construct `x ∈ B \ A` with `A ∪ {x} ∈ I`.
 4. Axioms 1+2 give an independence system; adding 3 gives a matroid.
 
 ### (5) Disprove a set system is a matroid
 
-1. First check downward closure: find `B ∈ ℐ` with some `A ⊆ B` where `A ∉ ℐ`.
-2. If closure holds, find `A, B ∈ ℐ` with `|A| < |B|` where every `x ∈ B \ A` gives `A ∪ {x} ∉ ℐ`.
+1. First check downward closure: find `B ∈ I` with some `A ⊆ B` where `A ∉ I`.
+2. If closure holds, find `A, B ∈ I` with `|A| < |B|` where every `x ∈ B \ A` gives `A ∪ {x} ∉ I`.
 3. State the counterexample explicitly.
 
 ### (6) Greedy algorithm for a weighted matroid
 
 ```
-Greedy(M = (E, ℐ), w):
+Greedy(M = (E, I), w):
   1. A := ∅
   2. sort E by w (increasing for min-weight basis, decreasing for max-weight)
   3. for each x in that order:
-  4.     if A ∪ {x} ∈ ℐ then A := A ∪ {x}
+  4.     if A ∪ {x} ∈ I then A := A ∪ {x}
   5. return A
 ```
 
@@ -189,9 +189,9 @@ On the graphic matroid this is **Kruskal's MST algorithm**.
 
 **Matroids**
 
-- **Matroid axioms:** (1) `∅ ∈ ℐ` (2) `B ∈ ℐ, A ⊆ B ⇒ A ∈ ℐ` (3) `A,B ∈ ℐ, |A| < |B| ⇒ ∃x ∈ B\A : A ∪ {x} ∈ ℐ`
+- **Matroid axioms:** (1) `∅ ∈ I` (2) `B ∈ I, A ⊆ B ⇒ A ∈ I` (3) `A,B ∈ I, |A| < |B| ⇒ ∃x ∈ B\A : A ∪ {x} ∈ I`
 - **Basis:** maximal independent set; all bases have equal cardinality
-- **Rank:** `r(B) = max{|A| : A ⊆ B, A ∈ ℐ}`; graphic, connected: `r(E) = |V| − 1`
+- **Rank:** `r(B) = max{|A| : A ⊆ B, A ∈ I}`; graphic, connected: `r(E) = |V| − 1`
 - **Weight:** `w(A) = Σ_{a∈A} w(a)` (linear weight function, `w : E → ℝ_{≥0}`)
 - **Greedy:** increasing order → min-weight basis; decreasing → max-weight basis
 - **Greedy runtime:** `O(n log n + n·f(n))`, `n = |E|`, `f(n)` = cost of one independence test

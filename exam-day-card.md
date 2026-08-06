@@ -323,20 +323,20 @@ That's why Kruskal's minimum spanning tree works. Everything below is the defini
 
 ### The vocabulary
 
-| Symbol | Name | What it means |
-|---|---|---|
-| `E` | **ground set** | the finite pile you're choosing from |
-| `ℐ` | the **independent sets** | the collection of allowed selections, `ℐ ⊆ 2^E` |
-| `A ∈ ℐ` | `A` is **independent** | this particular selection is allowed |
-| basis | a **maximal** independent set | allowed, and nothing can be added to it |
+| Symbol  | Name                          | What it means                                   |
+| ------- | ----------------------------- | ----------------------------------------------- |
+| `E`     | **ground set**                | the finite pile you're choosing from            |
+| `I`     | the **independent sets**      | the collection of allowed selections, `I ⊆ 2^E` |
+| `A ∈ I` | `A` is **independent**        | this particular selection is allowed            |
+| basis   | a **maximal** independent set | allowed, and nothing can be added to it         |
 
 **"Independent" carries no meaning of its own.** It's whatever the problem declares allowed —
 no cycle, no two adjacent nodes, fits inside a fixed set. Read the definition they give you.
 
-### A concrete one — read this before the axioms
+### An example — read this before the axioms
 
-Take a triangle. Let `E` be its edges, and call a set of edges **independent** if it contains
-**no cycle**.
+The **graphic matroid**. Take a triangle. Let `E` be its edges, and call a set of edges
+**independent** if it contains **no cycle**.
 
 ```
        a          E = { ab, ac, bc }
@@ -346,7 +346,7 @@ Take a triangle. Let `E` be its edges, and call a set of edges **independent** i
 
 | | |
 |---|---|
-| independent sets `ℐ` | `∅`, `{ab}`, `{ac}`, `{bc}`, `{ab,ac}`, `{ab,bc}`, `{ac,bc}` |
+| independent sets `I` | `∅`, `{ab}`, `{ac}`, `{bc}`, `{ab,ac}`, `{ab,bc}`, `{ac,bc}` |
 | **not** independent | `{ab,ac,bc}` — that's the triangle, a cycle |
 | **bases** | the three 2-edge sets — you can't add a third edge without closing the cycle |
 
@@ -354,17 +354,17 @@ Note the bases all have size **2**. That's not luck — see *Bases* below.
 
 ### The axioms
 
-`(E, ℐ)` is a **matroid** when all three hold:
+`(E, I)` is a **matroid** when all three hold:
 
 ```
-(1)  ∅ ∈ ℐ
+(1)  ∅ ∈ I
      the empty selection is allowed
 
-(2)  B ∈ ℐ  and  A ⊆ B   ⟹   A ∈ ℐ
+(2)  B ∈ I  and  A ⊆ B   ⟹   A ∈ I
      HEREDITARY — any part of an allowed selection is itself allowed
      (drop an edge from a forest, still a forest)
 
-(3)  A, B ∈ ℐ  with |A| < |B|   ⟹   ∃ x ∈ B \ A  with  A ∪ {x} ∈ ℐ
+(3)  A, B ∈ I  with |A| < |B|   ⟹   ∃ x ∈ B \ A  with  A ∪ {x} ∈ I
      EXCHANGE — a smaller allowed selection can always grow, using
      something taken from a bigger one
 ```
@@ -382,7 +382,7 @@ while a bigger one exists* — which is exactly why greedy can't paint itself in
 | Task | Method |
 |---|---|
 | **prove** | all three bullets, in order — (1) and (2) are one line each |
-| **disprove** | try in this order: is `∅ ∈ ℐ`? → hereditary? → exchange? |
+| **disprove** | try in this order: is `∅ ∈ I`? → hereditary? → exchange? |
 
 For exchange you must refute **every** `x ∈ B \ A` — so keep the example to 2–3 elements.
 
@@ -396,7 +396,7 @@ stay independent. *Maximal*, not maximum: nothing bigger contains it.
 **Proof** (SS23 E5b — four lines, pure axiom 3):
 
 1. Suppose not. Take bases `B₁, B₂` with `|B₁| < |B₂|`.
-2. Axiom 3 applies to them: there is an `e ∈ B₂ \ B₁` with `B₁ ∪ {e} ∈ ℐ`.
+2. Axiom 3 applies to them: there is an `e ∈ B₂ \ B₁` with `B₁ ∪ {e} ∈ I`.
 3. So `B₁ ∪ {e}` is independent and **strictly bigger** than `B₁`.
 4. That contradicts `B₁` being **maximal**. Hence `|B₁| = |B₂|`. ∎
 
@@ -417,16 +417,16 @@ B₁ = {1,2} B₂ = {2,3}    union {1,2,3} · intersection {2} · difference {1,
 **The claim is FALSE.** Counterexample, two elements:
 
 ```
-E = {a, b}        ℐ = { ∅, {a}, {b} }        "pick at most one"
+E = {a, b}        I = { ∅, {a}, {b} }        "pick at most one"
 ```
 
-Check it really is a matroid: `∅ ∈ ℐ` ✓ · hereditary ✓ · exchange — the only case is
-`A = ∅`, `B = {a}` or `{b}`, and `∅ ∪ {x} ∈ ℐ` ✓.
+Check it really is a matroid: `∅ ∈ I` ✓ · hereditary ✓ · exchange — the only case is
+`A = ∅`, `B = {a}` or `{b}`, and `∅ ∪ {x} ∈ I` ✓.
 
 ```
 bases:  B₁ = {a},  B₂ = {b}
 (B₁ ∪ B₂) \ (B₁ ∩ B₂)  =  {a,b} \ ∅  =  {a,b}
-but {a,b} ∉ ℐ  —  not even independent, let alone a basis.  ∎
+but {a,b} ∉ I  —  not even independent, let alone a basis.  ∎
 ```
 
 > **Move to steal:** when a "show or disprove" asks about a *constructed* set, try the smallest
@@ -437,7 +437,7 @@ but {a,b} ∉ ℐ  —  not even independent, let alone a basis.  ∎
 
 | Term | Definition |
 |---|---|
-| rank | `r(B) = max{|A| : A ⊆ B, A ∈ ℐ}`; connected graphic: `r(E) = |V| − 1` |
+| rank | `r(B) = max{|A| : A ⊆ B, A ∈ I}`; connected graphic: `r(E) = |V| − 1` |
 | greedy | increasing weight → **min** basis · decreasing → **max** basis |
 
 Greedy is optimal for **every** weight function **iff** the system is a matroid. That's why the

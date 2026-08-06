@@ -202,15 +202,15 @@ Items marked **[SS24]** / **[SS25]** are from real papers.
 
 # §8 · Matroids
 
-**Q29. [SS25]** Let `E` be a finite set. For which collections `ℐ` is `(E, ℐ)` a matroid?
-- [ ] `ℐ = {S ⊆ E : |S| is even}`
-- [ ] `ℐ = {S : S ⊆ E}`
-- [ ] `ℐ = {S ⊆ E : S contains no cycle}`, `E` the edge set of a graph
-- [ ] `ℐ = {S ⊆ E : |S| is odd}`
+**Q29. [SS25]** Let `E` be a finite set. For which collections `I` is `(E, I)` a matroid?
+- [ ] `I = {S ⊆ E : |S| is even}`
+- [ ] `I = {S : S ⊆ E}`
+- [ ] `I = {S ⊆ E : S contains no cycle}`, `E` the edge set of a graph
+- [ ] `I = {S ⊆ E : |S| is odd}`
 
-**Q30.** The exchange axiom says: for `A, B ∈ ℐ` with `|A| < |B|`…
-- [ ] there is an `x ∈ B \ A` with `A ∪ {x} ∈ ℐ`
-- [ ] there is an `x ∈ A \ B` with `B ∪ {x} ∈ ℐ`
+**Q30.** The exchange axiom says: for `A, B ∈ I` with `|A| < |B|`…
+- [ ] there is an `x ∈ B \ A` with `A ∪ {x} ∈ I`
+- [ ] there is an `x ∈ A \ B` with `B ∪ {x} ∈ I`
 - [ ] the smaller set is the one that grows
 - [ ] the new element comes from the larger set
 
