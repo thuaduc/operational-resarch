@@ -235,26 +235,21 @@ Thu 6 Aug   B6  B7
 
 ## What I cut, and the risk
 
-- **Network flow tail** (`T8.2`, `D8.4`, SS21 A5). `S8.3` *is* SS25 E6 word-for-word and you've
-  done it. The rest is polish.
-- **Full TU / knapsack-DP / TSP blocks** — exercises and papers dropped, headline facts kept in
-  B3. **Only one E6 topic appears per paper**, and matroids is the one that has appeared twice.
-- **Everything already marked `[SKIP]`** — Gomory cuts, Hungarian, DGS, online optimization,
-  column generation.
+- **Network flow tail** (`T8.2`, `D8.4`, SS21 A5). `S8.3` *is* SS25 E6 word-for-word and you've done it. The rest is polish.
+- **Full TU / knapsack-DP / TSP blocks** — exercises and papers dropped, headline facts kept in B3. **Only one E6 topic appears per paper**, and matroids is the one that has appeared twice.
+- **Everything already marked `[SKIP]`** — Gomory cuts, Hungarian, DGS, online optimization, column generation.
 
-**The risk, stated plainly:** if E6 turns out to be a full TU, DP or TSP question, B3 gets you
-partial credit, not full. That's the trade — matroids at depth beats four topics at a skim.
+**The risk, stated plainly:** if E6 turns out to be a full TU, DP or TSP question, B3 gets you partial credit, not full. That's the trade — matroids at depth beats four topics at a skim.
 
 ---
 
 ## B1 — Sensitivity, papers only · E2 · 16 pts · 45 min
 
-- [ ] **SS25 E2** (16) — done already? If not, do it first; it's the current format.
+- [x] **SS25 E2** (16) — done already? If not, do it first; it's the current format.
 - [ ] **SS21 A1** *Backmischung* (16) — sensitivity from an optimal tableau, with RHS ranging.
 - [ ] **Midterm SS25 P5** / **SS26 P4** — the midterms carry more sensitivity than the endterms.
 
-**Done when** you can read shadow prices off Row 0, range the RHS from a slack column, and price
-a new column, without notes.
+**Done when** you can read shadow prices off Row 0, range the RHS from a slack column, and price a new column, without notes.
 
 ---
 
@@ -262,9 +257,9 @@ a new column, without notes.
 
 The most repeated E6 topic: a full 14-pointer on **both SS23 and SS24**, plus an SS25 MC item.
 
-- [ ] `theory/08a` — the lesson.
-- [ ] `D8.3` *Matroids*, then `T8.1` *Matroids*.
-- [ ] Papers: **SS24 P5** (prove one, disprove one), **SS23 E5** (basis, equicardinality,
+- [x] `theory/08a` — the lesson.
+- [x] `D8.3` *Matroids*
+- [x] Papers: **SS24 P5** (prove one, disprove one), **SS23 E5** (basis, equicardinality,
       symmetric difference).
 
 **Done when** you can write the three axioms verbatim with the exchange direction right
@@ -346,7 +341,9 @@ The hardest block, alone on its own day. **SS25 put its entire 20-point nonlinea
 
 ## B7 — Final rehearsal · 2 h
 
-- [ ] **Formula box** of the covered `theory/` files. Nothing else.
+- [ ] **[exam-day-card.md](exam-day-card.md)** — every decision rule in the course, one page
+      per exam slot. Read it end to end. This is the only thing you read on Friday morning.
+- [ ] **Formula box** of the covered `theory/` files, if time.
 - [ ] Recall out loud, no notes:
   1. Standard form; what slack variables do
   2. Simplex optimality and unboundedness criteria
