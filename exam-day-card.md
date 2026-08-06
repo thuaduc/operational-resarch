@@ -328,7 +328,7 @@ That's why Kruskal's minimum spanning tree works. Everything below is the defini
 | `E`     | **ground set**                | the finite pile you're choosing from            |
 | `I`     | the **independent sets**      | the collection of allowed selections, `I ⊆ 2^E` |
 | `A ∈ I` | `A` is **independent**        | this particular selection is allowed            |
-| basis   | a **maximal** independent set | allowed, and nothing can be added to it         |
+| basis   | a **maximal** independent set | a member of `I` that cannot be extended         |
 
 **"Independent" carries no meaning of its own.** It's whatever the problem declares allowed —
 no cycle, no two adjacent nodes, fits inside a fixed set. Read the definition they give you.
@@ -389,9 +389,30 @@ For exchange you must refute **every** `x ∈ B \ A` — so keep the example to 
 ### Bases
 
 **A basis is a MAXIMAL independent set** — independent, and you cannot add anything to it and
-stay independent. *Maximal*, not maximum: nothing bigger contains it.
+stay independent.
 
-> **All bases of a matroid have the same size.**
+> **A basis is not extra structure — it is one of the members of `I`.**
+> ```
+> bases ⊆ I        every basis is independent
+>                  most independent sets are NOT bases
+> ```
+> The matroid *is* the pair `(E, I)`. Bases are derived: scan `I` for the sets that can't grow.
+> Conversely, because `I` is hereditary, the bases determine `I` — it's every subset of every
+> basis. Same object, described from the other end.
+
+On the triangle: `{ab,ac}`, `{ab,bc}`, `{ac,bc}` are bases. `∅` and `{ab}` are independent but
+**not** bases — they can still grow.
+
+**Maximal is not maximum**, and the exam uses both:
+
+| Word | Means | Where |
+|---|---|---|
+| **maximal** | cannot be extended | the **definition** — this is what SS23 E5a wants |
+| **maximum** | largest possible size | the **theorem** below |
+
+Writing "the largest independent set" as the definition loses the mark.
+
+> **All bases of a matroid have the same size.** *(so in a matroid, maximal ⟹ maximum)*
 
 **Proof** (SS23 E5b — four lines, pure axiom 3):
 
