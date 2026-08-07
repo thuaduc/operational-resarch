@@ -36,14 +36,7 @@
 
 It is a **derivative**, not an analogy: `z = yᵀb`, so `∂z/∂bᵢ = yᵢ`.
 
-```
-yᵀ = c_Bᵀ B⁻¹              compute it
-Row 0 under slack sᵢ       read it off a tableau
-Δz = yᵢ · δ                use it
-```
-
-**The economic reading:** `yᵢ` is the most you would pay for one extra unit of resource `i`.
-Above that price, buying it loses money. That's the business answer the whole topic exists to give.
+**The economic reading:** `yᵢ` is the most you would pay for one extra unit of resource `i`. Above that price, buying it loses money. That's the business answer the whole topic exists to give.
 
 **Five names, one object.** The exam and the lectures use these interchangeably:
 
@@ -54,63 +47,42 @@ shadow price  ·  dual variable  ·  simplex multiplier  ·  opportunity cost  �
 It genuinely **is** the optimal dual solution from §4 — the same numbers you would get by solving
 (D) directly.
 
-| Constraint at the optimum | Slack `sᵢ` | Shadow price |
-|---|---|---|
-| **binding** — fully used | `sᵢ = 0`, non-basic | `yᵢ ≥ 0`, usually `> 0` |
-| **not binding** — spare left | `sᵢ > 0`, basic | **`yᵢ = 0`** |
+### RHS ranging and degeneracy
 
-That second row is complementary slackness: **a resource you aren't fully using is worth nothing
-at the margin.** More wood is useless if wood is already piling up unused.
+**Degenerate BFS** = a **basic** variable equal to **zero** in the RHS column. Normally basic
+means positive and non-basic means zero; degeneracy is when that split breaks. It's the boundary:
+one more nudge and the variable goes negative and the basis loses feasibility.
 
-### Shadow-price notes — where marks go
-
-| Note | Why |
-|---|---|
-| Valid **only inside the RHS range** | past the endpoint the basis changes and `yᵢ` changes with it |
-| Gives the change in **`z`**, not in the basic variables | the plan moves by `B⁻¹Δb`. **SS25 multiple-choice trap.** |
-| A `≤` row in a max problem has `yᵢ ≥ 0` | more resource can't hurt; a `≥` row is bizarre and gives `yᵢ ≤ 0` (§4) |
-| Reducing `bᵢ` can only **raise** `yᵢ` (max problem) | scarcer ⟹ more valuable at the margin — use as a sanity check after re-pivoting |
-| At a **degenerate** optimum it's ambiguous | the marginal value can differ going up vs down; the tableau shows one side |
-| All costs zero ⟹ **every `yᵢ` = 0** | `c_B = 0` ⟹ `yᵀ = c_BᵀB⁻¹ = 0`. This is why SS25 E2 looks so strange |
-
-### Which half breaks
-
-| You change | What moves | So only this can break |
-|---|---|---|
-| `b` — a resource | the plan `b' = B⁻¹b` | **feasibility** |
-| `c` — a price | Row 0 | **optimality** |
-
-### RHS ranging · `bᵢ → bᵢ + δ`
-
-1. Take the **column** of slack `sᵢ` — it *is* `B⁻¹eᵢ`, already in the tableau.
-2. `x_B(δ) = b' + δ·(that column) ≥ 0` — one inequality per row.
-3. Intersect → the `δ` range. Inside it, `z(δ) = z + yᵢ·δ`.
-4. At each endpoint, **name the basic variable that hits zero**.
-
-### Cost ranging · `c_k → c_k + Δ`
-
-| `x_k` is | Use | Range | `z` inside |
-|---|---|---|---|
-| **basic** | that variable's **row**; new Row 0 = Row 0 + `Δ`·(row) `≥ 0` | two-sided | `z + Δ·x_k` |
-| **non-basic** | its own entry only: `c'_j − Δ ≥ 0` | one-sided, `c_j ≤ yᵀa_j` | unchanged |
-
-The plan is unchanged in both cases.
-
-### New column, and two tableau readings
+**Perturbation** = replacing `bᵢ` by `bᵢ + δ` and asking how far `δ` can go. When you shift `bᵢ`,
+every basic value moves by `δ ×` the entry in the **`sᵢ` column** — that column holds `B⁻¹`.
 
 ```
-c'_new = yᵀa_new − c_new          enters ⟺ c_new > yᵀa_new
-                                  with production cost k:  p ≥ yᵀa_new + k
+for every basic row:   RHS_row + δ · (sᵢ column entry) ≥ 0
 ```
 
-| Tableau shows | Means |
-|---|---|
-| a **basic** variable with RHS `= 0` | **degenerate** — and simplex can cycle |
-| a **non-basic** variable with Row 0 `= 0` | **multiple optima** |
+Solve each for `δ`, intersect → the **range of `bᵢ` for which the basis stays optimal**.
 
-The endpoints of an RHS range are exactly where degeneracy occurs.
+> **The two endpoints of that range are exactly where the BFS becomes degenerate** — that's the
+> same calculation, so one table answers both questions. The variable whose inequality **binds**
+> is the one that hits zero, and it's the one that would **leave** the basis.
 
----
+Uses only `B⁻¹` and `b` — **never `c`.** Zero prices change nothing here.
+
+**Worked (SS25 E2d — water, constraint 1, so read the `s₁` column):**
+
+```
+      s₁      RHS
+x₁ │  1/3  │  20        20 + δ/3   ≥ 0   ⟹   δ ≥  −60   ←  binds below
+x₂ │ −1/6  │  10        10 − δ/6   ≥ 0   ⟹   δ ≤   60
+s₃ │ −1/3  │  10        10 − δ/3   ≥ 0   ⟹   δ ≤   30   ←  binds above
+s₄ │  1/12 │  15        15 + δ/12  ≥ 0   ⟹   δ ≥ −180
+
+δ ∈ [−60, +30]      water from 40 to 130
+δ = −60  → x₁ hits zero        δ = +30  → s₃ hits zero
+```
+
+Push `bᵢ` **past** the range and that variable leaves; pick the entering one by the **dual ratio
+test** — in the leaving row, among entries `< 0`, minimise `|c'_j / row_j|` — then pivot once.
 
 # §4 · Duality
 
@@ -145,6 +117,11 @@ weak     cᵀx ≤ bᵀy      for ALL feasible x and y
 strong   cᵀx* = bᵀy*    at optimality
 ```
 
+> **Weak:** every feasible dual is a **ceiling** on every feasible primal. They never cross.
+> **Strong:** at the optimum the ceiling is **reached** — both values are the same number.
+
+So if you find an `x` and a `y` with `cᵀx = bᵀy`, **both are optimal.** One line, done.
+
 | If the primal is | Then the dual is |
 |---|---|
 | unbounded | infeasible |
@@ -158,7 +135,16 @@ primal CS   ((Aᵀy)_j − c_j) · x_j = 0     per variable
 dual CS     ((Ax)_i − b_i) · y_i = 0      per constraint
 ```
 
-Slack constraint ⟹ `yᵢ = 0`. Non-zero variable ⟹ its dual constraint is tight.
+**What it's for in the exam:** they give you an `x*` and ask "is it optimal?". CS is how you get
+`y` **without solving the dual** — it turns the guess into equations:
+
+| You see in `x*` | You write |
+|---|---|
+| constraint `i` has **slack** | `yᵢ = 0` |
+| `x_j ≠ 0` | dual constraint `j` holds with **`=`** |
+
+Those give you enough equations to solve for `y`. Then check `y` against the rest of the dual —
+that's the recipe below.
 
 ### Showing `x*` is **not** optimal
 
@@ -175,18 +161,6 @@ Slack constraint ⟹ `yᵢ = 0`. Non-zero variable ⟹ its dual constraint is ti
 ---
 
 # §5 · IP modelling
-
-### The answer template — this is the rubric
-
-```
-Introduce z ∈ {0,1}:  z = 1 ⟺ <meaning, in a full sentence>
-    <linking constraint(s)>
-Then:
-    <the requirement, keyed on z>        ∀ i ∈ <explicit range>
-```
-
-Three things score separately: **the words**, **the linking**, **the `∀` with its range**.
-Every auxiliary also needs its **domain line** — without `z ∈ {0,1}` the model is broken.
 
 ### Indicator — `t = 1 ⟺ X > K`, `X` integer
 
@@ -206,35 +180,146 @@ For **continuous** `X`, `t = 1 ⟺ X > K` is impossible: the set isn't closed.
 
 ### Patterns
 
-| English | Constraint |
-|---|---|
-| exactly one | `Σ_{i∈I} x_{i,j} = 1  ∀j` |
-| at most `k` | `Σ_i z_i ≤ k` |
-| capacity | `Σ_{j∈J} x_{i,j} ≤ c_i  ∀i` |
-| only if built | `x_{i,j} ≤ y_i  ∀i,j` — disaggregated, **stronger** |
-| `A ⇒ B` | `A ≤ B` |
-| several premises | `Σ(premises) − (#premises−1) ≤ Σ(conclusions)` |
-| pairwise conflict | `y_i + y_i' ≤ 1` for pairs violating a threshold |
-| either–or | `f₁ ≤ b₁ + Mz` and `f₂ ≤ b₂ + M(1−z)` |
-| XOR | an indicator per block, mirrored with `z` / `(1−z)` |
-| rolling window | `Σ_{t=k}^{k+6} x_t ≤ 5   ∀k ∈ {1,…,T−6}` |
-| ratio / percentage | move everything left, clear denominators |
-| product `x_k·x_l` | `Y ≤ x_k`, `Y ≤ x_l`, `Y ≥ x_k + x_l − 1` |
-| fixed charge | `x ≤ M·y`, `x ≥ q·y` — nothing, or at least `q` |
-| startup | `y_t ≥ x_t − x_{t−1}`, `t ≥ 2` |
-| two objectives | `min Σf_i y_i − Σs_{ij} x_{ij}` — flip one sign |
+Every example below uses the **same story**, so you only have to learn the story once:
+a company is deciding **which warehouses to build**, and **which warehouse serves which
+customer**. Warehouses are `i ∈ I`, customers are `j ∈ J`. Two binary variables carry the
+whole model:
 
-On the product: if `Y` is **rewarded**, the first two suffice; if **penalised**, the third does.
-All three is always safe.
+```
+y_i     ∈ {0,1}   = 1 iff warehouse i is BUILT
+x_{i,j} ∈ {0,1}   = 1 iff warehouse i SERVES customer j
+```
 
-### Traps
+#### 1 · Counting — "how many?"
 
-- missing `∀`, or the wrong range — `J\{21}`, `t ∈ {4,…,15}`
-- an auxiliary variable with no name in words, or no domain line
-- `M` treated as a variable
-- one direction of an indicator when the wording said "iff"
-- a product left non-linear
-- merging two sub-questions into one answer
+The easiest family. You are summing binaries, and a sum of binaries just *counts* how many are
+switched on. So "exactly one", "at most three", "no more than `c_i`" all become one sum with a
+`=` or `≤`. The only real decision is **which index you sum over** — sum over `i` to ask a
+question about a customer, sum over `j` to ask about a warehouse.
+
+```
+every customer served by exactly one warehouse      Σ_i x_{i,j} = 1        ∀j
+build at most 3 warehouses                          Σ_i y_i ≤ 3
+warehouse i serves at most c_i customers            Σ_j x_{i,j} ≤ c_i      ∀i
+only a BUILT warehouse can serve                    x_{i,j} ≤ y_i          ∀i,j
+```
+
+Read the first one aloud: *fix a customer `j`, add up all the warehouses serving them, that total
+must be 1.* Because `j` is fixed inside the constraint but the requirement holds for everybody,
+the `∀j` is what generates one such constraint per customer. Forgetting it is the classic lost mark.
+
+The last line is the **linking constraint**, the single most important pattern in the chapter. It
+says: if `y_i = 0` then `x_{i,j} ≤ 0`, so warehouse `i` serves nobody. If `y_i = 1` it says
+`x_{i,j} ≤ 1`, which is no restriction at all. One inequality, and "you can't use what you didn't
+build" is enforced. You could also write `Σ_j x_{i,j} ≤ |J|·y_i` — one constraint instead of
+`|I|·|J|` — but that version is **weaker**: its LP relaxation allows fractional `y_i`, so branch
+and bound has more work to do. When the exam says "give the stronger formulation", it wants the
+disaggregated `x_{i,j} ≤ y_i`.
+
+#### 2 · Logic — "if this, then that"
+
+Here you are translating sentences with *if*, *and*, *or*, *not both*. The trick is always the
+same: an implication `A ⇒ B` forbids exactly one combination, `A = 1` with `B = 0`. So write the
+inequality that rules out that single row of the truth table.
+
+```
+build 1  ⟹  build 2                      y₁ ≤ y₂
+build 1 AND 2  ⟹  build 3 or 4           y₁ + y₂ − 1 ≤ y₃ + y₄
+1 and 2 are too close — at most one       y₁ + y₂ ≤ 1
+bonus only if BOTH 1 and 2 are built      Y ≤ y₁ ,  Y ≤ y₂ ,  Y ≥ y₁ + y₂ − 1
+```
+
+`y₁ ≤ y₂` works because the only way to break it is `y₁ = 1, y₂ = 0` — precisely the forbidden
+case. Everything else satisfies it.
+
+The multi-premise version is the same idea scaled up. With two premises the left side reaches
+`2 − 1 = 1` **only** when both are built, and that forces the right side to be at least 1, i.e.
+at least one conclusion is chosen. If either premise is 0 the left side drops to `0` or `−1`, and
+the constraint is satisfied for free. In general: `Σ(premises) − (#premises − 1) ≤ Σ(conclusions)`.
+
+The last line **linearises a product.** `Y` is standing in for `y₁·y₂`, which is not linear and so
+not allowed. The first two inequalities push `Y` down to 0 if either factor is 0; the third pushes
+it up to 1 when both are 1. Which ones you actually need depends on the objective: if `Y` is
+**rewarded** (the solver wants it large) the two upper bounds are enough, since it will climb on
+its own. If `Y` is **penalised**, only the lower bound stops it collapsing to 0. Writing all three
+is never wrong, so when in doubt write all three.
+
+#### 3 · Big-M — "this constraint only applies sometimes"
+
+Sometimes a limit should be enforced only when a switch is on. You can't write "if" in an LP, so
+you add `M·z` to the right-hand side: when `z = 1` the bound becomes so large that the constraint
+cannot bind, and it is effectively switched **off**. When `z = 0` it is back in force.
+
+```
+serve region A OR region B                f₁ ≤ b₁ + Mz  ,  f₂ ≤ b₂ + M(1−z)
+produce NOTHING, or at least q            x ≤ M·y  ,  x ≥ q·y
+t = 1 iff i serves more than K            Σ_j x_{i,j} ≤ K + M·t
+                                          Σ_j x_{i,j} ≥ (K+1)·t
+```
+
+Notice the mirroring `z` / `(1−z)` in the either–or pair: exactly one of the two is relaxed, never
+both, and that's what makes it "or".
+
+Fixed charge is worth reading twice — it's the same shape doing something different. `x ≤ M·y`
+says you can only produce if you paid to open (`y = 1`), and `x ≥ q·y` says that if you *did* open,
+you must produce at least the minimum batch `q`. Together: **nothing, or at least `q`** — a gap in
+the middle that a plain LP cannot express.
+
+`M` must be a **constant you can justify**, never a variable, and never "a very big number" left
+unexplained. Pick the smallest value that can't bind: `M = |J|` for a count over customers,
+`M = c_i` for a capacity, `M = Σ_j w_j` for a total weight. A tighter `M` gives a tighter
+relaxation, which is a real modelling mark.
+
+#### 4 · Time — "per period, and across periods"
+
+When the index is time, constraints usually talk about a **window** of periods rather than a
+single one, so the `∀k` range has to stop early enough that the window still fits.
+
+```
+at most 5 of any 7 consecutive days       Σ_{t=k}^{k+6} x_t ≤ 5   ∀k ∈ {1,…,T−6}
+pay a start-up when a machine turns on    s_t ≥ x_t − x_{t−1}     t ≥ 2
+```
+
+The rolling window is one constraint per starting day `k`, each covering `k` through `k+6`. The
+range stops at `T−6` because `k = T−5` would need a day `T+1` that doesn't exist — that off-by-one
+is exactly what's being tested.
+
+Start-up detects a **change**, not a state. `x_t − x_{t−1}` equals 1 only on the period where the
+machine goes from off to on, and that's the only period where `s_t` is forced up to 1. If it's
+running in both periods the difference is 0, so no second charge. It starts at `t ≥ 2` because
+`x₀` doesn't exist.
+
+#### 5 · Ratios — clear the denominator
+
+A percentage looks like a fraction, and a fraction of variables is not linear. So never leave it
+divided: multiply out and collect everything on one side.
+
+```
+at least 40% of output is type 1          x₁ ≥ 0.4(x₁ + x₂)   →   0.6x₁ − 0.4x₂ ≥ 0
+```
+
+Write the fraction form first if it helps you think, but the answer must be the expanded one.
+
+### A full model, in the exam's format
+
+*"Build at most 3 warehouses, each serving ≤ 10 customers, everyone served, minimise cost."*
+
+Put the pieces together in the order the marker reads them: **variables with their meaning in
+words and their domain**, then the **objective**, then the **constraints, each with its `∀` and a
+short label**. Nothing here is new — it's patterns 1 and 3 from above, assembled.
+
+```
+y_i     ∈ {0,1}   = 1 iff warehouse i is built
+x_{i,j} ∈ {0,1}   = 1 iff warehouse i serves customer j
+
+min  Σ_i f_i y_i  +  Σ_i Σ_j c_{ij} x_{ij}
+
+s.t. Σ_i x_{i,j} = 1          ∀ j ∈ J        everyone served, exactly once
+     Σ_j x_{i,j} ≤ 10 y_i     ∀ i ∈ I        capacity, and zero if not built
+     x_{i,j} ≤ y_i            ∀ i ∈ I, j ∈ J  the strong linking
+     Σ_i y_i ≤ 3                             at most three
+```
+
 
 ---
 
@@ -269,15 +354,12 @@ Write **MAX** or **MIN** at the top of your answer. A tie (`Z_node = Z*`) still 
 | `x₂ ≤ 1` | horizontal at 1 | below |
 | `x₂ ≥ 2` | horizontal at 2 | above |
 
-Constraints accumulate down the path. **Empty region → prune by infeasibility**, no arithmetic.
-Otherwise slide the objective line to the last vertex it touches.
-
 ### Node order
 
-| | Structure | Takes |
-|---|---|---|
+|          | Structure             | Takes                    |
+| -------- | --------------------- | ------------------------ |
 | **FIFO** | queue — breadth-first | the **oldest** open node |
-| **LIFO** | stack — depth-first | the **newest** open node |
+| **LIFO** | stack — depth-first   | the **newest** open node |
 
 Stop as soon as the incumbent is confirmed. **State which child you push first** — the answer
 depends on it.
@@ -288,8 +370,7 @@ For every node record: **node · constraint added · vertex · `Z` · which rule
 
 # §7 · Total unimodularity
 
-`A` is **TU** ⟺ every square submatrix has determinant in `{−1, 0, +1}`.
-Hence every entry is in `{−1, 0, +1}`.
+`A` is **TU** ⟺ every square submatrix has determinant in `{−1, 0, +1}`. Hence every entry is in `{−1, 0, +1}`.
 
 > **TU + integral `b` ⟹ integral polyhedron ⟹ the IP is solvable in polynomial time.**
 
@@ -517,8 +598,7 @@ approximation exists.
 
 ### What it's for
 
-Water through pipes, traffic through roads, data through a network. **How much can you push from
-one point to another**, given that each link has a limit?
+Water through pipes, traffic through roads, data through a network. **How much can you push from one point to another**, given that each link has a limit?
 
 ### The setup
 
@@ -616,18 +696,6 @@ it, greedy path-finding is not correct.
 It works because `t` is unreachable (so it's a genuine cut) and every arc leaving `X` must be
 saturated (or it would still be in the residual network).
 
-### Worked — the SS25 graph
-
-```
-              a
-        1  ↗     ↘  1
-   s                 c  ──3──▶  t
-        1  ↘     ↗  1
-              b
-```
-
-Max flow: 1 unit via `a`, 1 via `b`, both down `c→t`. **`val(f) = 2`.**
-Cut `X = {s}`: arcs `s→a` and `s→b`, **`cap = 2`.** They match ⟹ both optimal ✓
 
 ### Modelling transformations
 
@@ -643,7 +711,7 @@ Cut `X = {s}`: arcs `s→a` and `s→b`, **`cap = 2`.** They match ⟹ both opti
 
 ### What it's for
 
-Visit every city once, return home, minimise distance. The canonical hard combinatorial problem
+Visit every city once, return home, minimize distance. The canonical hard combinatorial problem
 — and the chapter is really about **what to do when a problem is too hard to solve exactly**.
 
 ### Euler vs Hamilton — the cheapest marks here

@@ -1,0 +1,640 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><title>OR endterm — final card</title>
+<style>
+@page { size: A4 portrait; margin: 4.5mm 4mm; }
+* { box-sizing: border-box; }
+body { font-family: "Helvetica Neue", Arial, sans-serif; font-size: 6.9pt; line-height: 1.19;
+       margin: 0; color: #000; column-count: 3; column-gap: 3.5mm; column-fill: auto; }
+
+h1 { font-size: 7.9pt; margin: 0 0 1.5pt; padding: 1.2pt 3pt; background: #000; color: #fff;
+     text-transform: uppercase; letter-spacing: .3pt; break-after: avoid; }
+h2 { font-size: 7.2pt; margin: 3pt 0 1pt; padding-bottom: .5pt;
+     border-bottom: .6pt solid #000; break-after: avoid; }
+h3 { font-size: 6.9pt; margin: 2.5pt 0 .5pt; break-after: avoid; }
+
+p  { margin: 1.2pt 0; }
+ul { margin: 1.2pt 0 1.2pt 8pt; padding: 0; }
+li { margin: .4pt 0; padding-left: 0; }
+
+.def { border-left: 2pt solid #000; padding: .5pt 0 .5pt 3.5pt; margin: 1.8pt 0; }
+
+pre { font-family: "SF Mono", Menlo, Consolas, monospace; font-size: 5.7pt; line-height: 1.18;
+      margin: 1.8pt 0; padding: 2pt; background: #f1f1f1; white-space: pre-wrap;
+      break-inside: avoid; }
+code { font-family: "SF Mono", Menlo, Consolas, monospace; font-size: 6.4pt; }
+
+table { border-collapse: collapse; width: 100%; margin: 1.5pt 0; font-size: 6.4pt;
+        break-inside: avoid; }
+td, th { border: .4pt solid #888; padding: .7pt 2pt; text-align: left; vertical-align: top; }
+th { background: #e2e2e2; font-weight: 700; }
+
+.sec { margin-bottom: 3.5pt; }
+.k { background: #ffe680; padding: 0 1.5pt; font-weight: 700; }
+.trap { background: #f1f1f1; padding: 2pt 2pt 2pt 3pt; margin: 1.8pt 0; break-inside: avoid; }
+.trap ul { margin: .8pt 0 0 8pt; }
+</style></head><body>
+
+<!-- ============ 1 ============ -->
+<div class="sec">
+<h1>1 · Conversions</h1>
+<table>
+<tr><th>From</th><th>To</th><th>Note</th></tr>
+<tr><td><code>aᵀx ≤ b</code></td><td><code>+s = b</code></td><td><b>slack</b> — is a basis column</td></tr>
+<tr><td><code>aᵀx ≥ b</code></td><td><code>−s = b</code></td><td><b>surplus</b> — <i>not</i> a basis column</td></tr>
+<tr><td><code>≥ b</code>, <code>b&lt;0</code></td><td>×(−1) first</td><td>then add a slack</td></tr>
+<tr><td><code>aᵀx = b</code></td><td><code>+w = b</code></td><td><b>artificial</b> — start basis only</td></tr>
+</table>
+</div>
+
+<!-- ============ 2 ============ -->
+<div class="sec">
+<h1>2 · Reading a tableau</h1>
+<ul>
+<li><b>Optimal?</b> every Row-0 entry <code>≥ 0</code>.</li>
+<li><b>Basic variables + values:</b> Basis column ↔ RHS column, row by row.</li>
+<li><b>Everything else = 0.</b> Say so explicitly.</li>
+<li><b>Objective:</b> Row 0's RHS entry.</li>
+<li>Row 0: under a <b>basic</b> column always <code>0</code>; under <b>slack <code>sᵢ</code></b> it is the shadow price <code>yᵢ</code>.</li>
+</ul>
+<pre>c'_j = yᵀa_j − c_j        y = c_B B⁻¹</pre>
+</div>
+
+<!-- ============ 3 ============ -->
+<div class="sec">
+<h1>3 · Sensitivity</h1>
+
+<div class="def"><b>Shadow price <code>yᵢ</code></b> — the value of one more unit of resource <code>i</code>. Raise <code>bᵢ</code> by 1, the objective improves by <code>yᵢ</code>.</div>
+
+<ul>
+<li>It is a derivative: <code>z = yᵀb</code>, so <code>∂z/∂bᵢ = yᵢ</code>.</li>
+<li>Economically: the most you'd pay for one extra unit.</li>
+<li>Same object as: dual variable · simplex multiplier · opportunity cost · <code>π</code>.</li>
+</ul>
+
+<h2>RHS ranging</h2>
+
+<div class="def"><b>Perturbation</b> — replace <code>bᵢ</code> by <code>bᵢ + δ</code> and ask how far <code>δ</code> can move.</div>
+
+<p>Shifting <code>bᵢ</code> moves every basic value by <code>δ ×</code> the entry in the <b><code>sᵢ</code> column</b> (that column holds <code>B⁻¹</code>).</p>
+<pre>one inequality per basic row:
+    RHS_row  +  δ · (sᵢ column entry)  ≥  0</pre>
+<ul>
+<li>Solve each for <code>δ</code>, intersect → the range where the basis stays optimal.</li>
+<li>Uses only <code>B⁻¹</code> and <code>b</code> — <b>never <code>c</code></b>. Zero prices change nothing.</li>
+</ul>
+
+<h2>Degeneracy</h2>
+
+<div class="def"><b>Degenerate BFS</b> — a <b>basic</b> variable equal to <b>0</b> in the RHS column.</div>
+
+<ul>
+<li><span class="k">The two endpoints of the RHS range are exactly the degenerate points.</span> One table answers both questions.</li>
+<li>The row whose inequality <b>binds</b> names the variable that hits 0 — and it is the one that would <b>leave</b> the basis.</li>
+</ul>
+
+<h2>Past the range</h2>
+<p>That variable <b>leaves</b>. Entering one by the <b>dual ratio test</b>: in the leaving row, among entries <code>&lt; 0</code>, minimise <code>|c'_j / row_j|</code>. Then one pivot.</p>
+<p><b>Cost ranging:</b> for a basic variable, use its row under the non-basic columns and force every resulting Row-0 entry <code>≥ 0</code>.</p>
+</div>
+
+<!-- ============ 4 ============ -->
+<div class="sec">
+<h1>4 · Duality</h1>
+
+<h2>Deriving the dual</h2>
+<ul>
+<li><code>max</code> ↔ <code>min</code>.</li>
+<li>One dual <b>variable</b> per primal <b>constraint</b>.</li>
+<li>One dual <b>constraint</b> per primal <b>variable</b>.</li>
+<li>Dual constraint <code>j</code> reads <b>down column <code>j</code></b> of <code>A</code>.</li>
+<li>Swap <code>c</code> and <code>b</code>.</li>
+</ul>
+
+<h2>SOB — classify, then translate</h2>
+<table>
+<tr><th></th><th>S sensible</th><th>O odd</th><th>B bizarre</th></tr>
+<tr><td>variable</td><td><code>x ≥ 0</code></td><td>free</td><td><code>x ≤ 0</code></td></tr>
+<tr><td>constr. in max</td><td><code>≤</code></td><td><code>=</code></td><td><code>≥</code></td></tr>
+<tr><td>constr. in min</td><td><code>≥</code></td><td><code>=</code></td><td><code>≤</code></td></tr>
+<tr><th>constr → dual var</th><td><code>y ≥ 0</code></td><td><code>y</code> free</td><td><code>y ≤ 0</code></td></tr>
+<tr><th>var → dual constr</th><td>sensible dir.</td><td><code>=</code></td><td>bizarre dir.</td></tr>
+</table>
+<p><b>Sensible direction</b> = <code>≥</code> if the dual is a min, <code>≤</code> if it's a max.</p>
+
+<h2>Weak &amp; strong duality</h2>
+
+<div class="def"><b>Weak</b> — <code>cᵀx ≤ bᵀy</code> for <b>all</b> feasible <code>x</code> and <code>y</code>. Every feasible dual is a ceiling on every feasible primal; they never cross.</div>
+
+<div class="def"><b>Strong</b> — <code>cᵀx* = bᵀy*</code> at optimality. The ceiling is actually reached; no duality gap.</div>
+
+<ul>
+<li><span class="k">Find <code>x</code>, <code>y</code> with <code>cᵀx = bᵀy</code> ⟹ both are optimal.</span> One line.</li>
+<li><b>"Show (P) is not unbounded"</b> ⟹ exhibit <b>one</b> feasible dual point and check it; weak duality then caps (P). Squeeze both ways to pin <code>z*</code>.</li>
+</ul>
+
+<table>
+<tr><th>If the primal is</th><th>then the dual is</th></tr>
+<tr><td>unbounded</td><td>infeasible</td></tr>
+<tr><td>infeasible</td><td>unbounded <b>or</b> infeasible</td></tr>
+<tr><td>feasible, and D too</td><td>both finite</td></tr>
+</table>
+
+<h2>Complementary slackness</h2>
+
+<div class="def"><b>CS</b> — each product <code>(slack)·(variable) = 0</code>, so at most one of the pair is non-zero.</div>
+
+<pre>primal   ((Aᵀy)_j − c_j) · x_j = 0   per variable
+dual     ((Ax)_i − b_i) · y_i = 0    per constraint</pre>
+<p><b>Write every line out</b> — one per constraint, one per variable. It is separately scored.</p>
+
+<h3>Using it: is a given <code>x*</code> optimal?</h3>
+<ul>
+<li><b>1.</b> Check <code>x*</code> is primal <b>feasible</b> first.</li>
+<li><b>2.</b> Constraint <code>i</code> has slack ⟹ <code>yᵢ = 0</code>.</li>
+<li><b>3.</b> <code>x_j ≠ 0</code> ⟹ dual constraint <code>j</code> holds with <code>=</code>. Solve for <code>y</code>.</li>
+<li><b>4.</b> Test <code>y</code> against the <b>remaining</b> dual constraints <b>and the sign restrictions</b>.</li>
+</ul>
+<table>
+<tr><th>Step 4 result</th><th>Conclusion</th></tr>
+<tr><td>all satisfied</td><td><code>x*</code> <b>is</b> optimal; <code>y</code> is the dual optimum</td></tr>
+<tr><td>any violation</td><td><code>x*</code> is <b>not</b> optimal</td></tr>
+</table>
+<p><i>Both verdicts have appeared. Don't assume "not optimal".</i></p>
+</div>
+
+<!-- ============ 5 ============ -->
+<div class="sec">
+<h1>5 · IP modelling</h1>
+
+<h2>The answer template</h2>
+<pre>z ∈ {0,1}:  z = 1 ⟺ &lt;meaning, full sentence&gt;
+    &lt;linking constraint&gt;
+    &lt;requirement on z&gt;  ∀i ∈ &lt;explicit range&gt;</pre>
+<p>Four things score <b>separately</b>:</p>
+<ul>
+<li>the meaning <b>in words</b></li>
+<li>the <b>linking</b> constraint</li>
+<li>the <b>∀</b> with its explicit range</li>
+<li>the <b>domain line</b> (<code>z ∈ {0,1}</code>)</li>
+</ul>
+
+<h2>Patterns</h2>
+<p>Warehouses <code>i∈I</code> serve customers <code>j∈J</code>; <code>y_i</code> = built, <code>x_ij</code> = serves.</p>
+<table>
+<tr><th>English</th><th>Constraint</th></tr>
+<tr><td>exactly one</td><td><code>Σ_i x_ij = 1</code>&nbsp; <code>∀j</code></td></tr>
+<tr><td>at most <code>k</code></td><td><code>Σ_i y_i ≤ k</code></td></tr>
+<tr><td>capacity</td><td><code>Σ_j x_ij ≤ c_i</code>&nbsp; <code>∀i</code></td></tr>
+<tr><td><b>only if built</b></td><td><code>x_ij ≤ y_i</code>&nbsp; <code>∀i,j</code> — <b>strong</b><br>weak: <code>Σ_j x_ij ≤ |J|·y_i</code></td></tr>
+<tr><td><code>A ⟹ B</code></td><td><code>y_A ≤ y_B</code></td></tr>
+<tr><td>several premises</td><td><code>Σ(prem) − (#prem−1) ≤ Σ(concl)</code></td></tr>
+<tr><td>at most one of two</td><td><code>y₁ + y₂ ≤ 1</code></td></tr>
+<tr><td>product <code>y₁·y₂ → Y</code></td><td><code>Y ≤ y₁</code>, <code>Y ≤ y₂</code>, <code>Y ≥ y₁+y₂−1</code></td></tr>
+<tr><td>either–or</td><td><code>f₁ ≤ b₁+Mz</code>, <code>f₂ ≤ b₂+M(1−z)</code></td></tr>
+<tr><td>fixed charge</td><td><code>x ≤ M·y</code>, <code>x ≥ q·y</code></td></tr>
+<tr><td>rolling window</td><td><code>Σ_{t=k}^{k+6} x_t ≤ 5</code>&nbsp; <code>∀k∈{1..T−6}</code></td></tr>
+<tr><td>start-up</td><td><code>s_t ≥ x_t − x_{t−1}</code>, <code>t ≥ 2</code></td></tr>
+<tr><td>ratio / %</td><td>clear the denominator, all on one side</td></tr>
+</table>
+<p><b>Product rule:</b> <code>Y</code> rewarded → first two suffice; penalised → the third; all three is always safe.</p>
+
+<h2>Indicator — <code>t = 1 ⟺ X &gt; K</code>, <code>X</code> integer</h2>
+<pre>(A)  X ≤ K + M·t     X&gt;K ⟹ t=1   forces t UP
+(B)  X ≥ (K+1)·t     t=1 ⟹ X&gt;K   forces t DOWN</pre>
+<ul>
+<li>"indicates whether" / "if and only if" → write <b>both</b>.</li>
+<li>Unsure → write both. Never penalised.</li>
+<li><code>M</code> is a <b>constant</b>. Justify its size: <code>|J|</code>, <code>c_i</code>, <code>Σw_j</code>.</li>
+</ul>
+
+<div class="trap"><b>TRAPS</b>
+<ul>
+<li>missing <code>∀</code>, or the wrong range — <code>J\{21}</code>, <code>t∈{4..15}</code></li>
+<li>an auxiliary with no meaning in words, or no domain line</li>
+<li><code>M</code> treated as a variable</li>
+<li>one direction when the wording said "iff"</li>
+<li>a product left non-linear</li>
+</ul></div>
+</div>
+
+<!-- ============ 6 ============ -->
+<div class="sec">
+<h1>6 · Branch &amp; bound</h1>
+<p><b>Write MAX or MIN at the top of your answer.</b></p>
+
+<table>
+<tr><th></th><th>relaxation gives</th><th>integer <code>c</code>, <code>x</code></th></tr>
+<tr><td>max</td><td>an <b>upper</b> bound</td><td><code>OPT ≤ ⌊z_LP⌋</code></td></tr>
+<tr><td>min</td><td>a <b>lower</b> bound</td><td><code>OPT ≥ ⌈z_LP⌉</code></td></tr>
+</table>
+
+<p><b>Branching:</b> on a fractional <code>x_i = f</code>, split into <code>x_i ≤ ⌊f⌋</code> and <code>x_i ≥ ⌈f⌉</code>. No integer point is lost. Children <b>inherit</b> every ancestor constraint.</p>
+
+<h2>Closing a node — three rules</h2>
+<table>
+<tr><th>Rule</th><th>Condition</th></tr>
+<tr><td><b>integrality</b></td><td>LP solution already integral → update <code>Z*</code> if better, then close</td></tr>
+<tr><td><b>infeasibility</b></td><td>the relaxation has no feasible point</td></tr>
+<tr><td><b>bound</b></td><td><code>Z_node ≤ Z*</code> (max) · <code>Z_node ≥ Z*</code> (min)</td></tr>
+</table>
+<ul>
+<li>A <b>tie</b> (<code>Z_node = Z*</code>) still prunes.</li>
+<li>Integrality closes the node <b>even when it improves</b> — there's nothing left to split.</li>
+<li>Record per node: <b>node · constraint added · vertex · <code>Z</code> · which rule closed it</b>.</li>
+</ul>
+
+<h2>Stopping the algorithm</h2>
+<ul>
+<li>Formally: the <b>open list is empty</b> → the incumbent is optimal. Never an incumbent → the IP is <b>infeasible</b>.</li>
+<li><span class="k">Early stop: as soon as every open node's bound cannot beat <code>Z*</code>.</span></li>
+<li><b>Justify it in a sentence</b> — "P₁ is integer with 14, above P₂'s 12.9, so above any child of P₂."</li>
+</ul>
+
+<h2>Node order</h2>
+<ul>
+<li><b>FIFO</b> — queue, breadth-first, take the <b>oldest</b> open node.</li>
+<li><b>LIFO</b> — stack, depth-first, take the <b>newest</b>.</li>
+<li><b>State which child you push first</b> — the answer depends on it.</li>
+</ul>
+<p>On a plot: empty region → prune by infeasibility, no arithmetic. Otherwise slide the objective line to the last vertex it touches.</p>
+</div>
+
+<!-- ============ 7 ============ -->
+<div class="sec">
+<h1>7 · Total unimodularity</h1>
+
+<div class="def"><b>TU</b> — every <b>square submatrix</b> has determinant in <code>{−1, 0, +1}</code>. Hence every entry is too.</div>
+
+<p class="k">TU + integral <code>b</code> ⟹ integral polyhedron ⟹ the IP solves in polynomial time.</p>
+
+<h2>Proving it</h2>
+<ul>
+<li><b>By recognition</b> — the incidence matrix of a <b>bipartite</b> or <b>directed</b> graph is TU. Usually the whole answer.</li>
+<li>Consecutive-ones (interval) matrices are TU.</li>
+<li><b>By the three conditions:</b>
+  <ul>
+  <li>entries in <code>{−1,0,+1}</code></li>
+  <li>at most 2 non-zeros per <b>column</b></li>
+  <li>rows split into <code>M₁, M₂</code>: same sign → different parts, opposite signs → same part</li>
+  </ul></li>
+</ul>
+<p><b>Do not write "Ghouila-Houri"</b> — reproduce the three conditions.</p>
+
+<h2>Disproving it</h2>
+<p>Find a <b>zero-free 2×2</b> with <code>|det| ≥ 2</code>. Any 2×2 containing a zero has <code>det ∈ {−1,0,1}</code>, so only zero-free blocks can break it.</p>
+
+<p><b>Closure:</b> <code>A</code> TU ⟹ <code>−A</code>, <code>Aᵀ</code>, <code>A⁻¹</code>, <code>[A, I]</code> are all TU.</p>
+</div>
+
+<!-- ============ 8 ============ -->
+<div class="sec">
+<h1>8 · Matroids</h1>
+
+<p class="k">Greedy finds the optimum for every weight function ⟺ the system is a matroid.</p>
+
+<div class="def"><b><code>E</code></b> — the ground set, a finite pile.<br>
+<b><code>I ⊆ 2^E</code></b> — the independent sets: which selections are allowed.</div>
+
+<h2>The three axioms</h2>
+<ul>
+<li><b>(1)</b> <code>∅ ∈ I</code></li>
+<li><b>(2)</b> <code>B ∈ I</code> and <code>A ⊆ B</code> ⟹ <code>A ∈ I</code> &nbsp;<i>(hereditary)</i></li>
+<li><b>(3)</b> <code>A, B ∈ I</code> with <code>|A| &lt; |B|</code> ⟹ ∃ <code>x ∈ B\A</code> with <code>A ∪ {x} ∈ I</code></li>
+</ul>
+<p>(1)+(2) alone = an <b>independence system</b>. Adding (3) makes it a matroid.</p>
+
+<h2>Basis</h2>
+
+<div class="def"><b>Basis</b> — a <b>MAXIMAL</b> independent set: it is in <code>I</code> and cannot be extended.</div>
+
+<ul>
+<li><code>bases ⊆ I</code>. A basis is not extra structure — it's a member of <code>I</code>.</li>
+<li><b>Maximal ≠ maximum.</b> Maximal = cannot be extended (<b>the definition</b>). Maximum = largest possible size (<b>the theorem</b>).</li>
+<li>Writing "the largest independent set" as the definition <b>loses the mark</b>.</li>
+</ul>
+<p class="k">All bases of a matroid have the same size — so here maximal ⟹ maximum.</p>
+<p><b>To disprove:</b> exhibit <code>A, B ∈ I</code> with <code>|A| &lt; |B|</code> such that <b>nothing</b> in <code>B\A</code> extends <code>A</code>. Three elements is usually enough.</p>
+</div>
+
+<!-- ============ 9 ============ -->
+<div class="sec">
+<h1>9 · Knapsack DP</h1>
+
+<div class="def"><b><code>B[i,w]</code></b> — the best value using <b>only items 1..i</b> with capacity <code>w</code>.</div>
+
+<p>Row 0 and column 0 are all <b>zero</b>: no items, or no room, means no value.</p>
+
+<h2>Recurrence — one decision per cell</h2>
+<pre>if w_i ≤ w:
+   B[i,w] = max{ B[i−1, w] ,           ← SKIP i
+                 v_i + B[i−1, w−w_i] } ← TAKE i
+
+if w_i &gt; w:
+   B[i,w] = B[i−1, w]        doesn't fit</pre>
+
+<h2>Backtracking from <code>(n, W)</code></h2>
+<ul>
+<li><code>B[i,w] = B[i−1,w]</code> → item <code>i</code> <b>not</b> taken → go to <code>(i−1, w)</code></li>
+<li>otherwise → item <code>i</code> <b>was</b> taken → go to <code>(i−1, w−w_i)</code></li>
+</ul>
+
+<h2>Complexity</h2>
+<table>
+<tr><th>Index by</th><th>Cost</th></tr>
+<tr><td>weight</td><td><code>O(n · W_max)</code></td></tr>
+<tr><td>value</td><td><code>O(n · V_max)</code></td></tr>
+</table>
+<p><b>Run whichever bound is smaller, and say why.</b> This is a marked step.</p>
+<p><b>Pseudopolynomial, not polynomial:</b> <code>W</code> is a <i>number</i>, written in <code>log W</code> bits, so <code>O(nW)</code> is exponential in the input <i>length</i>.</p>
+
+<h2>FPTAS</h2>
+<pre>θ = ε·v_max/n ;  v_i* = ⌊v_i/θ⌋
+run the VALUE-indexed DP on the scaled data,
+report the chosen items at ORIGINAL values
+V_approx ≥ (1−ε)·V_opt
+P ⊆ FPTAS ⊆ PTAS ⊆ APX</pre>
+<p>Max clique, set cover, max independent set are <b>not in APX at all</b>.</p>
+</div>
+
+<!-- ============ 10 ============ -->
+<div class="sec">
+<h1>10 · Network flow</h1>
+
+<div class="def"><b>Flow</b> — a number on every arc obeying:<br>
+<b>capacity</b> <code>0 ≤ f(e) ≤ u(e)</code><br>
+<b>conservation</b> in = out at every node except <code>s</code> and <code>t</code></div>
+
+<p><code>val(f) = Σ_j f(s,j)</code> — the total leaving <code>s</code>, equal to the total arriving at <code>t</code>.</p>
+
+<h2>Cuts</h2>
+
+<div class="def"><b>Cut</b> <code>S = [X, V\X]</code> with <code>s ∈ X</code>, <code>t ∉ X</code>.<br>
+<code>cap(S) = Σ u(i,j)</code> over <code>i ∈ X</code>, <code>j ∉ X</code> — <b>forward arcs only</b>.</div>
+
+<p><b>Why forward only:</b> capacity measures what could cross toward <code>t</code>. An arc pointing the wrong way carries nothing that direction, so it imposes no limit. Counting it inflates the cut.</p>
+
+<pre>val(f) ≤ cap(S)   every flow, every cut   ← weak
+max val(f) = min cap(S)                   ← strong</pre>
+<p class="k">Find a flow and a cut with the same number ⟹ both optimal. One line.</p>
+
+<h2>Residual network</h2>
+<ul>
+<li><b>Forward</b> arc <code>(i,j)</code>: capacity <code>u(e) − f(e)</code> — spare room.</li>
+<li><b>Backward</b> arc <code>(j,i)</code>: capacity <code>f(e)</code> — flow you could <b>undo</b>.</li>
+<li>Drop arcs of residual capacity 0.</li>
+</ul>
+<p>The backward arc is the <b>undo button</b> — without it greedy path-finding is not correct.</p>
+
+<h2>Ford–Fulkerson</h2>
+<ul>
+<li><b>1.</b> Build the residual network.</li>
+<li><b>2.</b> Find <b>any</b> <code>s–t</code> path. None left → the flow is maximal, stop.</li>
+<li><b>3.</b> <code>κ</code> = smallest residual capacity on the path (the bottleneck).</li>
+<li><b>4.</b> <code>f += κ</code> on forward arcs, <code>f −= κ</code> on backward arcs. Repeat.</li>
+</ul>
+<p><b>Edmonds–Karp</b> = the same, always taking a <b>shortest</b> path (BFS).<br>
+<code>FF: O(|E|·U)</code> pseudopolynomial · <code>EK: O(V·E²)</code> polynomial.</p>
+
+<h2>Reading the min cut for free</h2>
+<ul>
+<li>Take the <b>final</b> residual network (no augmenting path left).</li>
+<li><code>X</code> = every node <b>reachable from <code>s</code></b>.</li>
+<li><code>S = [X, V\X]</code> is a minimum cut. <b>Check <code>cap(S) = val(f)</code>.</b></li>
+</ul>
+
+<h2>Modelling transformations</h2>
+<p>many sources/sinks → super-source and super-sink · <b>node</b> capacity → split <code>v_in → v_out</code> joined by an arc of that capacity · undirected edge → two opposite arcs</p>
+</div>
+
+<!-- ============ 11 ============ -->
+<div class="sec">
+<h1>11 · TSP</h1>
+
+<p class="k">EULER = every EDGE once (easy). HAMILTON = every NODE once (NP-complete).</p>
+<p><b>TSP</b> = a minimum-weight Hamiltonian cycle.</p>
+<ul>
+<li><b>symmetric</b> <code>c_ij = c_ji</code> → <code>(n−1)!/2</code> tours</li>
+<li><b>asymmetric</b> → <code>(n−1)!</code> tours</li>
+<li><b>metric</b> <code>c_ik ≤ c_ij + c_jk</code> — both ratios below need it</li>
+</ul>
+
+<h2>The IP, in two stages</h2>
+<p><b>Degree constraints:</b> <code>Σ_{i≠j} x_ij = 1 ∀j</code> and <code>Σ_{j≠i} x_ij = 1 ∀i</code>.</p>
+<p>These alone are just the <b>assignment problem</b> — they permit <b>subtours</b>. So add:</p>
+<table>
+<tr><th></th><th>Constraint</th><th>Count</th><th>Relax.</th></tr>
+<tr><td><b>SEC</b></td><td><code>Σ_{i,j∈U} x_ij ≤ |U|−1</code>, <code>2≤|U|≤n−1</code></td><td>exp.</td><td><b>tight</b></td></tr>
+<tr><td><b>MTZ</b></td><td><code>u_i − u_j + 1 ≤ (n−1)(1−x_ij)</code>, <code>u₁=1</code>, <code>2≤u_i≤n</code></td><td><code>O(n²)</code></td><td><b>weak</b></td></tr>
+</table>
+<p>Use the lecture's <code>(n−1)</code>, not the textbook's <code>n</code>.</p>
+
+<h2>Approximation</h2>
+<table>
+<tr><th></th><th>Ratio</th><th>How degrees are made even</th></tr>
+<tr><td>MST-doubling</td><td><b>2</b></td><td><b>double every edge</b></td></tr>
+<tr><td>Christofides</td><td><b>3/2</b></td><td><b>min-weight matching on the ODD-degree vertices</b></td></tr>
+<tr><td>nearest nb.</td><td>none</td><td>—</td></tr>
+</table>
+<ul>
+<li>Both: MST → make degrees even → Euler tour → shortcut.</li>
+<li>A better ratio is a <b>worst-case guarantee</b>, not a promise of a better answer on an instance.</li>
+<li>The papers <b>mislabel MST-doubling as "Christofides"</b>. Execute what's described, add one line naming it correctly.</li>
+</ul>
+
+<h2>Classifying a problem</h2>
+<p>pair one-to-one → <b>assignment</b> · one budget, max value → <b>knapsack</b> · fewest containers → <b>bin packing</b> · cover every element → <b>set covering</b> · visit every node → <b>TSP</b> · pick nodes so every <b>edge</b> is touched → <b>vertex cover</b></p>
+</div>
+
+<!-- ============ COUNTEREXAMPLE ============ -->
+<div class="sec">
+<h1>⚑ Counterexample — 7× in 3 papers</h1>
+<p>Asked in <b>matroids · flow · TSP · convexity</b>. Always the same four moves:</p>
+<ul>
+<li><b>1.</b> Build the <b>smallest</b> instance meeting <b>every</b> stated assumption — and check them explicitly.</li>
+<li><b>2.</b> State what the claim predicts.</li>
+<li><b>3.</b> Show what actually happens.</li>
+<li><b>4.</b> Write: <i>"therefore the statement is false in general."</i></li>
+</ul>
+<p><b>Levers that worked:</b></p>
+<ul>
+<li><b>matroid</b> — <code>A, B ∈ I</code>, <code>|A|&lt;|B|</code>, nothing in <code>B\A</code> extends <code>A</code></li>
+<li><b>heuristic</b> — greedy commits to a cheap early edge and pays later</li>
+<li><b>convexity</b> — make <code>K</code> <b>non-convex</b>: <code>min x²</code> s.t. <code>x² ≥ 1</code> gives <code>x = ±1</code>, so the minimum isn't unique</li>
+<li><b>flow</b> — the graph below breaks most capacity claims</li>
+</ul>
+<pre>s→a=1, s→b=1, a→c=1, b→c=1, c→t=3
+
+max flow = 2  — EVEN, though every capacity is odd
+min cut ({s},rest) = 2
+add λ=2 to every capacity:
+  ({t},rest) = 5  beats the old cut's 6
+  ⟹ the minimum cut MOVED</pre>
+</div>
+
+<!-- ============ 12 ============ -->
+<div class="sec">
+<h1>12 · Nonlinear, unconstrained</h1>
+
+<div class="def"><b>Critical point</b> — a point where <code>∇f = 0</code>. Maxima, minima <b>and saddles</b> all qualify, which is why you need the Hessian.</div>
+
+<pre>∇f = (∂f/∂x₁, …, ∂f/∂xₙ)ᵀ
+H_f = (∂²f/∂xᵢ∂xⱼ)   — always symmetric</pre>
+
+<h2>Procedure</h2>
+<ul>
+<li>Solve <code>∇f = 0</code> for <b>all</b> critical points — <b>factor, don't divide</b>. <code>x·(…) = 0</code> has two branches.</li>
+<li>Compute <code>H_f</code> symbolically.</li>
+<li><b>Substitute each point separately</b> — different points can classify differently.</li>
+</ul>
+
+<h2>Test A · 2×2 · <code>det = ad − b²</code>, <code>tr = a + d</code></h2>
+<table>
+<tr><th><code>det</code></th><th><code>tr</code></th><th>The point is a</th></tr>
+<tr><td><code>&gt; 0</code></td><td><code>&gt; 0</code></td><td>positive definite → <b>minimum</b></td></tr>
+<tr><td><code>&gt; 0</code></td><td><code>&lt; 0</code></td><td>negative definite → <b>maximum</b></td></tr>
+<tr><td><code>&lt; 0</code></td><td>—</td><td>indefinite → <b>saddle</b></td></tr>
+<tr><td><code>= 0</code></td><td>—</td><td>inconclusive → Test C</td></tr>
+</table>
+<p><i>Why:</i> <code>λ₁λ₂ = det</code>, <code>λ₁+λ₂ = tr</code>. Same sign, or opposite.</p>
+
+<h2>Test B · leading principal minors</h2>
+<ul>
+<li>all <code>D_k &gt; 0</code> → positive definite → <b>minimum</b></li>
+<li><code>D₁&lt;0, D₂&gt;0, D₃&lt;0, …</code> alternating, <b>starting negative</b> → <b>maximum</b></li>
+<li>no <code>D_k = 0</code> but neither pattern → <b>saddle</b></li>
+<li>any <code>D_k = 0</code> → the test is <b>inapplicable</b></li>
+</ul>
+
+<h2>Test C · eigenvalues — the fallback</h2>
+<p>Solve <code>det(H − λI) = 0</code>. All <code>+</code> → min · all <code>−</code> → max · mixed → saddle · some <code>0</code> → truly inconclusive.</p>
+<p class="k">A zero minor does NOT mean semidefinite — it means the test can't decide.</p>
+
+<h2>Do this FIRST</h2>
+<p>If <code>H ≻ 0</code> <b>everywhere</b> (not just at the critical point) then <code>f</code> is strictly convex, so:</p>
+<ul>
+<li><b>no maxima exist at all</b> — a scoring statement, not a remark</li>
+<li>any critical point is the <b>unique global minimum</b></li>
+</ul>
+</div>
+
+<!-- ============ 13 ============ -->
+<div class="sec">
+<h1>13 · Convexity</h1>
+
+<p class="k">convex objective + convex feasible set ⟹ every LOCAL minimum is GLOBAL.</p>
+
+<div class="def"><b>Convex SET</b> — <code>λx + (1−λ)y ∈ C</code> for all <code>x,y ∈ C</code>, <code>λ ∈ [0,1]</code>.<br>
+<i>The whole segment between any two points stays inside.</i></div>
+
+<div class="def"><b>Convex FUNCTION</b> — <code>f(λx+(1−λ)y) ≤ λf(x)+(1−λ)f(y)</code>.<br>
+<i>The chord between two points on the graph lies above the graph.</i></div>
+
+<ul>
+<li><b>Strictly convex</b> — <code>&lt;</code> for <code>x ≠ y</code>. <code>x²</code> is; <code>|x|</code> is convex but not strictly.</li>
+<li><b>Concave</b> — reverse the inequality; equivalently <code>−f</code> is convex.</li>
+<li><b>Affine <code>aᵀx + b</code></b> — <b>both</b> convex and concave (the chord <i>is</i> the graph).</li>
+</ul>
+
+<table>
+<tr><th></th><th>compact</th><th>convex</th></tr>
+<tr><td>circle <b>curve</b> <code>x²+y²=r²</code></td><td>✓</td><td><b>✗</b></td></tr>
+<tr><td>closed <b>disk</b> <code>x²+y²≤r²</code></td><td>✓</td><td>✓</td></tr>
+<tr><td>halfplane</td><td>✗</td><td>✓</td></tr>
+<tr><td>intersection of convex</td><td></td><td>✓ always</td></tr>
+<tr><td>union of convex</td><td></td><td>✗ generally</td></tr>
+</table>
+
+<h2>Open / closed / bounded / compact</h2>
+<ul>
+<li><b>Open</b> — every point has a small ball still inside. Strict <code>&lt;</code>.</li>
+<li><b>Closed</b> — contains its own boundary; complement is open. Non-strict <code>≤</code>.</li>
+<li><b>Bounded</b> — fits inside a finite box.</li>
+<li><b>COMPACT = closed AND bounded</b> (Heine–Borel, in <code>ℝⁿ</code>).</li>
+</ul>
+<ul>
+<li>"Not open" ≠ "closed": <code>[0,1)</code> is neither, <code>ℝⁿ</code> is both.</li>
+<li>On <code>(0,1)</code> the max is never attained — not closed. On <code>[0,∞)</code> it runs away — not bounded.</li>
+</ul>
+<p class="k">Weierstrass: non-empty compact set + continuous <code>f</code> ⟹ a global min AND max are attained.</p>
+
+<h2>Proving convexity</h2>
+<ul>
+<li><b>From the definition</b> — when <code>f</code> is abstract or non-differentiable (a norm).</li>
+<li><b>Hessian</b> — on a <b>convex domain</b>: <code>H ⪰ 0</code> everywhere <b>⟺</b> convex; <code>H ≻ 0</code> everywhere <b>⟹</b> strictly convex (converse false — <code>x⁴</code>).</li>
+<li><b>Composition</b> — preserved by <code>αf</code> (<code>α≥0</code>), <code>f+g</code>, <code>f(Ax+b)</code>, <code>max{f₁..fₘ}</code>, <code>h∘g</code> (<code>h</code> convex, non-decreasing).</li>
+<li><b>Counterexample</b> — one triple <code>(x,y,λ)</code> disproves it.</li>
+</ul>
+
+<h2>The norm proof — say every line</h2>
+<pre>‖λx+(1−λ)y‖ ≤ ‖λx‖ + ‖(1−λ)y‖
+                       triangle inequality
+            = |λ|·‖x‖ + |1−λ|·‖y‖
+                       homogeneity
+            = λ‖x‖ + (1−λ)‖y‖
+                 λ∈[0,1] ⟹ both ≥ 0  ←SAY THIS</pre>
+</div>
+
+<!-- ============ 14 ============ -->
+<div class="sec">
+<h1>14 · KKT</h1>
+
+<h2>Standard form — convert first, always</h2>
+<pre>min f(x)   s.t.  g_i(x) ≤ 0 ,  h_j(x) = 0
+
+g(x) ≥ 0  becomes  −g(x) ≤ 0
+max f     becomes  min −f</pre>
+<ul>
+<li><b>ACTIVE</b> (tight, binding): <code>g_i(x*) = 0</code> — the constraint presses.</li>
+<li><b>INACTIVE</b> (slack): <code>g_i(x*) &lt; 0</code> — room to spare.</li>
+</ul>
+
+<h2>The Lagrangian</h2>
+<pre>L = f(x) + Σᵢ λᵢ gᵢ(x) + Σⱼ μⱼ hⱼ(x)    (MIN)
+
+λᵢ  inequality  —  λᵢ ≥ 0  SIGN-CONSTRAINED
+μⱼ  equality    —  free in sign</pre>
+<p><b>Why:</b> violating <code>gᵢ ≤ 0</code> must <i>increase</i> the objective you're minimising, so <code>λ</code> can't be negative. An equality breaks either way, so <code>μ</code> needs both signs. Same SOB pattern as §4. <b><code>λ</code> is a shadow price.</b></p>
+
+<h2>The four blocks</h2>
+<table>
+<tr><td><b>stationarity</b></td><td><code>∇f + Σλᵢ∇gᵢ + Σμⱼ∇hⱼ = 0</code></td></tr>
+<tr><td><b>primal feasibility</b></td><td><code>gᵢ ≤ 0</code>, <code>hⱼ = 0</code></td></tr>
+<tr><td><b>dual feasibility</b></td><td><code>λᵢ ≥ 0</code></td></tr>
+<tr><td><b>compl. slackness</b></td><td><code>λᵢ · gᵢ(x*) = 0</code></td></tr>
+</table>
+
+<h2>Solving — the case split</h2>
+<p>For each <code>i</code>: <b>either</b> <code>λᵢ = 0</code> (inactive) <b>or</b> <code>gᵢ(x*) = 0</code> (active).</p>
+<ul>
+<li>Discard a case if <code>λᵢ &lt; 0</code> — dual infeasible.</li>
+<li>Discard a case if <code>gᵢ &gt; 0</code> — primal infeasible.</li>
+<li><b>Say why each branch died.</b> It's scored.</li>
+</ul>
+<p><b>Kill cases early</b> using a fact in the problem statement — <i>two distinct points exist ⟹ <code>r &gt; 0</code> ⟹ <code>μr = 0</code> ⟹ <code>μ = 0</code></i>.</p>
+
+<h2>Slater vs LICQ — this decides your conclusion</h2>
+<table>
+<tr><th></th><th>Requires</th><th>Gives you</th></tr>
+<tr><td><b>Slater</b></td><td><code>f, gᵢ</code> convex; <code>hⱼ</code> affine; a point <code>x̄</code> with <b>every <code>gᵢ(x̄) &lt; 0</code> strictly</b></td><td>a KKT point <b>IS a global optimum</b> — stop</td></tr>
+<tr><td><b>LICQ</b></td><td>active <code>∇gᵢ</code> plus all <code>∇hⱼ</code> linearly independent</td><td><b>candidates only</b> — evaluate <code>f</code> and compare</td></tr>
+</table>
+<ul>
+<li><b>Verify Slater by exhibiting the point.</b> Centroid with the radius inflated by <code>+1</code>, so every <code>gᵢ ≤ −1 &lt; 0</code>. The <code>+1</code> manufactures strictness.</li>
+<li><b>Only equality constraints ⟹ Slater always fails</b> — an equality has no strict version.</li>
+</ul>
+<div class="trap"><b>MC TRAP</b>
+<ul>
+<li>"a KKT point is always a local optimum" — <b>FALSE</b></li>
+<li>"for a convex problem a KKT point is a global minimiser if Slater holds" — <b>TRUE</b></li>
+</ul></div>
+
+<h2>The four-step recipe</h2>
+<ul>
+<li><b>1. Existence</b> — compact + continuous ⟹ a global min and max exist (Weierstrass). Cheap, often forgotten.</li>
+<li><b>2. CQ</b> — Slater? otherwise LICQ.</li>
+<li><b>3. Solve</b> — Lagrangian → 4 blocks → case split → discard, with reasons.</li>
+<li><b>4. Compare</b> — evaluate <code>f</code> at survivors. <b>Skip if Slater held.</b></li>
+</ul>
+</div>
+
+</body></html>

@@ -11,33 +11,33 @@ Items marked **[SS24]** / **[SS25]** are from real papers.
 # §1 · LP basics and simplex
 
 **Q1.** Which are correct about converting to standard form?
-- [ ] a `≤` constraint gets a slack variable, and that slack column can serve as a basis column
+- [x] a `≤` constraint gets a slack variable, and that slack column can serve as a basis column
 - [ ] a `≥` constraint gets a surplus variable whose column can serve as a basis column
-- [ ] a free variable is replaced by `x = x⁺ − x⁻` with `x⁺, x⁻ ≥ 0`
+- [x] a free variable is replaced by `x = x⁺ − x⁻` with `x⁺, x⁻ ≥ 0`
 - [ ] `min cᵀx` and `max cᵀx` have the same optimal solution set
 
 **Q2.** A point `v` of `X = {x : Ax ≤ b, x ≥ 0}` is a vertex if and only if…
-- [ ] it has `n` linearly independent active constraints
-- [ ] it corresponds to a basic feasible solution
-- [ ] it is not a convex combination of two other points of `X`
+- [x] it has `n` linearly independent active constraints
+- [x] it corresponds to a basic feasible solution
+- [x] it is not a convex combination of two other points of `X`
 - [ ] it maximises some linear objective over `X`
 
 **Q3.** Which can happen for a linear program?
-- [ ] the feasible region is empty
-- [ ] the feasible region is non-empty and the objective is unbounded
+- [x] the feasible region is empty
+- [x] the feasible region is non-empty and the objective is unbounded
 - [ ] there are exactly two optimal solutions
-- [ ] there are infinitely many optimal solutions
+- [x] there are infinitely many optimal solutions
 
 **Q4. [SS25]** Which scenarios can cause the simplex algorithm to cycle?
 - [ ] the simplex algorithm never cycles
 - [ ] the feasible region is unbounded
 - [ ] there are multiple distinct optimal solutions
-- [ ] the problem is degenerate
+- [x] the problem is degenerate
 
 **Q5.** In a max simplex tableau (z-row holding `−c`), which readings are correct?
-- [ ] no negative z-row entry ⟹ the current basis is optimal
-- [ ] the entering column has no strictly positive entry ⟹ the LP is unbounded
-- [ ] a tie in the ratio test ⟹ the next basis is degenerate
+- [x] no negative z-row entry ⟹ the current basis is optimal
+- [x] the entering column has no strictly positive entry ⟹ the LP is unbounded
+- [x] a tie in the ratio test ⟹ the next basis is degenerate
 - [ ] a basic variable equal to zero ⟹ the LP is infeasible
 
 ---
@@ -45,38 +45,38 @@ Items marked **[SS24]** / **[SS25]** are from real papers.
 # §2–3 · Tableau reading and sensitivity
 
 **Q6.** From an optimal tableau you can read off directly…
-- [ ] the values of the basic variables
-- [ ] the shadow prices
-- [ ] the optimal objective value
+- [x] the values of the basic variables
+- [x] the shadow prices
+- [x] the optimal objective value
 - [ ] the number of simplex iterations that were performed
 
 **Q7.** About shadow prices `y` in a max problem:
-- [ ] `yᵀ = c_Bᵀ B⁻¹`
-- [ ] they appear in Row 0 under the slack variables
-- [ ] a constraint with positive slack has shadow price zero
+- [x] `yᵀ = c_Bᵀ B⁻¹`
+- [x] they appear in Row 0 under the slack variables
+- [x] a constraint with positive slack has shadow price zero
 - [ ] `yᵢ` remains valid for arbitrarily large changes in `bᵢ`
 
 **Q8. [SS25]** You perturb the RHS of a constraint by `Δ` and the basis stays optimal. Which are always true?
 - [ ] the shadow price vector `π` should be updated
 - [ ] `π` can be used to find the change in the values of the basic variables
-- [ ] `π` can be used to find the change in the objective value
-- [ ] the solution can become degenerate for some `Δ`
+- [x] `π` can be used to find the change in the objective value
+- [x] the solution can become degenerate for some `Δ`
 
 **Q9.** Cost ranging. Which are correct?
 - [ ] changing a **non-basic** variable's cost can change the optimal solution but not the objective value, while it stays in range
-- [ ] changing a **basic** variable's cost changes the objective value but not the plan, while it stays in range
-- [ ] a basic variable's cost range is computed from that variable's **row** of the tableau
+- [x] changing a **basic** variable's cost changes the objective value but not the plan, while it stays in range
+- [x] a basic variable's cost range is computed from that variable's **row** of the tableau
 - [ ] a non-basic variable's cost range is two-sided
 
 **Q10.** In an optimal tableau:
-- [ ] a basic variable with RHS zero indicates degeneracy
-- [ ] a non-basic variable with Row-0 entry zero indicates multiple optimal solutions
+- [x] a basic variable with RHS zero indicates degeneracy
+- [x] a non-basic variable with Row-0 entry zero indicates multiple optimal solutions
 - [ ] degeneracy and multiple optima are the same phenomenon
-- [ ] the endpoints of a RHS validity range are exactly where the basis becomes degenerate
+- [x] the endpoints of a RHS validity range are exactly where the basis becomes degenerate
 
 **Q11.** A new product needs resources `a_new` and sells at `c_new`. It is worth introducing iff…
-- [ ] `c_new > yᵀa_new`
-- [ ] its Row-0 entry `yᵀa_new − c_new` is negative
+- [x] `c_new > yᵀa_new`
+- [x] its Row-0 entry `yᵀa_new − c_new` is negative
 - [ ] `a_new` uses less of every resource than some existing product
 - [ ] the LP must be re-solved from scratch to decide
 
@@ -85,27 +85,27 @@ Items marked **[SS24]** / **[SS25]** are from real papers.
 # §4 · Duality
 
 **Q12. [SS25]** Which are correct?
-- [ ] every linear program has a dual program
-- [ ] if a primal constraint is not tight, its corresponding dual variable is zero
+- [x] every linear program has a dual program
+- [x] if a primal constraint is not tight, its corresponding dual variable is zero
 - [ ] if the primal is infeasible, the dual is unbounded
-- [ ] if the primal is unbounded, the dual is infeasible
+- [x] if the primal is unbounded, the dual is infeasible
 
 **Q13.** About the dual of `max cᵀx s.t. Ax ≤ b, x ≥ 0`:
-- [ ] the dual has one variable per primal constraint
-- [ ] the dual has one constraint per primal variable
+- [x] the dual has one variable per primal constraint
+- [x] the dual has one constraint per primal variable
 - [ ] the sign restrictions `x ≥ 0` each contribute a dual variable
-- [ ] the dual of the dual is the primal
+- [x] the dual of the dual is the primal
 
 **Q14.** In a **max** primal, which SOB classifications are right?
-- [ ] a `≥` constraint is bizarre, so its dual variable satisfies `y ≤ 0`
-- [ ] an `=` constraint is odd, so its dual variable is free
-- [ ] a free primal variable gives a dual **equality** constraint
+- [x] a `≥` constraint is bizarre, so its dual variable satisfies `y ≤ 0`
+- [x] an `=` constraint is odd, so its dual variable is free
+- [x] a free primal variable gives a dual **equality** constraint
 - [ ] a primal variable `x ≤ 0` gives a dual constraint in the sensible direction
 
 **Q15.** Weak and strong duality:
-- [ ] `cᵀx ≤ bᵀy` holds for every feasible `x` and every feasible `y`
-- [ ] at optimality `cᵀx* = bᵀy*`
-- [ ] if both problems are feasible, both have finite optima
+- [x] `cᵀx ≤ bᵀy` holds for every feasible `x` and every feasible `y`
+- [x] at optimality `cᵀx* = bᵀy*`
+- [x] if both problems are feasible, both have finite optima
 - [ ] a duality gap can exist for a feasible bounded LP
 
 **Q16.** To show a given feasible `x*` is **not** optimal using complementary slackness, you…

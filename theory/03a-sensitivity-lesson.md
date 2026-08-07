@@ -19,10 +19,9 @@ You've solved an LP. You know the best plan and the best profit. Then the boss a
 - *"What if the price of tables drops — do we change what we make?"*
 - *"A supplier offers a new product line. Should we take it?"*
 
-**Re-solving the LP from scratch for each question would be madness.** Sensitivity analysis
-answers all of them by reading numbers off the *final tableau you already have*.
+**Re-solving the LP from scratch for each question would be madness.** 
+-> Sensitivity analysis answers all of them by reading numbers off the final tableau
 
-That's the whole subject. Not new theory — extracting more value from a solved problem.
 
 ---
 
@@ -142,15 +141,10 @@ worth bringing in    ⟺  Row-0 entry < 0
 
 Our Row 0 is `(0, 0, 2, 1)` — all `≥ 0`, so the tableau is optimal. ✓
 
-> **Warning.** Many textbooks define the reduced cost as `c_j − yᵀa_j`, the exact negation, and
-> read optimality as "all `≤ 0`". **This course uses the version above.** Write the convention at
-> the top of your answer so the marker knows which you mean.
-
 Two facts drop out:
 
-- **Under a basic column Row 0 is always 0** — `c_BᵀB⁻¹B − c_Bᵀ = 0`.
-- **Under a slack column Row 0 is exactly `yᵢ`** — a slack has `c_j = 0` and `a_j = eᵢ`, so
-  `Row0 = yᵀeᵢ − 0 = yᵢ`. Nothing to subtract.
+- **Under a basic column Row 0 is always 0** 
+- **Under a slack column Row 0 is exactly `yᵢ
 
 That second fact is why you can read shadow prices straight off the tableau.
 

@@ -38,7 +38,7 @@ m = 2 constraints        n = 4 variables (after slacks)
 
 ---
 
-# Given — you never solve for these
+# Given 
 
 ```
         ⎡ x₁ ⎤          ⎡ 3 ⎤            ⎡ 4 ⎤
@@ -91,7 +91,9 @@ B =  ⎢      ⎥     N =  ⎢      ⎥    c_B = ⎣ 4 ⎦    c_N = ⎣ 0 ⎦
 
 ---
 
-# Derived — computed from the above
+# Derived 
+
+![[Pasted image 20260805132916.png]]
 
 ```
         ⎡  2  −1 ⎤
@@ -99,13 +101,13 @@ B⁻¹ =   ⎢        ⎥         det B = 2·1 − 1·1 = 1
         ⎣ −1   1 ⎦          2×2 inverse: swap diagonal, negate off-diagonal, ÷ det
 ```
 
-| Symbol | Formula | Meaning | Value here |
-|---|---|---|---|
-| `b'` = `x_B` | `B⁻¹b` | **the plan** — amounts of the basic variables | `(2, 2)ᵀ` |
-| `N'` | `B⁻¹N` | tableau body under non-basic columns | `[[2,−1],[−1,1]]` |
-| `y` = `π` | `c_Bᵀ B⁻¹` | **shadow prices** / duals, one per constraint | `(2, 1)` |
-| `z` | `c_Bᵀb'` = `yᵀb` | objective value | `14` |
-| `Row0_j` = `c'_j` | `yᵀa_j − c_j` | reduced cost of column `j` | see below |
+| Symbol            | Formula          | Meaning                                       | Value here        |
+| ----------------- | ---------------- | --------------------------------------------- | ----------------- |
+| `b'` = `x_B`      | `B⁻¹b`           | **the plan** — amounts of the basic variables | `(2, 2)ᵀ`         |
+| `N'`              | `B⁻¹N`           | tableau body under non-basic columns          | `[[2,−1],[−1,1]]` |
+| `y` = `π`         | `c_Bᵀ B⁻¹`       | **shadow prices** / duals, one per constraint | `(2, 1)`          |
+| `z`               | `c_Bᵀb'` = `yᵀb` | objective value                               | `14`              |
+| `Row0_j` = `c'_j` | `yᵀa_j − c_j`    | reduced cost of column `j`                    | see below         |
 
 The arithmetic, once:
 
@@ -153,29 +155,6 @@ all Row0 ≥ 0  ⟺  OPTIMAL   (max problem)
 | Row 0 under **slack `sᵢ`** | `yᵢ` — the shadow price |
 
 **This is why you rarely compute `B⁻¹`.** It's already in the body, and `y` is already in Row 0.
-
----
-
-# Why Row 0 ≥ 0 means optimal
-
-```
-z   = c_Bᵀx_B + c_Nᵀx_N
-Ax = b  ⟹  Bx_B + Nx_N = b  ⟹  x_B = B⁻¹b − B⁻¹N x_N
-
-z = c_Bᵀ(B⁻¹b − B⁻¹N x_N) + c_Nᵀx_N
-  = c_BᵀB⁻¹b  −  (c_BᵀB⁻¹N − c_Nᵀ)·x_N
-  =     z₀     −       Row 0        · x_N
-```
-
-> **Raising a non-basic `x_j` by 1 changes `z` by `−Row0_j`.**
-
-```
-Row0_j < 0   →  raising x_j INCREASES z  →  bring it in
-all ≥ 0      →  nothing helps            →  OPTIMAL
-```
-
-> **Warning.** Textbooks often use `c̄_j = c_j − yᵀa_j`, the negation, and read "optimal ⟺ all ≤ 0".
-> **This course uses the version above.** State your convention in the exam.
 
 ---
 
