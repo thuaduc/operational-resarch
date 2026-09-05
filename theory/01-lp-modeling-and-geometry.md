@@ -12,7 +12,7 @@
 | **Convex set**             | `x,y ∈ X, α ∈ [0,1]` ⟹ `(1−α)x + αy ∈ X`                                                                        |
 | **Convex combination**     | `Σ αᵢ vᵢ` with `αᵢ ≥ 0`, `Σ αᵢ = 1`                                                                             |
 | **Active constraints**     | `I(x) = {i \| aᵢ^Tx = bᵢ}`, `J(x) = {j \| xⱼ = 0}`                                                              |
-| **Vertex = extreme point** | not a convex combination of two other points; equivalently `n` lin. indep. active constraints                   |
+| **Vertex = extreme point** | not a convex combination of two other points **of X** (no `y,z ∈ X`, `y ≠ z`, `α ∈ (0,1)` with `v = (1−α)y + αz`); equivalently `n` lin. indep. active constraints |
 | **BFS**                    | pick basis `B` (`m` lin. indep. columns), set `x_N = 0`, `x_B = B⁻¹b`; feasible iff `x_B ≥ 0`. **Vertex ⟺ BFS** |
 | **Adjacent vertices**      | share `n−1` active constraints; one simplex pivot apart                                                         |
 | **Recession direction**    | `d ≠ 0` with `x + td ∈ X` ∀`t ≥ 0`. `rec(X) = {d \| Ad ≤ 0, d ≥ 0}`. Bounded ⟺ `rec(X) = {0}`                   |
@@ -40,7 +40,7 @@
 **C. Convert to standard form `max c^T x, Ax = b ≥ 0, x ≥ 0`**
 1. `min c^T x → max (−c)^T x`.
 2. `≤` row: `+ slack`; `≥` row: `− surplus`; both `≥ 0`.
-3. Equality as inequalities: `a^Tx = b ⟺ a^Tx ≤ b ∧ a^Tx ≥ b`.
+3. Equality rows: keep unchanged — already standard. (The split `a^Tx = b ⟺ a^Tx ≤ b ∧ a^Tx ≥ b` is only for converting TO canonical form `Ax ≤ b`.)
 4. Negative RHS: multiply row by `−1`.
 5. Free variable: `x = x⁺ − x⁻`, `x⁺,x⁻ ≥ 0`. Lower bound `x ≥ l`: substitute `x' = x − l`.
 6. Upper bound `x ≤ u` becomes an ordinary row.
@@ -48,7 +48,7 @@
 **D. Find all `c` with multiple optima**
 1. List the vertices and edges/rays of `X`.
 2. For each edge direction `d`: objective is constant on it iff `c^T d = 0`. Take `c` = outward normal of the facet containing that edge.
-3. Discard normals whose facet is not attained (LP unbounded in that direction).
+3. No discarding needed: a facet normal always gives a bounded LP attained on that facet (`c^Tx ≤ b_i` on `X`). Only `c` that are NOT nonneg. combinations of active constraint normals can be unbounded directions.
 4. Report each `c` with `z = c^T v` for a vertex `v` on that edge.
 
 **E. Decide the four outcomes**
@@ -63,6 +63,8 @@
 | Infinitely many optima | objective line lies flat **on** an edge/facet | `c ⊥ (v_2−v_1)`, `c = λa_i`, `λ>0` | `{(1−α)v_1+αv_2 : α∈[0,1]}`, single `z*` |
 | Unbounded | region open in a direction `d` with `c^Td > 0` | `∃ d ∈ rec(X): c^Td > 0` | "unbounded", `z → ∞` |
 | Infeasible | no shaded area | `X = ∅` | "infeasible", no `z` |
+
+**Trap (P1 2026):** unbounded `X` ⇏ unbounded LP — you also need an improving recession direction (`c^T d > 0`). Example: `max −x₁` over `x ≥ 0` has `z* = 0`. Converse holds: unbounded LP ⇒ `X` unbounded. Nonempty polytope ⇒ optimum exists and is attained at a vertex.
 
 ## Formula box
 
@@ -88,6 +90,7 @@
 
 **Optimality Conditions**
 
+- **Fundamental theorem of LP:** if the LP has an optimal solution and `X` has at least one vertex (pointed polyhedron — automatic for `x ≥ 0` forms), then some vertex is optimal. Needs BOTH hypotheses: an optimum must exist (not unbounded/infeasible), and a polyhedron without vertices (only possible with free variables) can have optima at no vertex — e.g. `{x ∈ R² | x₁ + x₂ ≤ 1}` with `c = (1,1)`.
 - **Optimality (max):** `x*` optimal ⟺ `∇f(x*) = c ∈ N_X(x*)`
 - **Unbounded (max):** `X ≠ ∅` and `∃ d ∈ rec(X)` with `c^T d > 0`
 - **Multi-optima:** `c^T(v_2 − v_1) = 0` for adjacent optimal `v_1, v_2`

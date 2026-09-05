@@ -109,7 +109,7 @@ graph, `r(E) = |V| − 1` (spanning tree).
 4. Return the item set with its original unscaled total value.
 5. Guarantee: `V_approx ≥ (1−ε)·V_opt`.
 
-### (1) Prove TU via Ghouila-Houri
+### (1) Prove TU via the three sufficient conditions (the lecture never names them — write all three out)
 
 1. Check all entries lie in `{−1, 0, +1}`.
 2. Check every column has at most 2 non-zeros; if not, the criterion is not directly applicable.
@@ -182,9 +182,9 @@ On the graphic matroid this is **Kruskal's MST algorithm**.
 
 - **TU:** `∀` square submatrices `S ⊆ A` : `det(S) ∈ {−1, 0, +1}`
 - **Cramer:** `x_i = det(A_i)/det(A)`, `A_i` = `A` with column `i` replaced by `b`
-- **Integrality:** `A` TU, `b ∈ ℤ^m` ⇒ `P = {x ∈ ℝ₊ⁿ : Ax ≤ b}` integral polyhedron
+- **Integrality:** `A` TU, `b ∈ ℤ^m` ⇒ `P = {x ∈ ℝ₊ⁿ : Ax ≤ b}` integral polyhedron = every VERTEX integral (equivalently `P` = conv of its integral points), NOT every point of `P` (2026 P1e)
 - **Closure:** `A` TU ⇒ `−A`, `Aᵀ`, `A⁻¹`, `[A, I]` TU; appending identity rows preserves TU
-- **Ghouila-Houri:** entries in `{−1,0,1}` ∧ ≤2 non-zeros per column ∧ `∃(M₁,M₂)`: same sign → different parts, different signs → same part
+- **Sufficient conditions (state all three):** entries in `{−1,0,1}` ∧ ≤2 non-zeros per column ∧ `∃(M₁,M₂)`: same sign → different parts, different signs → same part
 - **2×2 shortcut:** a 2×2 submatrix containing a 0 always has `det ∈ {−1,0,1}`
 
 **Matroids**

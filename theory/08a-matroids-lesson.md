@@ -136,9 +136,9 @@ Therefore `U₁` is a matroid. ∎
 **The key sentence is "the path is unique".** That collapses `I₁` into "all subsets of one fixed
 set", which makes every axiom trivial. Finding that observation *is* the question.
 
-> A set system of the form "all subsets of a fixed set `P`" is always a matroid. So is "all
-> subsets of `E` of size at most `k`". These are the **uniform matroids**, and they're your
-> go-to source of small examples.
+> A set system of the form "all subsets of a fixed set `P`" is always a matroid (the **free
+> matroid** on `P`). So is "all subsets of `E` of size at most `k`" — the **uniform matroid**.
+> Both are your go-to source of small examples.
 
 ---
 

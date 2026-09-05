@@ -84,7 +84,48 @@ Reading the order off a tree:
    fractional form:  f_0 − Σ_j f_j x_j ≤ 0
    ```
 
-To add to the tableau: introduce slack `x_{n+1} ≥ 0`, append the row with RHS `−f_0`, reoptimise with dual simplex.
+**Why ≤ 0 (validity):** for integer-feasible `x` the left side `x_B + Σ ⌊ā_j⌋ x_j − ⌊b̄⌋` is an integer, and by the split it equals `f_0 − Σ f_j x_j < 1` (`f_0 < 1`, `f_j ≥ 0`, `x_j ≥ 0`). An integer below 1 is at most 0.
+**Why it cuts:** at the current LP vertex all nonbasic `x_j = 0`, so the fractional form reads `f_0 ≤ 0` — false, since `b̄` was chosen fractional (`f_0 > 0`). The cut removes the fractional vertex but no integer point.
+
+To add to the tableau: rewrite the cut as `−Σ f_j x_j + x_{n+1} = −f_0` with slack `x_{n+1} ≥ 0`; append this row (coefficients **`−f_j`**, RHS `−f_0` — the NEGATED fractional parts). The tableau is now primal infeasible (negative RHS) but still dual feasible, so reoptimise with **dual simplex**.
+
+### Worked Gomory cut (endterm 2026 P5, 15cr)
+
+`max z = 5x₁ + 8x₂` s.t. `x₁ + x₂ + s₁ = 6`, `5x₁ + 9x₂ + s₂ = 45`, `x ∈ ℕ₀`. Optimal LP tableau (`s₁, s₂` nonbasic):
+
+```
+z :   0   0   5/4   3/4  │ 165/4
+x₁:   1   0   9/4  −1/4  │  9/4
+x₂:   0   1  −5/4   1/4  │ 15/4
+```
+
+1. Both basic variables fractional; take the `x₂` row: `x₂ − (5/4)s₁ + (1/4)s₂ = 15/4`.
+2. Split with the **floor** — `0 ≤ f < 1` always, also for negative coefficients:
+   - `−5/4 = −2 + 3/4` → `f₁ = 3/4`  (`⌊−5/4⌋ = −2`, so `f₁` is **not** `1/4` and never negative)
+   - `1/4 = 0 + 1/4` → `f₂ = 1/4`
+   - `15/4 = 3 + 3/4` → `f₀ = 3/4`
+3. Both forms:
+   ```
+   integer:      x₂ − 2s₁ + 0·s₂ − 3 ≤ 0
+   fractional:   3/4 − (3/4)s₁ − (1/4)s₂ ≤ 0   i.e.   (3/4)s₁ + (1/4)s₂ ≥ 3/4
+   ```
+4. Violation check: the LP optimum has `s₁ = s₂ = 0`, so the cut reads `0 ≥ 3/4` — violated, as required.
+5. Append `−(3/4)s₁ − (1/4)s₂ + s₃ = −3/4` with `s₃ ≥ 0` basic:
+   ```
+   z :   0   0   5/4   3/4    0  │ 165/4
+   x₁:   1   0   9/4  −1/4    0  │  9/4
+   x₂:   0   1  −5/4   1/4    0  │ 15/4
+   s₃:   0   0  −3/4  −1/4    1  │ −3/4
+   ```
+6. Dual simplex: leaving row `s₃` (only negative RHS); entering column by min ratio `|c̄_j / ā_rj|` over the row's **negative** entries: `s₁: (5/4)/(3/4) = 5/3` vs `s₂: (3/4)/(1/4) = 3` → `s₁` enters. Pivot on `−3/4`:
+   ```
+   z :   0   0   0   1/3   5/3  │ 40
+   x₁:   1   0   0  −1     3    │  0
+   x₂:   0   1   0   2/3  −5/3  │  5
+   s₁:   0   0   1   1/3  −4/3  │  1
+   ```
+   RHS ≥ 0, reduced costs ≥ 0 → optimal and **integral**: `x* = (0, 5)`, `z = 40`. One cut closed the gap from `165/4 = 41.25` to 40.
+7. In original variables (substitute `s₁ = 6 − x₁ − x₂`, `s₂ = 45 − 5x₁ − 9x₂`): the cut is `2x₁ + 3x₂ ≤ 15`.
 
 ### Express a cut in the original variables
 
@@ -97,6 +138,7 @@ To add to the tableau: introduce slack `x_{n+1} ≥ 0`, append the row with RHS 
 **Bounds and bracketing**
 
 - **Relaxation bound:** `max: OPT(IP) ≤ Z_LP` / `min: OPT(IP) ≥ Z_LP`
+- **Unbounded relaxation:** `Z_LP = +∞` ⇒ no pruning by bound at that node; only if integrality *alone* was dropped (rational data) does it imply the IP itself is infeasible or unbounded
 - **Bracketing (max):** `Z* ≤ OPT(IP) ≤ Z'`
 - **Prune by bound:** `max: Z_node ≤ Z*` / `min: Z_node ≥ Z*`
 - **Quality guarantee:** `k = Z'/Z* ⇒ k·Z* = Z' ≥ OPT(IP)`

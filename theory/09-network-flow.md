@@ -126,6 +126,7 @@ recover: f(e) = u(e) - f'(e')
 
 - **Weak duality:** `val(f) ≤ cap(S)` for every flow `f`, every cut `S`
 - **MFMC:** `max val(f) = min cap(S)`
+- **Integrality:** all `u(e)` integral ⇒ every residual capacity stays integral ⇒ every bottleneck `κ` is a positive integer ⇒ each augmentation raises `val(f)` by ≥ 1, so FF **terminates** and outputs a max flow with `f(e)` integral on every arc. (Irrational capacities: FF need not terminate.)
 
 **Min cut**
 

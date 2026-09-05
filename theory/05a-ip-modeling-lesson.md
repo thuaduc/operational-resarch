@@ -194,7 +194,7 @@ Everything the text *gives* you:
 n_i = capacity of dorm i     n = (100, 500, 400, 300, 50)
 c_i = cost of dorm i         c = (100, 400, 360, 275, 75)   in €k
 D   = 600                    students expected
-p   = 950                    penalty per unhoused student
+p   = 950                    penalty per unhoused student, in € (= 0.95 €k)
 ```
 
 ## Step 3 — Decision variables
@@ -226,15 +226,16 @@ s ≤ 600
 
 ## Step 5 — Objective
 
-Two costs: construction, and penalties for the `600 − s` unhoused students.
+Two costs: construction, and penalties for the `600 − s` unhoused students. Keep the units
+consistent: all money in €k, so the €950 penalty enters as 0.95.
 ```
-min  Σ_{i∈I} c_i y_i  +  950·(600 − s)
+min  Σ_{i∈I} c_i y_i  +  0.95·(600 − s)
 ```
 
 ## The finished model
 
 ```
-min   Σ_{i∈I} c_i y_i + 950(600 − s)
+min   Σ_{i∈I} c_i y_i + 0.95(600 − s)
 s.t.  s ≤ Σ_{i∈I} n_i y_i
       s ≤ 600
       y_i ∈ {0,1}    ∀i ∈ I
@@ -304,8 +305,10 @@ s.t.        2x₂ ≤ 7
 ```
 
 The LP's corner points are `(0, 3.5)`, `(2.375, 3.5)`, `(3.54, 1.95)`. The **only** feasible
-integer point in the whole region is `(2,3)` — and it is not the rounding of any of them. Round
-and you land outside the feasible region entirely.
+integer point in the whole region is `(2,3)`. Rounding each corner to the nearest integers gives
+`(0,4)`, `(2,4)`, `(4,2)` — all infeasible; of the four up/down roundings of the LP optimum
+`(2.375, 3.5)`, only `(2,3)` happens to be feasible, and nothing in the LP solution points you
+to it.
 
 The lecture's framing, worth reproducing in a multiple-choice justification:
 

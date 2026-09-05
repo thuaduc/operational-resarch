@@ -288,16 +288,21 @@ Step 1  Check x* is primal feasible. If it isn't, stop — you're done immediate
 
 Step 2  For each primal constraint that is SLACK, CS forces its yᵢ = 0.
 
-Step 3  For each xⱼ* ≠ 0, CS forces dual constraint j to be TIGHT (an equation).
-        Substitute the zeros from Step 2 and solve for the remaining yᵢ.
+Step 3  For EVERY xⱼ* ≠ 0, CS forces dual constraint j to be TIGHT (an equation) —
+        list them ALL, not just some. Substitute the zeros from Step 2 and solve.
+        Inconsistent system → no such y exists → x* is NOT optimal, done.
 
-Step 4  Check the recovered y against the dual's OTHER constraints and sign restrictions.
+Step 4  Check the recovered y against everything not yet used: the dual constraints
+        NOT forced tight in Step 3 (as inequalities) and the sign restrictions.
           • all satisfied  → x* IS optimal, and y is the dual optimum
           • any violation  → x* is NOT optimal
+        (A constraint forced tight in Step 3 must hold as an EQUALITY — never
+        downgrade it to a mere inequality check.)
 ```
 
-Step 4 is where the answer lives. Usually the recovered `y` violates a sign restriction
-(`y₂ ≤ 0` but you got `y₂ = 3`) or one of the dual constraints you didn't use.
+Step 4 is where the answer usually lives — a sign restriction violated (`y₂ ≤ 0` but you got
+`y₂ = 3`) or an unused dual constraint failing. But if the Step 3 system is already
+inconsistent, that alone is a complete refutation.
 
 **If you're given a dual point instead**, swap every role: check dual feasibility, slack dual
 constraints force `xⱼ = 0`, non-zero `yᵢ` force primal row `i` tight, solve, check primal.
@@ -354,21 +359,29 @@ Feasible. So we continue.
 Constraint 1 is slack (`7 < 10`), so CS forces **`y₁ = 0`**.
 
 **Step 3 — non-zero variables force dual constraints tight.**
-`x₂ = 2 ≠ 0` and `x₃ = 1 ≠ 0`, so dual constraints 2 and 3 must hold with equality:
+`x₁ = 2`, `x₂ = 2`, `x₃ = 1` are **all** non-zero, so CS forces **all three** dual
+constraints tight:
 ```
+ y₁ + 2y₂ + y₃ = 3
 2y₁ −  y₂ + y₃ = 2
  y₁ + 2y₂ − y₃ = 1
 ```
 Substitute `y₁ = 0`:
 ```
-−y₂ +  y₃ = 2
- 2y₂ − y₃ = 1
+2y₂ + y₃ = 3
+−y₂ + y₃ = 2
+2y₂ − y₃ = 1
 ```
-Add them: `y₂ = 3`. Then `y₃ = 2 + y₂ = 5`. So CS forces **`y = (0, 3, 5)ᵀ`**.
+Add the last two: `y₂ = 3`. Then `y₃ = 2 + y₂ = 5`. But the first equation then reads
+`2·3 + 5 = 11 ≠ 3` — the system is **inconsistent**. No `y` satisfies CS with `x`.
 
-**Step 4 — check dual feasibility.**
-The dual requires `y₂ ≤ 0` (constraint 2 of the primal was a `≥` row in a max problem —
-bizarre). But we derived `y₂ = 3 > 0`. **Contradiction.**
+**Step 4 — check everything not yet used.**
+Normally: the dual constraints not forced tight (as inequalities) plus the sign
+restrictions. Here Step 3 is already inconsistent, so the contradiction arrived one step
+early — an overdetermined tight system that is inconsistent is itself a complete
+refutation. (Alternatively: constraints 2 and 3 alone give `y = (0, 3, 5)ᵀ`, and
+`y₂ = 3 > 0` violates the sign restriction `y₂ ≤ 0` — the `≥` row was bizarre. Either
+contradiction works.)
 
 > Therefore no dual-feasible point satisfies complementary slackness with `x = (2,2,1)ᵀ`, so by
 > the complementary slackness theorem `x` is **not optimal**. ∎
@@ -386,7 +399,9 @@ Notice: the LP was never solved.
 3. **Wrong sign on a `≥` row in a max problem** — that's bizarre, so `y ≤ 0`, not `y ≥ 0`.
 4. **Saying "P infeasible ⇒ D unbounded".** It's "unbounded *or* infeasible".
 5. **Solving the LP in part (c).** You don't need to, and you'll run out of time.
-6. **Stopping at Step 3** without checking dual feasibility — Step 4 *is* the answer.
+6. **Stopping without a contradiction.** Step 3 must force a tight equation for *every*
+   non-zero `xⱼ` — an inconsistent system there already ends it; otherwise Step 4
+   (unused constraints + signs) *is* the answer. Never quit on a consistent Step 3.
 
 ## Before any past paper
 

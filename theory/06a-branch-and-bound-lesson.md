@@ -38,9 +38,13 @@ give the optimum, and state the FIFO and LIFO exploration orders.
 | Pruning rules, correct direction | all four | **highest** |
 | Tree reconstruction from a table | SS25 only | high — it's the most recent |
 | FIFO / LIFO ordering | **SS25 only** | moderate — cheap to learn, rarely asked |
+| Knapsack B&B (greedy-ratio nodes) + unbounded relaxations | endterm 2026 P4 | **high** — the newest paper, no plot given |
 
-**You never run simplex inside this question.** The problems are deliberately two-dimensional so
-that every subproblem is a picture. Bring your ruler — it's on the allowed list for exactly this.
+**You never run simplex inside this question.** In SS21–SS25 the problems were deliberately
+two-dimensional so that every subproblem is a picture — but endterm 2026 P4 (15cr) ran B&B on a
+**knapsack** (nodes solved by the greedy ratio rule, no plot) and asked what an **unbounded**
+relaxation gives you (→ Part 2). Prepare both node-solving modes. Bring your ruler anyway —
+it's on the allowed list for exactly this.
 
 ---
 
@@ -85,6 +89,21 @@ OPT(IP)  ≤  ⌊Z_LP⌋
 ```
 
 `Z_LP = 14.25` with integer coefficients means `OPT(IP) ≤ 14`. Occasionally worth a point.
+
+## When the relaxation is unbounded
+
+If the relaxation is **unbounded**, `Z_LP = +∞` and `OPT(IP) ≤ +∞` says nothing — no finite
+upper bound, so pruning by bound is impossible with it. Endterm 2026 P4a: relaxing a knapsack to
+**free** (sign-unrestricted) real variables makes it unbounded — push a free variable with
+positive weight to −∞ to manufacture unlimited capacity, then push a high-value variable to +∞.
+So `P_free` is useless for B&B, while the standard non-negative relaxation `P_≥0` stays bounded
+and supplies the valid finite upper bound.
+
+**Caution:** `P_free` relaxes *more* than integrality (it also drops `x ≥ 0`), and an
+over-relaxation being unbounded says nothing about the IP — its optimum there is finite. Only
+when integrality *alone* is dropped (rational data) does an unbounded LP relaxation imply the IP
+itself is infeasible or unbounded. The bound becomes informative again once constraints (sign
+restrictions, branching bounds) make the relaxation bounded.
 
 ---
 
@@ -372,8 +391,10 @@ artefact of the good solution sitting on the left branch. Worth a sentence if yo
 
 # Part 10 — Gomory cuts, briefly
 
-Cuts are the *other* way to handle fractional relaxations, and they show up as multiple-choice
-items rather than as a full question. What you need:
+Cuts are the *other* way to handle fractional relaxations, and they appear both as MC items and
+as a **full procedure question** — endterm 2026 P5 (15 cr) asked to derive a Gomory fractional
+cut from the tableau row of a fractional basic variable, show all intermediate calculations, and
+verify that the current LP optimum violates the cut. What you need:
 
 - A **valid inequality** holds for every integer-feasible point. Adding one never removes an
   integer solution.
@@ -386,8 +407,12 @@ items rather than as a full question. What you need:
 The MC trap: *"cutting planes remove integer solutions from the LP relaxation"* — **false**, by
 definition they never do.
 
-Deriving a Gomory cut is in [06](06-branch-and-bound-and-cuts.md) §Procedures. It has never been
-a full exam question; don't spend the afternoon on it.
+Deriving a Gomory cut is in [06](06-branch-and-bound-and-cuts.md) §Procedures, now with the
+endterm 2026 P5 tableau worked end to end. That paper made it a **full 15-credit question** —
+derive the cut from a named tableau row, show every floor/fraction split (`⌊−5/4⌋ = −2`, so
+`f = 3/4` — never negative), check the LP optimum violates it (nonbasic vars are 0, so the
+fractional form reads `f₀ ≤ 0` — false), and write the relaxation with the cut added. Drill the
+complete procedure until you can run it from a raw tableau, not just the MC facts.
 
 ---
 
@@ -431,7 +456,11 @@ From blank paper:
    by the greedy ratio rule rather than graphically. Useful second angle.
 3. `S6.1` *Branch-and-Bound* — `[EXAM]` third rep. Stop here if pruning feels solid.
 4. `T6.3` *Staff Scheduling* — `[DRILL]` an IP model; doubles as Day 1 revision.
-5. Skip `T6.2`, `S6.2`, `D6.2`, `D6.3` — all Gomory cuts, dropped.
+5. `T6.2`, `S6.2`, `D6.2`, `D6.3` — all Gomory cuts. Endterm 2026 P5 was a **full 15cr Gomory
+   procedure** from an optimal tableau: do at least two of these from a raw tableau, including
+   one row with a negative coefficient (`⌊−1/4⌋ = −1`, so `f = 3/4` — the classic slip), and
+   practice restating the cut in the original variables and appending the slack row for dual
+   simplex.
 
 Sheet 6 is `exercises/07-integer-programming-solution-methods/sheet-06-exercises.pdf`; the
 self-study section (S6.x) is in the second half of the same file.

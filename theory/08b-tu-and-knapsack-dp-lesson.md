@@ -26,6 +26,12 @@ A totally unimodular  +  b integral   ⟹   every vertex of {x ≥ 0 : Ax ≤ b}
 That sentence is the single most quoted fact from this chapter. It's why assignment and network
 flow are easy while GAP and bin packing are not.
 
+> **Careful (2026 P1e):** the theorem says the **vertices** are integral — simplex returns a
+> vertex, so it hands you an integral optimum. It does **not** say every feasible point is
+> integral: the feasible region is convex, so it still contains fractional points. One-line
+> counterexample: `A = [1]` is TU, `b = 1` is integral, yet `{x ≥ 0 : x ≤ 1} = [0,1]`
+> contains `x = 1/2`.
+
 ## The definition
 
 ```
@@ -224,9 +230,12 @@ cover and max independent set are not in APX at all** — no constant-factor app
 1. **Writing "by Ghouila-Houri".** Unnamed in the lecture — reproduce the three conditions.
 2. **Checking every `2×2`** instead of just the zero-free ones.
 3. **Forgetting "+ integral `b`"** in the integrality statement. TU alone isn't enough.
-4. **Choosing the wrong DP index.** Compare `W_max` against `V_max` and *say why*.
-5. **Not backtracking.** "Maximum value 6" is half the answer; the item set is the other half.
-6. **Calling knapsack DP polynomial.** It's *pseudo*polynomial.
+4. **Reading "integral polyhedron" as "all feasible points integral"** — tested verbatim as a
+   false MC option on endterm 2026 P1e. It means all VERTICES are integral; between two distinct
+   vertices lie uncountably many fractional feasible points, e.g. `1/2` in `[0,1]`.
+5. **Choosing the wrong DP index.** Compare `W_max` against `V_max` and *say why*.
+6. **Not backtracking.** "Maximum value 6" is half the answer; the item set is the other half.
+7. **Calling knapsack DP polynomial.** It's *pseudo*polynomial.
 
 ## Say these without looking
 

@@ -21,7 +21,7 @@
 **Perfect matching** — every vertex is incident to exactly one selected edge.
 Minimum-weight perfect matching on a general (non-bipartite) graph is solvable in polynomial time; the bipartite max-weight version is the assignment problem (Hungarian algorithm).
 
-**Approximation ratio `ρ`** — a **worst-case guarantee**: `ALG(I) ≤ ρ · OPT(I)` for *every* instance `I`. It says nothing about any single instance.
+**Approximation ratio `ρ`** — a **worst-case guarantee**: `ALG(I) ≤ ρ · OPT(I)` for *every* instance `I`. What it does **not** promise is that ALG is exactly `ρ` times worse — on a particular instance ALG may even be optimal. Consequence on any instance: an `r`-approximation returning cost `C` gives `C/r ≤ OPT ≤ C` (lower bound from the guarantee, upper bound because the returned tour is itself feasible). Example (endterm 2026 P1f): a 1.5-approximation returns 30 ⇒ `30/1.5 = 20 ≤ OPT ≤ 30`.
 
 **Spanning tree / MST** — subgraph that is a tree and touches all `n` nodes (`n−1` edges); MST = minimum total weight such tree.
 
@@ -62,6 +62,8 @@ Runtime `O(n²)`. No constant-factor approximation guarantee.
 
 Only valid under the triangle inequality (metric instances).
 
+**Why ratio 2:** `c(MST) ≤ OPT` (drop one edge of the optimal tour → a spanning tree, so the minimum spanning tree costs no more); the Euler tour on the doubled MST costs exactly `2·c(MST)`; shortcutting only shortens under the triangle inequality. Chain: `tour ≤ 2·c(MST) ≤ 2·OPT`.
+
 ### 5. Christofides' algorithm — ratio 3/2 (metric only)
 
 1. Compute the MST `T`.
@@ -69,6 +71,8 @@ Only valid under the triangle inequality (metric instances).
 3. Compute a minimum-weight perfect matching `M` on `O` using original edge costs.
 4. Combine `T ∪ M` into a multigraph (all degrees now even) and find an Eulerian cycle.
 5. Shortcut repeated vertices to get a Hamiltonian cycle.
+
+**Why ratio 3/2:** (i) `c(T) ≤ OPT` — deleting one edge of the optimal tour leaves a spanning tree, and the MST costs no more. (ii) `|O|` is even (handshake lemma: the degree sum of `T` is even), so a perfect matching on `O` exists in the complete graph. (iii) Shortcut the optimal tour to visit only the vertices of `O`: by the triangle inequality this even cycle on `O` costs `≤ OPT`, and its edges split alternately into two disjoint perfect matchings of `O`; the cheaper one costs `≤ OPT/2`, so the minimum-weight matching has `c(M) ≤ OPT/2`. (iv) The Euler tour of `T ∪ M` costs `c(T) + c(M) ≤ OPT + OPT/2`, and shortcutting never increases cost under the triangle inequality, so the final tour is `≤ (3/2)·OPT`.
 
 ### 6. NP-hardness of TSP: reduction HC ≤_p metric TSP
 
@@ -128,8 +132,8 @@ The often-quoted textbook form `u_i − u_j + n·x_ij ≤ n − 1` is the same f
 - **(c) Flow conservation (round trip) per agent:**
   - `Σ_{i≠j} x^k_ij = Σ_{i≠j} x^k_ji` for all `j ∈ V`, all `k ∈ {F, M}`
   - **Per-agent SEC:**
-    - `Σ_{i,j∈U_F, i≠j} x^F_ij ≤ |U_F| − 1` for all `U_F ⊆ V \ {D1}`
-    - `Σ_{i,j∈U_M, i≠j} x^M_ij ≤ |U_M| − 1` for all `U_M ⊆ V \ {D2}`
+    - `Σ_{i,j∈U_F, i≠j} x^F_ij ≤ |U_F| − 1` for all `U_F ⊆ V \ {D1}` with `2 ≤ |U_F|`
+    - `Σ_{i,j∈U_M, i≠j} x^M_ij ≤ |U_M| − 1` for all `U_M ⊆ V \ {D2}` with `2 ≤ |U_M|`
   - (or per-agent MTZ labels `u^F`, `u^M` with `u^k_{depot} = 1`)
 
 - **(d) Objective:**

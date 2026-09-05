@@ -128,8 +128,14 @@ s₂ :  (2·0 + 1·1) − 0  =  1      =  y₂
 
 ```
 b' ≥ 0        ⟺  FEASIBLE
-all Row0 ≥ 0  ⟺  OPTIMAL   (max problem)
+all Row0 ≥ 0  ⟹  OPTIMAL   (max problem; converse only guaranteed for a
+                            nondegenerate optimal basis)
 ```
+
+**Why:** substitute `x_B = B⁻¹b − B⁻¹N·x_N` into `z = cᵀx` and get
+`z(x) = z* − Σ_{j non-basic} Row0_j · x_j`. Feasible `x` have `x_j ≥ 0`, so if every
+`Row0_j ≥ 0` no feasible point beats `z*`. A negative `Row0_j` means each unit of `x_j`
+adds `−Row0_j` to `z` — that is why it enters, and why step 3 below takes the most negative.
 
 ---
 
@@ -204,7 +210,7 @@ The `c` clash bites: SS25 E6 says *"capacities `c(e) ∈ ℕ`"* while `theory/09
 ```
 c_B     = objective coefficients of the BASIC variables, in Basis-column order
 yᵀ      = c_Bᵀ B⁻¹                    shadow prices, one per constraint
-Row0_j  = yᵀa_j − c_j                  optimal ⟺ all ≥ 0  (max)
+Row0_j  = yᵀa_j − c_j                  all ≥ 0 ⟹ optimal (max); ⟸ needs nondegeneracy
 Row 0 under a basic column = 0
 Row 0 under slack sᵢ       = yᵢ
 b'      = B⁻¹b                         the plan; feasible ⟺ b' ≥ 0

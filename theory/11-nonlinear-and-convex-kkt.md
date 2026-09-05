@@ -138,9 +138,9 @@ L(x, λ, μ) = f(x) + Σᵢ λᵢ g_i(x) + Σⱼ μⱼ h_j(x)
 ### 5. Equality-constrained optimisation on a compact set
 
 1. Argue existence: feasible set is compact (Heine-Borel) and `f` is continuous, so extrema exist (Weierstrass).
-2. Check the constraint qualification: if the constraint is nonlinear, Slater does not apply; verify LICQ (`∇g ≠ 0` on the feasible set).
+2. Check the constraint qualification: if the constraint is nonlinear, Slater does not apply; verify LICQ (`∇h ≠ 0` on the feasible set).
 3. Write the Lagrangian, solve the stationarity conditions and the constraint equation simultaneously.
-4. Note that `λ` is unrestricted in sign for equality constraints.
+4. Note that `μ` is unrestricted in sign for equality constraints.
 5. Compare `f` at all candidates to identify the maximiser and minimiser (mandatory under LICQ).
 
 ### 6. Global-extrema strategy — the 4-step recipe
@@ -192,7 +192,7 @@ L(x, λ, μ) = f(x) + Σᵢ λᵢ g_i(x) + Σⱼ μⱼ h_j(x)
 
 - `∇f(x) = (∂f/∂x₁,…,∂f/∂xₙ)ᵀ`
 - `H_f(x) = (∂²f/∂xᵢ∂xⱼ)ᵢⱼ`
-- **Quadratic:** `f(x) = xᵀQx + bᵀx + c` implies `∇f = 2Qx + b`, `H_f = 2Q`
+- **Quadratic** (`Q` symmetric): `f(x) = xᵀQx + bᵀx + c` implies `∇f = 2Qx + b`, `H_f = 2Q` (non-symmetric `Q`: replace `2Q` by `Q + Qᵀ`, or symmetrise first)
 - `f` convex iff `Q ⪰ 0`
 
 **2x2 Definiteness:** `H = [[a,b],[b,d]]`, `det = ad − b²`, `tr = a + d`
@@ -222,7 +222,7 @@ L(x, λ, μ) = f(x) + Σᵢ λᵢ g_i(x) + Σⱼ μⱼ h_j(x)
 - **Min:** `L = f + Σᵢ λᵢ gᵢ + Σⱼ μⱼ hⱼ`
 - **Max:** `L = f − Σᵢ λᵢ gᵢ − Σⱼ μⱼ hⱼ`
 - **Equality only:** `∇f + μ∇h = 0`, `h = 0`, regularity: `∇h(x*) ≠ 0`
-- **Shadow price:** `λ* = ∂(optimal value)/∂b ≈ λ*` (small RHS change `b → b+Δ` shifts `f*` by `≈ λ*Δ`)
+- **Shadow price** (min form, perturbed constraint `g(x) ≤ b`, `L = f + λ(g − b)`): `λ* = −∂(optimal value)/∂b` — relaxing the RHS by `Δ > 0` lowers the optimal min value by `≈ λ*Δ` (inactive constraint: `λ* = 0`, no effect). Same magnitude/interpretation as Day 2's `yᵢ*`, but the sign flips because Day 2's LP is a max (there `∂z*/∂bᵢ = +yᵢ*`).
 
 **KKT** (min `f` s.t. `g ≤ 0`, `h = 0`):
 

@@ -22,17 +22,17 @@
 
 ### One simplex iteration (max, z-row = `−c`)
 1. **Optimality check.** All z-row entries `≥ 0` → stop, read `x*` from basic rows, `z*` from z-row Res.
-2. **Entering.** Pick the most negative z-row entry (column `j`).
-3. **Ratio test.** Over rows with `a_{ij} > 0` only, compute `bᵢ / a_{ij}`; pick the minimum. Ties → Bland: smallest index.
-4. No `a_{ij} > 0` at all → **unbounded**, stop.
+2. **Entering.** Pick the most negative z-row entry (column `j`). — *why:* entry `= −c̄_j`, so entry `< 0` ⇒ `c̄_j > 0` ⇒ `z = z_now + c̄_j·x_j` strictly increases per unit of `x_j`.
+3. **Ratio test.** Over rows with `a_{ij} > 0` only, compute `bᵢ / a_{ij}`; pick the minimum. Ties → Bland: smallest index. — *why:* each basic value becomes `bᵢ − a_{ij}·x_j`, so the min ratio is the largest step keeping every `bᵢ ≥ 0` (rows with `a_{ij} ≤ 0` impose no limit); the argmin row's variable hits 0 first and leaves.
+4. No `a_{ij} > 0` at all → **unbounded**, stop. — *why:* `bᵢ − a_{ij}·x_j ≥ bᵢ ≥ 0` for all `x_j ≥ 0`, so no basic value ever goes negative — a feasible ray along which `z = z_now + c̄_j·x_j → +∞`.
 5. **Pivot.** Divide row `i*` by the pivot element, then eliminate column `j` in all other rows (including z-row).
 6. **Relabel.** Row `i*` gets basis label `x_j`. Go to 1.
 
 
 ### Read a tableau — check order
 1. Every row owns a unit column and every Res. `≥ 0`? If not, fix or reject.
-2. Artificial in basis with Res. `> 0` → **infeasible**.
-3. Any z-row entry `< 0`? No → optimal. Yes → continue.
+2. Any z-row entry `< 0`? No → optimal. Yes → continue.
+3. Optimal (all z-row `≥ 0` in the phase-1 / big-M objective) AND an artificial still basic with Res. `> 0` → **infeasible**. An artificial basic at positive value in a NON-optimal tableau proves nothing yet — keep pivoting.
 4. For each negative z-row column: any `a_{ij} > 0`? No → **unbounded**. Yes → do ratio test.
 5. Any basic row with Res. `= 0` → **degenerate**.
 6. Optimal and a nonbasic column has z-row `= 0` → **multiple optima**; pivot to get second vertex.
@@ -80,7 +80,8 @@
 
 **Simplex Iteration**
 
-- **Enter:** `j = argmin_j (z-row)_j`, require `(z-row)_j < 0` (min-problem, z-row = +c: take argmax > 0)
+- **Enter:** `j = argmin_j (z-row)_j`, require `(z-row)_j < 0`
+- **Min problem, z-row = `+c`:** entries are the reduced costs `c̄_j` themselves — still enter at the most negative entry `< 0`, optimal when all `≥ 0` (same rule); the z-row Res then holds `−z`, negate it to read the min value. Only min with z-row = `−c` flips the signs: enter at the most positive entry `> 0`, optimal when all `≤ 0`. Safest: `min cᵀx = −max(−cᵀx)` (Conversions box), use the max rules throughout, negate `z*` at the end.
 - **Leave:** `i = argmin { b_i / a_ij : a_ij > 0 }` -- STRICTLY positive only
 - **Pivot:** `R_i ← R_i / a_ij`; `R_k ← R_k − a_kj · R_i` for all `k ≠ i` (incl. z-row)
 

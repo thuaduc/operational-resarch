@@ -170,7 +170,7 @@ The `∀k` and the *explicit range of k* are where the points are. Same shape fo
 
 ### 15. History / consecutive-past conditions
 
-**"grown on >50 ha in each of the two preceding years ⇒ may use good soil in t":**
+**"grown on ≤50 ha in each of the two preceding years ⇒ may use good soil in t" (i.e. >50 ha in *either* preceding year ⇒ no good soil in t):**
 
 - `950 A_{p,t} ≥ (x_{p,g,t} + x_{p,b,t}) − 50` `∀p ∈ P, t ∈ T`
 - `x_{p,g,t} ≤ 1000 (1 − A_{p,t−1})` `∀p ∈ P, t ∈ {2,…,15}`
@@ -181,6 +181,7 @@ The `∀k` and the *explicit range of k* are where the points are. Same shape fo
 - `1000 R_t ≥ x_{R,g,t} + x_{R,b,t}` `∀t ∈ T`
 - `x_{R,q,t} ≤ 1000 (3 − R_{t−3} − R_{t−2} − R_{t−1})` `∀q ∈ Q, t ∈ {4,…,15}`
 Pattern: `k − Σ(k past indicators)` is 0 exactly when all `k` fired.
+Contrast the two examples: separate `(1 − A)` rows per year ban as soon as **either** year fired (OR-trigger); the combined `k − Σ` row bans only when **all** `k` fired (AND-trigger).
 
 ### 16. Start-up / changeover detection
 
@@ -222,9 +223,9 @@ General shape: `Σ(premise binaries) − (#premises − 1) ≤ Σ(conclusion bin
 ### 20. Piecewise-linear cost / volume discount
 
 - **Split the variable:** `x = x_L + x_H`
-- `x_L ≤ B · z` (B = breakpoint)
+- `x_L ≤ B` (B = breakpoint — cap is unconditional, else 0 < x < B is infeasible)
 - `x_H ≤ M · z` (high tier only above the breakpoint)
-- `x_L ≥ B · z`
+- `x_L ≥ B · z` (z = 1 forces the low tier full before the high tier opens)
 - **Cost:** `c_L x_L + c_H x_H`
 
 Exam variant (Dutch Petroleum, price 1.8 below 10 000 l and 1.6 above), modelled with a cost variable `c ≥ 0`:

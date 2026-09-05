@@ -105,6 +105,20 @@ Three lines. Note the last step is doing real work — you must say **why** the 
 off, namely that `λ` and `1−λ` are non-negative because `λ ∈ [0,1]`. Skipping that is the usual
 mark lost.
 
+Second from-definition rep — a *different* chain (no triangle inequality; per-coordinate
+bounding instead). **This was 2026 P7d verbatim**, and citing the Route C max-rule would not
+earn the from-definition marks:
+
+> **Claim.** `f(x) = max(x₁, x₂)` is convex on `ℝ²`.
+>
+> **Proof.** Let `x, y ∈ ℝ²`, `λ ∈ [0,1]`, and `z = λx + (1−λ)y`. For each coordinate `j ∈ {1,2}`:
+> ```
+> zⱼ = λxⱼ + (1−λ)yⱼ  ≤  λ·max(x₁,x₂) + (1−λ)·max(y₁,y₂)
+> ```
+> since `xⱼ ≤ max(x₁,x₂)`, `yⱼ ≤ max(y₁,y₂)` and `λ, 1−λ ≥ 0`. The bound holds for **both** `j`
+> and the right side doesn't depend on `j`, so taking the max over `j` on the left preserves it:
+> `f(z) = maxⱼ zⱼ ≤ λf(x) + (1−λ)f(y)`. ∎
+
 ## Route B — the Hessian (the computational route)
 
 On a **convex domain**:
@@ -188,8 +202,10 @@ the penalty `λᵢgᵢ` must *increase* the objective you're minimising — so `
 equality can be violated in either direction, so its multiplier needs both signs available.
 
 This is exactly the SOB pattern from LP duality: `≤` rows get sign-restricted duals, `=` rows get
-free ones. **`λ` is a shadow price** — `λ* ≈ ∂(optimal value)/∂b`, the same interpretation as
-`yᵢ*` on Day 2.
+free ones. **`λ` is a shadow price** in magnitude, like `yᵢ*` on Day 2 — but here we minimise, so
+`λ* = −∂(optimal value)/∂bᵢ`: relaxing constraint `i`'s RHS by `Δ` improves (lowers) `f*` by
+`≈ λᵢ*Δ`, while on Day 2's max LP relaxing a resource *raises* `z*` by `yᵢ*Δ`. Same price,
+opposite sign, because a min improves downward.
 
 For a **max** problem the convention flips to `L = f − Σλᵢgᵢ − Σμⱼhⱼ`. Simpler: convert to a min
 and never worry about it.
@@ -257,6 +273,35 @@ With `m` inequalities that's up to `2ᵐ` cases — but most collapse instantly.
 ```
 
 Step 6 is where most cases die, and **saying why you discarded each one is worth marks**.
+
+## Worked mini-example — both branches, end to end
+
+Same shape as SS24 P7b / T10.3 (single linear constraint; 2026 P7's 22cr block asked for
+exactly this kind of case analysis):
+
+> `min (x−2)² + (y−2)²  s.t.  x + y − 2 ≤ 0`
+
+`L = (x−2)² + (y−2)² + λ(x + y − 2)`, with blocks: stationarity `2(x−2)+λ = 0`, `2(y−2)+λ = 0`;
+primal `x+y−2 ≤ 0`; dual `λ ≥ 0`; CS `λ(x+y−2) = 0`.
+
+```
+Case 1  (λ = 0, inactive):  ∇f = 0 ⟹ (x,y) = (2,2).  But g = 2+2−2 = 2 > 0.
+                            DISCARD — primal infeasible (the slack case violated g ≤ 0).
+
+Case 2  (x + y = 2, active): stationarity ⟹ x = y = 2 − λ/2; into the constraint:
+                            4 − λ = 2 ⟹ λ = 2 ≥ 0 ✓ dual feasible.  KEEP.
+                            Point (1,1), λ* = 2, f = 2.
+```
+
+(The mirror discard is `λ < 0` in an active case — cite **dual** feasibility there.)
+
+**Globality:** `f` convex (`H = 2I ≻ 0`), `g` affine; `x̄ = (0,0)` has `g(x̄) = −2 < 0` strictly
+⟹ **Slater** ⟹ `(1,1)` is the global minimum, no comparison step.
+
+**Shadow-price check** (Part 4's sign): relax to `x + y ≤ 2 + Δ` ⟹ `f* = (2−Δ)²/2`, so
+`∂f*/∂Δ = −2 = −λ*` at `Δ = 0`. ✓
+
+For a **max** problem (T10.3's shape), convert `max f → min −f` *first*, then run the same split.
 
 ## Shortcuts that kill cases fast
 

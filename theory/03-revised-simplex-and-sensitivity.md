@@ -39,7 +39,7 @@ so for a **max** problem the tableau is **optimal ⟺ every Row-0 entry ≥ 0**,
 2. Compute `B⁻¹`, `b' = B⁻¹b`, `N' = B⁻¹N`, `c'_N = −(c_N − N'ᵀc_B)`.
 3. `c'_N ≥ 0` → optimal, stop.
 4. **Entering:** most negative `c'_k`.
-5. Compute `d = B⁻¹a_j`. If `d ≤ 0` → **unbounded**, stop.
+5. Compute `d = B⁻¹a_k` (the entering column). If `d ≤ 0` → **unbounded**, stop.
 6. **Leaving:** `argmin{ b'_i / d_i : d_i > 0 }`.
 7. Swap entering/leaving in `B` and `N`. Go to 2.
 

@@ -203,6 +203,26 @@ Ford-Fulkerson   O(|E| · U)     pseudopolynomial — depends on capacity size
 Edmonds-Karp     O(V · E²)      polynomial
 ```
 
+## Integrality — and why the algorithm stops at all
+
+**Integrality theorem.** If every capacity `u(e)` is an integer:
+
+```
+u integral, start f = 0 (integral)
+  ⟹  every residual capacity  u−f  and  f  stays integral
+  ⟹  every bottleneck κ is a positive INTEGER, i.e. κ ≥ 1
+  ⟹  each augmentation raises val(f) by ≥ 1
+  ⟹  FF terminates (val(f) ≤ cap(S) is a finite bound)
+      and its max flow has f(e) integral on EVERY arc.
+```
+
+This chain is simultaneously the **termination proof** for Ford-Fulkerson — with irrational
+capacities FF need not terminate at all — and the reason the `O(|E| · U)` bound holds.
+
+**Endterm 2026 P6 (17 cr) asked for exactly this argument.** Write the chain, not just the
+conclusion: "integral capacities ⇒ integral residual capacities ⇒ integral κ ≥ 1 per
+augmentation ⇒ an integral maximum flow exists."
+
 ## Reading off the minimum cut when you finish
 
 The algorithm hands you the min cut for free:
@@ -217,8 +237,9 @@ The algorithm hands you the min cut for free:
 Step 4 is a free correctness check. Use it every time.
 
 Why it works: if no augmenting path exists, `t` is unreachable, so `t ∉ X` — it's a genuine cut.
-And every arc leaving `X` must be *saturated* (else it would still be in the residual network and
-extend `X`), so the cut's capacity equals the flow crossing it.
+Every arc leaving `X` must be *saturated* (else its residual forward arc would extend `X`), **and**
+every arc entering `X` must carry zero flow (else its residual backward arc would point out of `X`
+and extend it). Hence `val(f)` = forward flow − backward flow = `cap(S) − 0 = cap(S)`.
 
 ---
 

@@ -1,17 +1,18 @@
 # Operations Research — theory index
 
-Eleven cheat sheets distilled from the lecture decks and the central-exercise theory recaps,
-pruned to what the past papers actually test. Every file has the same six sections:
+Eleven core cheat sheets plus eleven companions (one reference card, ten lessons), distilled
+from the lecture decks and the central-exercise theory recaps, pruned to what the past papers
+actually test. Every core sheet has the same three sections:
 
-**Definitions** · **Procedures** · **Formula box** · **Traps** · **True/false facts**
+**Definitions** · **Procedures** · **Formula box**
 
 - **Procedures** = the step-lists you execute under time pressure. Drill these.
-- **True/false facts** = your multiple-choice prep. SS24 and SS25 open with 14–16 points of it; across all eleven files that's ~120 pre-written statements.
-- **Formula box + Traps** = the Day-14 read. Nothing else on the last day.
+- Multiple-choice prep = `mc-question-bank.md` + `mc-answers.md` at the repo root. SS24 and SS25 open with 14–16 points of it.
+- **Formula boxes + the lessons' "Traps and drills" sections** = the Day-14 read. Nothing else on the last day.
 
 ---
 
-## The eleven files
+## The files — 11 core + 11 companions
 
 | # | File | Topic |
 |---|---|---|
@@ -68,24 +69,25 @@ Out loud, without notes:
 3. The SOB primal→dual table (max/min × ≤/≥/= × free/≥0).
 4. Complementary slackness, both directions.
 5. B&B pruning rules — for **max** and for **min**.
-6. TU + integral `b` ⇒ integral polyhedron ⇒ IP in P.
-7. Knapsack DP: `O(nW)` vs `O(nV)` — run whichever bound is smaller.
-8. Matroid axioms; all bases are equicardinal.
-9. Max-flow = min-cut; cut capacity counts **forward** arcs only.
-10. Subtour elimination: SEC (exponential, tight) vs MTZ (polynomial, weak).
-11. Christofides = **3/2** with odd-degree matching; MST-doubling = **2**. Both need the triangle inequality.
-12. Hessian classification, and the eigenvalue fallback when leading principal minors are inconclusive.
-13. KKT's four blocks; Slater ⇒ KKT ⟺ global; LICQ ⇒ candidates only.
+6. Gomory fractional cut: pick a source row whose RHS `b̄ᵢ` is fractional; the cut is `Σⱼ frac(āᵢⱼ)·xⱼ ≥ frac(b̄ᵢ)` over the nonbasic columns. Round the source row down, use integrality; it cuts off the current fractional optimum because there every nonbasic `xⱼ = 0` while `frac(b̄ᵢ) > 0`. (Endterm-2026 P5: `x₂` row gives `¾s₁ + ¼s₂ ≥ ¾`, violated by `s₁ = s₂ = 0`.)
+7. TU + integral `b` ⇒ integral polyhedron ⇒ IP in P.
+8. Knapsack DP: `O(nW)` vs `O(nV)` — run whichever bound is smaller.
+9. Matroid axioms; all bases are equicardinal.
+10. Max-flow = min-cut; cut capacity counts **forward** arcs only.
+11. Subtour elimination: SEC (exponential, tight) vs MTZ (polynomial, weak).
+12. Christofides = **3/2** with odd-degree matching; MST-doubling = **2**. Both need the triangle inequality.
+13. Hessian classification, and the eigenvalue fallback when leading principal minors are inconclusive.
+14. KKT's four blocks; Slater ⇒ KKT ⟺ global; LICQ ⇒ candidates only.
 
 ---
 
 ## Three errors in the source material
 
-Verified, and flagged in the relevant files:
+Verified. Where each warning actually lives:
 
-1. **Midterm SS26 P2d** gives `{λ₁n₁+λ₂n₂ : λᵢ>0}` as the `c` making the LP *unbounded*. That cone is exactly where it is **bounded** — `c=(−1,−1)` is inside it and bounded; `c=(1,1)` is unbounded and outside it. → `01` Traps.
-2. **ce-09-demo D9.1** calls MST-doubling "Christofides' 2-approximation". Christofides is the 3/2 algorithm with the odd-degree matching. If an exam phrases it their way, **execute MST-doubling** — that is what gets graded. → `10` Traps #1.
-3. **The TU sufficient condition is never named in the lecture.** Reproduce the three numbered conditions; citing "Ghouila-Houri" earns nothing. → `08`.
+1. **Midterm SS26 P2d** gives `{λ₁n₁+λ₂n₂ : λᵢ>0}` as the `c` making the LP *unbounded*. That cone is exactly where it is **bounded** — `c=(−1,−1)` is inside it and bounded; `c=(1,1)` is unbounded and outside it. → flagged **only here**; `01` carries no note on it.
+2. **ce-09-demo D9.1** calls MST-doubling "Christofides' 2-approximation". Christofides is the 3/2 algorithm with the odd-degree matching. If an exam phrases it their way, **execute MST-doubling** — that is what gets graded. → `10a` "The correction you must carry in" + Traps #3.
+3. **The TU sufficient condition is never named in the lecture.** Reproduce the three numbered conditions; citing "Ghouila-Houri" earns nothing. → `08b` boxed warning + Traps #1; `08`'s Procedures header (1) now states the same warning inline and lists all three conditions.
 
 ---
 

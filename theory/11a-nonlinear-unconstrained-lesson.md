@@ -254,6 +254,13 @@ solving, and "no maxima exist" is itself part of the answer to "find all local e
 The reverse implication is false: `f(x) = x⁴` is strictly convex but `f''(0) = 0`. So
 `H ≻ 0 ⟹ strictly convex`, not `⟺`.
 
+**Warning (MC trap — 2026 P1g):** strictly convex does **NOT** imply a minimum exists.
+`f(x) = eˣ` is strictly convex (`f'' = eˣ > 0` everywhere) yet has no critical point and no
+minimizer — `inf f = 0` is never attained. Strict convexity gives *uniqueness IF a minimum
+exists*; existence needs a separate argument (compact domain + Weierstrass, or a critical point
+actually found). The true half, also tested there: a stationary point of a convex `f` **is** a
+global minimum.
+
 ---
 
 # Part 7 — Worked example: SS24 P7a

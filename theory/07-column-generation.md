@@ -8,6 +8,8 @@ s.t. Σ_{j∈Γ} a_ij x_j ≥ b_i    ∀i = 1..m
      x_j ∈ ℕ₀
 ```
 
+CG operates on the **LP relaxation** of this master: replace `x_j ∈ ℕ₀` by `x_j ≥ 0`. Everything below (duals, reduced costs, termination) refers to this LP.
+
 Advantage: **strong LP relaxation** (the naive bin-packing/assignment model `Σ_i ℓ_i y_ij ≤ L x_j` has a terrible bound). Disadvantage: `|Γ| = n` is astronomically large.
 
 **Restricted master problem (RMP).** The master LP with only a subset of columns kept in memory (an initial feasible basis plus whatever CG has generated). Everything else is treated as non-basic and never written down.
@@ -27,7 +29,7 @@ Advantage: **strong LP relaxation** (the naive bin-packing/assignment model `Σ_
 1. **Solve the RMP** with the current column subset; read off basis `B` and `c_B`.
 2. **Compute duals:** `π^T = c_B^T B⁻¹`.
 3. **Solve the pricing problem:** `max_a { π^T a − c_a : a valid }`.
-4. **Check optimum:** if `≤ 0` → stop, current solution is optimal; if `> 0`, `a*` enters the basis.
+4. **Check optimum:** if `≤ 0` → stop, the RMP solution is optimal for the LP relaxation of the full master (not yet integral in general); if `> 0`, `a*` enters the basis.
 5. **Min-ratio test:** compute `b' = B⁻¹b` and `N' = B⁻¹a*`; the leaving variable is `argmin_k { b'_k / N'_k : N'_k > 0 }`. Update `B`, `c_B`, repeat.
 
 ### Formulating a pricing problem
@@ -35,6 +37,22 @@ Advantage: **strong LP relaxation** (the naive bin-packing/assignment model `Σ_
 1. **Define what a column represents** and name the decision variables.
 2. **Write the validity constraints** that make a column admissible in the master.
 3. **Set the objective** to `max Σ_i π_i y_i − c_y`. If multiple resource types exist, write one pricing IP per type and take the best.
+
+### Cutting stock instantiation
+
+- **Valid pattern:** `a ∈ ℕ₀^m` with `Σ_i ℓ_i a_i ≤ L` (the pieces fit on one roll of length `L`).
+- **Cost:** `c_j = 1` for every pattern (each use = one roll), so the master is `min Σ_j x_j` = number of rolls.
+- **Pricing problem** (duals `π` from the RMP): an **integer knapsack**, solvable by DP over capacity `L`:
+
+```
+max  Σ_i π_i y_i
+s.t. Σ_i ℓ_i y_i ≤ L
+     y_i ∈ ℕ₀
+```
+
+- **Improvement test:** new pattern improves iff knapsack optimum `> 1` (i.e. `c̄_a = 1 − π^T a < 0`; the generic `z* = π^T a − c_a > 0` with `c_a = 1`).
+
+**Mini-example.** `L = 10`, `ℓ = (3, 5, 6)`. Start with the singleton patterns `(3,0,0)`, `(0,2,0)`, `(0,0,1)` (`⌊L/ℓ_i⌋` pieces of one type each). Then `B = diag(3,2,1)`, `π^T = c_B^T B⁻¹ = (1/3, 1/2, 1)`. Pricing knapsack: best is `y = (1,0,1)` (length `3+6 = 9 ≤ 10`) with value `1/3 + 1 = 4/3 > 1` ⇒ pattern `(1,0,1)` enters, `c̄ = 1 − 4/3 = −1/3`.
 
 ### When is CG worth it
 
@@ -54,7 +72,7 @@ CG pays off when `#columns ≫ #rows`. Count `n = |Γ|` combinatorially and comp
 
 **Termination test**
 
-- `z* ≤ 0` ⇒ RMP optimum = full-master optimum
+- `z* ≤ 0` ⇒ every column has `c̄_j = c_j − π^T a_j ≥ 0` ⇒ RMP optimum is optimal for the **LP relaxation** of the FULL master — a lower bound on the integer master; recover integrality by rounding or branch-and-price
 - `z* > 0` ⇒ `a*` enters the basis
 
 **Leaving variable**
