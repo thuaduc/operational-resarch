@@ -1,831 +1,623 @@
-# IP Modelling — from scratch
+# IP modelling
 
-Teaching companion to [05-ip-modeling](05-ip-modeling.md). That file is the exhaustive catalogue for lookup. **This file assumes you know nothing** and builds up to the exam questions.
+Companion to [05-ip-modeling](05-ip-modeling.md), which has the full catalogue of patterns.
 
-Exam slot **E4**, worth **21–35 points** — the largest single block on every past paper.
-
-Work through Parts 0–3 in order. Part 4 onward is the exam material proper.
+Exam slot E4/P2, 21–35 points, the largest block on every paper. Parts 0–3 are the basics; Part 4 onward is exam material.
 
 ---
 
-# Part 0 — The vocabulary
+# Part 0: Vocabulary
 
-An **integer program** is four things:
+$$
+\begin{aligned}
+\min\quad & 40x_1 + 25x_2 && \text{objective} \\
+\text{s.t.}\quad & x_1 + x_2 \ge 3 && \text{constraints} \\
+& 2x_1 + 5x_2 \le 12 \\
+& x_1, x_2 \in \mathbb{N}_0 && \text{domains}
+\end{aligned}
+$$
 
-```
-min  40x₁ + 25x₂            ← OBJECTIVE   
-s.t. x₁ + x₂ ≥ 3            ← CONSTRAINTS
-     2x₁ + 5x₂ ≤ 12
-     x₁, x₂ ∈ ℕ₀            ← DOMAINS
-```
+- A **variable** is chosen by the solver ($x_1, x_2$).
+- A **parameter** is given in the text (40, 25, 3, 12).
+- A **feasible solution** satisfies every constraint; an **optimal solution** is the best feasible one.
 
-- A **variable** is a number the solver gets to choose. `x₁` and `x₂` here.
-- A **parameter** is a number *given to you* in the problem text. The `40`, `25`, `3`, `12`.
-  You never solve for a parameter.
-- A **feasible solution** is any assignment of the variables that satisfies every constraint.
-- An **optimal solution** is the feasible one with the best objective value.
+Modelling means translating the text into these blocks. You are never asked to solve the model.
 
-**"Modelling" means translating a paragraph of English into those four blocks.** That is the
-entire E4 task. You are never asked to *solve* the model — only to write it down correctly.
-
-The one thing that makes it an *integer* program is the domain line: variables restricted to
-whole numbers (`∈ ℕ₀`, `∈ ℤ`) or to `{0,1}`.
+What makes it an integer program is the domain: variables in $\mathbb{N}_0$, $\mathbb{Z}$ or $\{0,1\}$.
 
 ---
 
-# Part 1 — Binary variables: the counting trick
+# Part 1: Binary variables
 
-A **binary variable** takes only the values 0 or 1. It encodes a yes/no decision:
+$$y_i \in \{0,1\} \qquad y_i = 1: \text{build school } i; \quad y_i = 0: \text{do not}$$
 
-```
-y_i ∈ {0,1}      y_i = 1  means "we build school i"
-                 y_i = 0  means "we don't"
-```
+Write $\in \{0,1\}$, not $0 \le y \le 1$, which would allow building 40% of a school.
 
-There is no third option. This is why we write `∈ {0,1}` and not `0 ≤ y ≤ 1` — the latter would
-allow `y = 0.4`, "build 40% of a school", which is meaningless.
+## Sums of binaries count
 
-## Why sums of binaries count things
+With $y_1,\dots,y_5 \in \{0,1\}$ for five dorms, $y_1 + \dots + y_5$ is the number built.
 
-Suppose `y₁, y₂, y₃, y₄, y₅ ∈ {0,1}` say which of five dorms get built. Then:
-
-```
-y₁ + y₂ + y₃ + y₄ + y₅
-```
-
-Each term contributes 1 if built and 0 if not. **So the sum is literally the number built.**
-That gives you counting constraints for free:
-
-| English | Constraint |
+| Requirement | Constraint |
 |---|---|
-| build at most 3 | `y₁+y₂+y₃+y₄+y₅ ≤ 3` |
-| build exactly 3 | `y₁+y₂+y₃+y₄+y₅ = 3` |
-| build at least 1 | `y₁+y₂+y₃+y₄+y₅ ≥ 1` |
-| build at most one of 2 and 3 | `y₂ + y₃ ≤ 1` |
+| build at most 3 | $y_1+y_2+y_3+y_4+y_5 \le 3$ |
+| build exactly 3 | $y_1+y_2+y_3+y_4+y_5 = 3$ |
+| build at least 1 | $y_1+y_2+y_3+y_4+y_5 \ge 1$ |
+| at most one of 2 and 3 | $y_2 + y_3 \le 1$ |
 
-## Why sums of binaries × parameters total things
+## Parameter × binary totals
 
-Now attach a cost `c_i` to each dorm. Then:
+With a cost $c_i$ per dorm, $\sum_i c_i y_i$ is the total cost of what is built.
 
-```
-c₁y₁ + c₂y₂ + c₃y₃ + c₄y₄ + c₅y₅
-```
-
-Each term is either `c_i` (if built) or `0`. **So the sum is the total cost of what you built.**
-
-That's the whole mechanism. A binary variable multiplied by a parameter is a switch: the
-parameter counts, or it doesn't.
-
-| English | Constraint |
+| Requirement | Constraint |
 |---|---|
-| total cost at most €450k | `Σᵢ cᵢyᵢ ≤ 450` |
-| total capacity at least 600 | `Σᵢ nᵢyᵢ ≥ 600` |
-
-**Everything else in this file is a variation on these two ideas.** Stop and make sure they feel
-obvious before continuing.
+| total cost at most €450k | $\sum_i c_i y_i \le 450$ |
+| total capacity at least 600 | $\sum_i n_i y_i \ge 600$ |
 
 ---
 
-# Part 2 — Summation notation, properly
+# Part 2: Summation notation
 
-This is where most people lose points, so go slowly.
+## Two indices form a grid
 
-## Two indices means a grid
+$$x_{i,j} \in \{0,1\} \qquad = 1 \text{ if student } j \text{ is assigned to school } i$$
 
-When a decision involves a *pair* of things — student `j` assigned to school `i` — you need a
-variable with two indices:
+| | student 1 | student 2 |
+|---|---|---|
+| school 1 | $x_{1,1}$ | $x_{1,2}$ |
+| school 2 | $x_{2,1}$ | $x_{2,2}$ |
+| school 3 | $x_{3,1}$ | $x_{3,2}$ |
 
-```
-x_{i,j} ∈ {0,1}      = 1 if student j is assigned to school i
-```
+- $\sum_i x_{i,j}$: fix a student, sum down the column. How many schools student $j$ is assigned to.
+- $\sum_j x_{i,j}$: fix a school, sum along the row. How many students school $i$ has.
 
-Picture it as a **grid**: schools down the side, students across the top. With 3 schools and 2 students:
+## Free and bound indices
 
-```
-              student 1   student 2
-school 1        x₁,₁        x₁,₂
-school 2        x₂,₁        x₂,₂
-school 3        x₃,₁        x₃,₂
-```
+$$\sum_{i\in I} x_{i,j} = 1 \qquad \forall j \in J$$
 
-Now the two summations mean two different things:
+- $i$ is bound (summed over).
+- $j$ is free, so it needs $\forall j \in J$.
 
-- **`Σᵢ x_{i,j}`** — fix a student, add down that student's **column**. = "how many schools is
-  student `j` assigned to?"
-- **`Σⱼ x_{i,j}`** — fix a school, add across that school's **row**. = "how many students does
-  school `i` have?"
+Every index that appears but is not summed over needs a $\forall$. A missing $\forall$ costs the point.
 
-Whenever you're unsure which sum to write, draw the grid and ask: *am I adding a row or a column?*
+## What ∀ produces
 
-## Free indices and bound indices
+$\forall$ makes one copy of the constraint per index value. With $I = \{1,2,3\}$, $J = \{1,2\}$:
 
-Take:
-```
-Σ_{i∈I} x_{i,j} = 1        ∀j ∈ J
-```
+$$
+\begin{aligned}
+& \sum_{i\in I} x_{i,j} = 1 \quad \forall j \in J \\
+j=1:\quad & x_{1,1} + x_{2,1} + x_{3,1} = 1 \\
+j=2:\quad & x_{1,2} + x_{2,2} + x_{3,2} = 1
+\end{aligned}
+$$
+Each student is assigned to exactly one school.
 
-- `i` is **bound** — it's the summation index. It gets used up by the sum and does not appear in
-  the result.
-- `j` is **free** — it appears but is not summed over. So it must be quantified with `∀j ∈ J`.
+$$
+\begin{aligned}
+& \sum_{j\in J} x_{i,j} \le 1 \quad \forall i \in I \\
+i=1:\quad & x_{1,1} + x_{1,2} \le 1 \\
+i=2:\quad & x_{2,1} + x_{2,2} \le 1 \\
+i=3:\quad & x_{3,1} + x_{3,2} \le 1
+\end{aligned}
+$$
+Each school gets at most one student.
 
-**The rule: every index that appears in a constraint but is not summed over must carry a `∀`.**
-Forget the `∀` and you lose the point, every time.
+## Rule
 
-## What `∀` actually produces
+Sum over what you are counting; quantify over what you are counting it for.
 
-`∀` does not mean "for all" in a vague sense. It means **make one copy of this constraint per
-value of the index.** With `I = {1,2,3}` and `J = {1,2}`:
+"Each student must be assigned to exactly one school": count schools (sum over $i$) for each student ($\forall j$): $\sum_{i\in I} x_{i,j} = 1 \; \forall j \in J$.
 
-```
-Σ_{i∈I} x_{i,j} = 1   ∀j ∈ J
-
-expands to TWO constraints:
-    j=1:   x₁,₁ + x₂,₁ + x₃,₁ = 1
-    j=2:   x₁,₂ + x₂,₂ + x₃,₂ = 1
-```
-
-Each says: *this student's column adds to 1* — assigned to exactly one school. Correct.
-
-Compare, swapping the roles:
-```
-Σ_{j∈J} x_{i,j} ≤ 1   ∀i ∈ I
-
-expands to THREE constraints:
-    i=1:   x₁,₁ + x₁,₂ ≤ 1
-    i=2:   x₂,₁ + x₂,₂ ≤ 1
-    i=3:   x₃,₁ + x₃,₂ ≤ 1
-```
-
-Each says: *this school's row adds to at most 1* — no school gets more than one student.
-Completely different meaning.
-
-## The recipe
-
-> **Sum over the thing you are counting. Quantify over the thing you are counting *for*.**
-
-"Each student must be assigned to exactly one school" — you're counting *schools*, for each
-*student*. So sum over `i` (schools), quantify over `j` (students):
-`Σ_{i∈I} x_{i,j} = 1 ∀j ∈ J`. ✓
-
-If you ever write a constraint and can't say how many copies it expands into, you've made a
-mistake. Check it.
+You should always be able to say how many copies a constraint expands into.
 
 ---
 
-# Part 3 — Your first model, built from nothing
+# Part 3: A first model
 
-The lecture's own example. Read the paragraph, then build it line by line.
+> TUM is opening a new campus. Five dormitories can be built, with 100, 500, 400, 300 and 50 places. Construction costs are €100k, €400k, €360k, €275k, €75k. 600 students are expected. For each student who does not get a place, the city pays €950. Minimise total cost.
 
-> TUM is opening a new campus. Five dormitories can be built, with 100, 500, 400, 300 and 50
-> places. Construction costs are €100k, €400k, €360k, €275k, €75k. 600 students are expected.
-> For each student who does **not** get a place, the city pays €950. Minimise total cost.
+**Index set:**
+$$I = \{1,2,3,4,5\} \qquad \text{dormitories}$$
 
-## Step 1 — Index sets
+**Parameters:**
+$$
+\begin{aligned}
+n_i &= \text{capacity of dorm } i && n = (100, 500, 400, 300, 50) \\
+c_i &= \text{cost of dorm } i && c = (100, 400, 360, 275, 75) \text{ in €k} \\
+D &= 600 && \text{students expected} \\
+p &= 950 && \text{penalty per unhoused student, € } (= 0.95 \text{ €k})
+\end{aligned}
+$$
 
-There is one family of things: dormitories.
-```
-I = {1,2,3,4,5}        set of possible dormitories
-```
+**Variables:**
+$$
+\begin{aligned}
+y_i &\in \{0,1\} && = 1 \text{ if dorm } i \text{ is built} \\
+s &\in \mathbb{N}_0 && = \text{number of students who get a place}
+\end{aligned}
+$$
+$s$ is needed because the cost depends on how many students are housed.
 
-## Step 2 — Parameters
+**Constraints:**
+$$
+\begin{aligned}
+s &\le \sum_{i\in I} n_i y_i && \text{cannot house more than the capacity built} \\
+s &\le 600 && \text{cannot house more students than exist}
+\end{aligned}
+$$
 
-Everything the text *gives* you:
-```
-n_i = capacity of dorm i     n = (100, 500, 400, 300, 50)
-c_i = cost of dorm i         c = (100, 400, 360, 275, 75)   in €k
-D   = 600                    students expected
-p   = 950                    penalty per unhoused student, in € (= 0.95 €k)
-```
+**Objective** (all money in €k):
+$$\min \; \sum_{i\in I} c_i y_i + 0.95\cdot(600 - s)$$
 
-## Step 3 — Decision variables
+**Model:**
+$$
+\begin{aligned}
+\min\quad & \sum_{i\in I} c_i y_i + 0.95(600 - s) \\
+\text{s.t.}\quad & s \le \sum_{i\in I} n_i y_i \\
+& s \le 600 \\
+& y_i \in \{0,1\} \quad \forall i \in I \\
+& s \in \mathbb{N}_0
+\end{aligned}
+$$
 
-What is actually being *decided*? Two things:
-```
-y_i ∈ {0,1}    = 1 if dorm i is built                    (the real decision)
-s   ∈ ℕ₀       = number of students who DO get a place    (a consequence — but we need
-                                                           it as a variable to write the
-                                                           objective linearly)
-```
-
-That second variable is the one beginners miss. The cost depends on how many students are
-housed, so "how many are housed" has to be nameable.
-
-## Step 4 — Constraints
-
-*You cannot house more students than you have places:*
-```
-s ≤ Σ_{i∈I} n_i y_i
-```
-Here `Σ nᵢyᵢ` is total capacity built (Part 1). If no dorm is built the right side is 0, forcing
-`s = 0`. Correct.
-
-*You cannot house more students than exist:*
-```
-s ≤ 600
-```
-
-## Step 5 — Objective
-
-Two costs: construction, and penalties for the `600 − s` unhoused students. Keep the units
-consistent: all money in €k, so the €950 penalty enters as 0.95.
-```
-min  Σ_{i∈I} c_i y_i  +  0.95·(600 − s)
-```
-
-## The finished model
-
-```
-min   Σ_{i∈I} c_i y_i + 0.95(600 − s)
-s.t.  s ≤ Σ_{i∈I} n_i y_i
-      s ≤ 600
-      y_i ∈ {0,1}    ∀i ∈ I
-      s ∈ ℕ₀
-```
-
-That is a complete, correct IP. **Notice the shape** — it's the shape of every answer you will
-write: index sets, parameters, variables with domains, objective, constraints with quantifiers.
+Every answer has this shape: index sets, parameters, variables with domains, objective, constraints with quantifiers.
 
 ## Extra conditions (lecture slide 16)
 
-The lecture then adds conditions one at a time. Each is one line. Try each before reading on:
-
-| English | Constraint | Why |
+| Requirement | Constraint | Reason |
 |---|---|---|
-| Dorms 2 and 3 share a site — at most one | `y₂ + y₃ ≤ 1` | sum of two binaries ≤ 1 |
-| Total cost at most €450k | `Σᵢ cᵢyᵢ ≤ 450` | parameter × binary = total |
-| At most 3 dorms | `Σᵢ yᵢ ≤ 3` | sum of binaries = count |
-| Dorm 2 only if dorm 4 is built | `y₂ ≤ y₄` | see below |
-| Dorm 4 only if all students housed | `600y₄ ≤ s` | if y₄=1 then s ≥ 600 |
+| dorms 2 and 3 share a site, at most one | $y_2 + y_3 \le 1$ | sum of binaries |
+| total cost at most €450k | $\sum_i c_i y_i \le 450$ | parameter × binary |
+| at most 3 dorms | $\sum_i y_i \le 3$ | count |
+| dorm 2 only if dorm 4 is built | $y_2 \le y_4$ | implication |
+| dorm 4 only if all students are housed | $600y_4 \le s$ | if $y_4 = 1$ then $s \ge 600$ |
 
-## Why `y₂ ≤ y₄` means "2 only if 4"
+## Checking $y_2 \le y_4$ by cases
 
-Enumerate all four cases. This is the lecture's own table:
+| $y_2$ | $y_4$ | $y_2 \le y_4$ | allowed |
+|---|---|---|---|
+| 0 | 0 | $0 \le 0$ | yes |
+| 0 | 1 | $0 \le 1$ | yes |
+| 1 | 0 | $1 \le 0$ | **no** |
+| 1 | 1 | $1 \le 1$ | yes |
 
-| `y₂` | `y₄` | `y₂ ≤ y₄`? | allowed? | matches "2 ⇒ 4"? |
-|---|---|---|---|---|
-| 0 | 0 | `0 ≤ 0` ✓ | yes | yes — didn't build 2, fine |
-| 0 | 1 | `0 ≤ 1` ✓ | yes | yes — built 4 only, fine |
-| 1 | 0 | `1 ≤ 0` ✗ | **no** | yes — this is the forbidden case |
-| 1 | 1 | `1 ≤ 1` ✓ | yes | yes — built both, fine |
+Only "2 without 4" is forbidden, which is the implication $y_2 \Rightarrow y_4$. Enumerating 0/1 cases is how to check any binary constraint.
 
-The inequality forbids exactly one combination: built 2 without 4. That is precisely the
-logical implication `y₂ ⇒ y₄`.
+## Logical operators (lecture slide 15)
 
-**This is the technique for checking any binary constraint you're unsure about: enumerate the
-cases and compare against the English.** Do it in the exam when you have doubts.
-
-## The four logical operators (lecture slide 15)
-
-| Logic | Written as |
+| Logic | Constraint |
 |---|---|
-| `x₁ ∨ x₂ ∨ … ∨ xₙ` (OR — at least one) | `x₁ + x₂ + … + xₙ ≥ 1` |
-| `x₁ ∧ x₂ ∧ … ∧ xₙ` (AND — all) | `x₁ ≥ 1; x₂ ≥ 1; …` (separate rows) |
-| `x₁ ⇒ x₂` (implication) | `x₁ ≤ x₂` |
-| `x₁ ⇔ x₂` (equivalence) | `x₁ = x₂` |
-| `¬A` (negation) | `1 − A` |
-
-Negation is worth dwelling on: if `A ∈ {0,1}` means "it rains", then `1 − A` means "it doesn't
-rain" — it's 1 exactly when `A` is 0. You will use `1 − A` constantly.
+| $x_1 \lor \dots \lor x_n$ (at least one) | $x_1 + \dots + x_n \ge 1$ |
+| $x_1 \land \dots \land x_n$ (all) | $x_1 \ge 1;\ x_2 \ge 1;\ \dots$ |
+| $x_1 \Rightarrow x_2$ | $x_1 \le x_2$ |
+| $x_1 \iff x_2$ | $x_1 = x_2$ |
+| $\lnot A$ | $1 - A$ |
 
 ---
 
-# Part 4 — Why integer programs are hard
+# Part 4: Why integer programs are hard
 
 ## Rounding does not work
 
-The natural question: why not solve it as an ordinary LP (allowing fractions) and round?
+$$
+\begin{aligned}
+\max\quad & x_1 + x_2 \\
+\text{s.t.}\quad & 2x_2 \le 7 \\
+& 7x_1 + 16x_2 \ge 56 \\
+& 4x_1 + 3x_2 \le 20 \\
+& x_1, x_2 \in \mathbb{N}_0
+\end{aligned}
+$$
 
-The lecture's counterexample:
-```
-max  x₁ + x₂
-s.t.        2x₂ ≤ 7
-     7x₁ + 16x₂ ≥ 56
-     4x₁ +  3x₂ ≤ 20
-            x₁, x₂ ∈ ℕ₀
-```
+The LP corners are $(0, 3.5)$, $(2.375, 3.5)$, $(3.54, 1.95)$. The only feasible integer point is $(2,3)$. Rounding the corners gives $(0,4)$, $(2,4)$, $(4,2)$, all infeasible, and nothing in the LP solution points to $(2,3)$.
 
-The LP's corner points are `(0, 3.5)`, `(2.375, 3.5)`, `(3.54, 1.95)`. The **only** feasible
-integer point in the whole region is `(2,3)`. Rounding each corner to the nearest integers gives
-`(0,4)`, `(2,4)`, `(4,2)` — all infeasible; of the four up/down roundings of the LP optimum
-`(2.375, 3.5)`, only `(2,3)` happens to be feasible, and nothing in the LP solution points you
-to it.
+Lecture: rounding is fine for large quantities with low marginal cost, but fails for a few costly decisions, and rounding a binary decision is meaningless.
 
-The lecture's framing, worth reproducing in a multiple-choice justification:
+The IP feasible set is the lattice points inside a polyhedron. It has no corners or edges for simplex to walk along, hence branch and bound.
 
-> Rounding is often fine for large production quantities with low marginal costs. It fails for
-> **a few costly decisions**, and "rounding" a binary decision is meaningless — you get poor or
-> infeasible solutions.
-
-Geometrically: the LP feasible region is a solid polyhedron; the IP feasible region is only the
-**lattice points inside it**. Scattered points have no corners and no edges, so simplex — which
-walks from corner to corner — has nothing to walk on. Hence branch & bound (exam slot E5).
-
-## The taxonomy
+## Problem classes
 
 | | Form | Variables |
 |---|---|---|
-| **LP** | `max{cᵀx : Ax ≤ b, x ≥ 0}` | all continuous |
-| **MIP** | `max cᵀx + hᵀy`, `Ax + Gy ≤ b`, `x ≥ 0`, `y ∈ ℕ₀` | mixed |
-| **IP** | all structural variables in `ℕ₀` | all integer |
-| **BIP** | `max cᵀx`, `Ax ≤ b`, `x ∈ {0,1}` | all binary |
+| LP | $\max\{c^T x : Ax \le b,\ x \ge 0\}$ | continuous |
+| MIP | $\max c^T x + h^T y$, $Ax + Gy \le b$, $x \ge 0$, $y \in \mathbb{N}_0$ | mixed |
+| IP | all structural variables in $\mathbb{N}_0$ | integer |
+| BIP | $\max c^T x$, $Ax \le b$, $x \in \{0,1\}$ | binary |
 
-## LP relaxation — the idea that links E4 to E5
+## LP relaxation and formulation strength
 
-**Take your IP and delete every integrality requirement** (`x ∈ {0,1}` becomes `0 ≤ x ≤ 1`).
-What's left is an ordinary LP called the **LP relaxation**.
+Dropping integrality ($x \in \{0,1\}$ becomes $0 \le x \le 1$) gives the LP relaxation. Its feasible region contains the IP's, so for a max problem:
 
-Because you deleted restrictions, the relaxation's feasible region **contains** the IP's. More
-room to move means you can do at least as well, so for a max problem:
+$$z_{LP} \ge z_{IP} \qquad \text{upper bound (lower bound for min)}$$
 
-```
-z_LP  ≥  z_IP        the relaxation is always an UPPER bound
-```
+Branch and bound relies on this bound, so the formulation affects solving time. Of two formulations with the same integer solutions, the one with the smaller relaxation region is **stronger**: tighter bound, more pruning.
 
-(For a min problem it's a lower bound. Same reasoning.)
+$$
+\begin{aligned}
+\text{disaggregated:}\quad & x_{i,j} \le y_i && \forall i,j && \text{stronger} \\
+\text{aggregated:}\quad & \sum_j x_{i,j} \le M\cdot y_i && \forall i && \text{weaker}
+\end{aligned}
+$$
 
-That bound is the entire engine of branch & bound — **so your modelling choices in E4 have
-consequences in E5.** Which is what "formulation strength" means:
+Both allow the same integer solutions, but the aggregated form's relaxation allows $y_i = 0.01$ with one student assigned.
 
-> Between two correct formulations of the same IP, the one whose **LP-relaxation region is
-> smaller** is **stronger**. Tighter bound → more pruning → faster B&B.
+"Which formulation is stronger and why": equal integer feasible sets, smaller relaxation region.
 
-Concrete example you'll meet in Part 6. Two ways to say "you can only assign students to a
-school you built":
-```
-disaggregated:  x_{i,j} ≤ y_i           ∀i,j      ← stronger
-aggregated:     Σ_j x_{i,j} ≤ M·y_i     ∀i        ← weaker
-```
-For *integer* values these allow exactly the same solutions. But in the relaxation, the
-aggregated version permits `y_i = 0.01` with one student assigned — a fractional fifth of a
-school — which the disaggregated version forbids. Same IP, worse bound.
+## Complexity
 
-Asked "which formulation is stronger and why": *equal integer feasible sets, smaller relaxation
-region.*
+- **P**: solvable in polynomial time.
+- **NP**: a proposed solution can be verified in polynomial time.
+- **Polynomial reduction**: instances of A convert to instances of B in polynomial time, and solutions convert back. Then B is at least as hard as A.
+- **NP-hard**: every NP problem reduces to it. It need not be in NP.
+- **NP-complete**: in NP and NP-hard.
 
-## Complexity — small, cheap, and directly examined
+Optimisation versions ("find the cheapest tour") are typically NP-hard; decision versions ("is there a tour under 100 km?") are NP-complete.
 
-- **P** — solvable by a deterministic machine in polynomial time `O(nᵏ)`.
-- **NP** — solvable by a *nondeterministic* machine in poly time. Equivalently, and more
-  usefully: a proposed solution can be **verified** in poly time.
-- **Polynomial reduction** — A reduces to B if instances of A convert into instances of B in
-  poly time and solutions convert back. Then B is at least as hard as A.
-- **NP-hard** — every problem in NP reduces to it. **Need not itself be in NP.**
-- **NP-complete** — in NP **and** NP-hard.
+**Deciding whether an IP has any feasible solution is NP-hard.** SAT reduces to binary IP:
 
-That last distinction is a standard multiple-choice trap. Optimisation versions ("find the
-cheapest tour") are typically NP-**hard**; decision versions ("is there a tour under 100km?")
-are NP-**complete**.
+1. For each boolean $x_i$ introduce $v_i \in \{0,1\}$, $v_i = 1 \iff x_i$ TRUE.
+2. Each clause $x_1 \lor \lnot x_2 \lor \dots \lor x_i$ becomes $v_1 + (1 - v_2) + \dots + v_i \ge 1$.
+3. A satisfying assignment exists $\iff$ the IP is feasible.
 
-**The result to memorise:**
+Cook (1971): SAT is NP-complete. Karp (1972) added TSP, scheduling, colouring, knapsack, bin packing, set cover, integer programming.
 
-> It is **NP-hard to decide whether an IP has a feasible solution** — not merely to optimise it.
+**LP:** simplex is exponential in the worst case (Klee–Minty cubes, a path through all $2^n$ corners), but LP is in P: ellipsoid method (Khachiyan 1979, $O(n^4 L)$, impractical) and interior-point methods (Karmarkar 1984, $O(n^{3.5} L)$). Simplex remains the default because it supports sensitivity analysis and warm starts, which B&B needs.
 
-Proof sketch (SAT reduces to binary IP), three reproducible lines:
-```
-For each boolean variable xᵢ, introduce vᵢ ∈ {0,1} with vᵢ = 1 ⟺ xᵢ = TRUE.
-Each clause C = x₁ ∨ ¬x₂ ∨ … ∨ xᵢ  becomes  v₁ + (1 − v₂) + … + vᵢ ≥ 1.
-A satisfying assignment exists ⟺ the IP is feasible.
-```
-Note that the clause translation is just the OR rule from Part 3, with `¬x₂` written `1 − v₂`.
+LP is in P; IP is NP-hard.
 
-Cook (1971) proved SAT NP-complete. Karp (1972) added TSP, scheduling, colouring, **knapsack,
-bin packing, set cover, integer programming**.
+## Standard problems
 
-**LP side, also examinable.** Simplex is **exponential in the worst case** — Klee–Minty cubes
-are warped `n`-cubes with an ascending path through all `2ⁿ` corners. Yet LP itself is **in P**:
-Khachiyan's ellipsoid method (1979, `O(n⁴L)`, impractical) and Karmarkar's interior-point method
-(1984, `O(n³·⁵L)`, competitive). Simplex stays the default because it supports sensitivity
-analysis and warm-starts — which matters inside B&B, where thousands of near-identical LPs get
-re-solved. Interior-point methods are poor at that.
+Exams ask "which known problem is this?" (SS24 P6b: vertex cover).
 
-**So: LP ∈ P, IP is NP-hard. Integrality is the whole difficulty.**
+**Assignment:** $n$ jobs to $n$ machines, minimum cost.
+$$\min \sum_i \sum_j c_{ij} x_{ij} \quad \text{s.t.} \quad \sum_i x_{ij} = 1 \ \forall j, \quad \sum_j x_{ij} = 1 \ \forall i, \quad x \in \{0,1\}$$
+$n!$ candidate assignments, but solvable in polynomial time: its constraint matrix is totally unimodular, so the LP relaxation is integral.
 
-## Standard templates — memorise these outright
+**Generalized assignment (GAP):** with capacities it becomes NP-hard.
+$$\min \sum_i \sum_j c_{ij} x_{ij} \quad \text{s.t.} \quad \sum_i x_{ij} = 1 \ \forall j, \quad \sum_j d_{ij} x_{ij} \le s_i \ \forall i, \quad x \in \{0,1\}$$
 
-Exams ask "which known problem is this?" directly. SS24 P6b: *"To which NP-hard problem learned
-in the lecture does this correspond?"* → vertex cover. Two free points.
+**0-1 knapsack:**
+$$\max \sum_j p_j x_j \quad \text{s.t.} \quad \sum_j w_j x_j \le W, \quad x \in \{0,1\}$$
+Variants: multiple ($m$ knapsacks), bounded (several copies per item), multiple-choice (exactly one item per class).
 
-**Assignment problem** — `n` jobs to `n` machines, minimum cost:
-```
-min Σᵢ Σⱼ cᵢⱼ xᵢⱼ    s.t.  Σᵢ xᵢⱼ = 1 ∀j,   Σⱼ xᵢⱼ = 1 ∀i,   x ∈ {0,1}
-```
-Both a row constraint and a column constraint — every job gets one machine, every machine gets
-one job. There are `n!` candidate assignments, yet it is **solvable in polynomial time**. It's
-maximum matching in a weighted bipartite graph, a special case of the transportation problem.
+**Multiple knapsack:**
+$$\max \sum_i \sum_j p_j x_{ij} \quad \text{s.t.} \quad \sum_j w_j x_{ij} \le W_i \ \forall i, \quad \sum_i x_{ij} \le 1 \ \forall j$$
+$\le 1$: items may be left out.
 
-*Bridge to E6:* its constraint matrix is **totally unimodular**, so the LP relaxation's corners
-are already integral — just solve the LP. Being an IP does not make a problem hard; TU is
-exactly the condition under which it isn't. (The Hungarian method itself has never been
-examined; the *fact* that assignment is in P has.)
+**Bin packing:**
+$$\min \sum_i y_i \quad \text{s.t.} \quad \sum_i x_{ij} = 1 \ \forall j, \quad \sum_j d_j x_{ij} \le s\cdot y_i \ \forall i, \quad x, y \in \{0,1\}$$
+$= 1$: everything is packed. Capacity $s$ is available only if bin $i$ is opened. Multidimensional version (server consolidation): $\sum_j u_{j,k,t} x_{ij} \le s_{i,k} y_i \ \forall i,k,t$.
 
-**Generalized Assignment (GAP)** — add capacities, and it becomes NP-hard:
-```
-min Σᵢ Σⱼ cᵢⱼ xᵢⱼ    s.t.  Σᵢ xᵢⱼ = 1 ∀j,   Σⱼ dᵢⱼ xᵢⱼ ≤ sᵢ ∀i,   x ∈ {0,1}
-```
-
-**0-1 Knapsack:**
-```
-max Σⱼ pⱼ xⱼ   s.t.  Σⱼ wⱼ xⱼ ≤ W,   x ∈ {0,1}
-```
-Lecture variants: multiple (`m` knapsacks), bounded (several copies per item), multiple-choice
-(items in `k` classes, exactly one per class).
-
-**Multiple Knapsack:**
-```
-max Σᵢ Σⱼ pⱼ xᵢⱼ   s.t.  Σⱼ wⱼ xᵢⱼ ≤ Wᵢ ∀i,   Σᵢ xᵢⱼ ≤ 1 ∀j
-```
-Note `≤ 1`, not `= 1`: items may be left behind.
-
-**Bin Packing** — minimise bins used:
-```
-min Σᵢ yᵢ    s.t.  Σᵢ xᵢⱼ = 1 ∀j,   Σⱼ dⱼ xᵢⱼ ≤ s·yᵢ ∀i,   x, y ∈ {0,1}
-```
-Here `= 1`: everything must be packed. The second constraint is the capacity-linked-to-opening
-pattern in its native habitat — capacity `s` only available if bin `i` is opened.
-Multidimensional version (server consolidation): `Σⱼ u_{j,k,t} xᵢⱼ ≤ s_{i,k} yᵢ ∀i,k,t` —
-resources `K` and time `T` become extra index dimensions.
-
-**Set covering / partitioning / packing** — the same matrix `A` with `aᵢⱼ = 1` if set `j`
-contains element `i`; only the relation changes:
-```
-covering:      min cᵀx,  Ax ≥ 1,  x binary      "cover every element at least once"
-partitioning:  min cᵀx,  Ax = 1,  x binary      "exactly once"
-packing:       max cᵀx,  Ax ≤ 1,  x binary      "at most once"
-```
+**Set covering / partitioning / packing** ($a_{ij} = 1$ if set $j$ contains element $i$):
+$$
+\begin{aligned}
+\text{covering:}\quad & \min c^T x,\ Ax \ge 1,\ x \text{ binary} && \text{every element at least once} \\
+\text{partitioning:}\quad & \min c^T x,\ Ax = 1,\ x \text{ binary} && \text{exactly once} \\
+\text{packing:}\quad & \max c^T x,\ Ax \le 1,\ x \text{ binary} && \text{at most once}
+\end{aligned}
+$$
 
 ---
 
-# Part 5 — The core difficulty: you cannot write "if"
+# Part 5: Conditional constraints and big-M
 
-Everything so far was direct. The hard exam points come from conditional requirements:
+> "If more than 200 students are assigned to zone A, then at least 300 must go to zone B."
 
-> "**If** more than 200 students are assigned to zone A, **then** at least 300 must go to zone B."
+A linear inequality is always active, so a condition has to be modelled with a binary switch.
 
-There is no "if" in linear algebra. **An inequality is always active** — you can't switch it on
-and off. So you have to fake it.
+$$X \le 200 + M\cdot t \qquad t \in \{0,1\}$$
 
-## The fake: make a constraint say nothing
+- $t = 0$: $X \le 200$, the constraint applies.
+- $t = 1$: $X \le 200 + M$. If $M$ is large enough, this restricts nothing.
 
-Look at what happens when you add a huge number to the right-hand side of a constraint:
+## Choosing M
 
-```
-X ≤ 200 + M·t          with t ∈ {0,1}
-```
+With 800 students, $X$ (students in zone A) is at most 800.
 
-- **`t = 0`** → `X ≤ 200`. The constraint bites normally.
-- **`t = 1`** → `X ≤ 200 + M`. If `M` is big enough that `200 + M` exceeds anything `X` could
-  ever be, this restricts nothing. **The constraint has been switched off.**
+- $M = 800$: $t = 1$ gives $X \le 1000$, no restriction.
+- $M = 50$: $t = 1$ gives $X \le 250$, which still cuts off legal solutions. Wrong.
 
-That's it. That's big-M. A number large enough to make a row vacuous.
+$M$ must be at least the largest amount the switched-off constraint may need to allow (here $800 - 200 = 600$).
 
-## Choosing M, with actual numbers
+1. $M$ is a constant, not a variable. Do not list it among the variables.
+2. Justify its size in one clause: "$M = 800$ works since there are only 800 students." SS24's solution: *"for M we can choose any fixed number greater or equal 4."*
 
-In the school problem there are 800 students, so `X` — students in zone A — can never exceed 800.
-
-- Pick `M = 800`. Then `t = 1` gives `X ≤ 1000`. Since `X ≤ 800` anyway, no restriction. ✓
-- Pick `M = 50`. Then `t = 1` gives `X ≤ 250`. That **still restricts** `X` — the model now
-  forbids solutions that should be legal. **The model is wrong.** ✗
-
-**Rule: M must be at least as large as the biggest amount the switched-off constraint could
-need to allow.** Here that's `800 − 200 = 600`, so `M = 800` is safe.
-
-Two things the examiners check:
-1. **M is a constant, not a variable.** Never write `M` in the domain list.
-2. **You justify its size.** One clause: *"M = 800 works, since there are only 800 students."*
-   SS24's own solution says *"for M we can choose any fixed number greater or equal 4."*
-
-Read M off another constraint whenever you can: `M = |J|`, `M = cᵢ`, `M = Σⱼ wⱼ`.
+Take $M$ from another quantity when possible: $M = \lvert J\rvert$, $M = c_i$, $M = \sum_j w_j$. When a variable is bounded by 1 (a fraction), $M = 1$ (2026 P2a: $x_i \le y_i$).
 
 ---
 
-# Part 6 — Indicator variables and the two directions
+# Part 6: Indicator variables in both directions
 
-This is the single most examinable thing in the topic. Read it twice.
+Goal: a binary $t$ that is 1 exactly when $X > K$. That needs two inequalities:
 
-## The setup
+$$
+\begin{aligned}
+\text{(A)}\quad & X \le K + M\cdot t && X > K \text{ forces } t = 1 \\
+\text{(B)}\quad & X \ge (K+1)\cdot t && t = 1 \text{ forces } X > K
+\end{aligned}
+$$
 
-You want a binary `t` that is **1 exactly when `X > K`**. That phrase hides *two separate
-requirements*, and each needs its own inequality.
+**(A)**, with $K = 200$, $M = 800$, $X = 500$: $t = 0$ gives $500 \le 200$, violated, so $t = 1$.
 
-```
-(A)  X ≤ K + M·t        "if X > K then t must be 1"     — forces t UP
-(B)  X ≥ (K+1)·t        "if t = 1 then X must be > K"   — forces t DOWN
-```
+**(B)** reads $X \ge 201\cdot t$: $t = 1$ is allowed only if $X \ge 201$; $t = 0$ gives $X \ge 0$.
 
-## Check (A) with numbers
+## When one direction is enough
 
-`K = 200`, `M = 800`. Suppose `X = 500`.
-- Try `t = 0`: constraint reads `500 ≤ 200`. **Violated.** So `t = 0` is impossible.
-- Therefore `t = 1` is forced. ✓ **(A) does its job: a large `X` forces `t` on.**
+- (A) alone allows $t = 1$ with $X = 0$. Harmless only if $t = 1$ is costly in the objective.
+- (B) alone allows $X = 800$ with $t = 0$. Harmless only if $t = 1$ is rewarded.
 
-## Check (B) with numbers
-
-`(B)` reads `X ≥ 201·t`. Suppose `t = 1`.
-- Constraint reads `X ≥ 201`. So `t = 1` is only allowed when `X` really is above 200. ✓
-- If `t = 0` it reads `X ≥ 0` — no restriction, correctly.
-
-## Why you often need both — the failure modes
-
-**(A) alone** permits `t = 1` while `X = 0`: the constraint reads `0 ≤ 1000`, satisfied. So a
-solver could switch `t` on for free. Whether that matters depends on the objective — if `t`
-being 1 *costs* something, the solver will never do it, and (A) alone is enough.
-
-**(B) alone** permits `X = 800` with `t = 0`: reads `800 ≥ 0`, satisfied. So a huge `X` fails to
-trigger `t`. Again — harmless only if the objective *rewards* `t = 1`.
-
-## How to decide
-
-| Wording in the question | Write |
+| Wording | Write |
 |---|---|
-| "indicates whether…", "if and only if", "⟺" | **both** (A) and (B) |
-| "if more than K …, then …" | (A), plus the consequence keyed on `t` |
-| you're not sure | **both** — you are never penalised for both |
+| "indicates whether", "if and only if", $\iff$ | both (A) and (B) |
+| "if more than K …, then …" | (A), plus the consequence keyed on $t$ |
+| unsure | both; writing both is never penalised |
 
-## The `K+1` detail
+## The K+1
 
-`(B)` uses `(K+1)`, not `K`, because "more than 200" for a **whole number** of students means
-"at least 201". This only works because `X` is integer.
+"More than 200" for an integer number of students means "at least 201". For continuous $X$, "$t = 1$ iff $X > K$" cannot be modelled exactly, because $\{X > K\}$ is not closed. The usual workaround uses a small $\varepsilon$: $X \ge (K + \varepsilon)\cdot t$.
 
-For a **continuous** `X`, "`t = 1` if and only if `X > K`" is genuinely **impossible** to model
-exactly — the set `{X > K}` isn't closed, so it isn't a polytope. Worth one sentence if a
-question baits you with it.
+## Threshold on a continuous variable (2026 P2j)
+
+With $x \in [0,1]$ and threshold $\tau$, a switch $z$ with $z = 0$ below $\tau$ and $z = 1$ above:
+$$
+\begin{aligned}
+x &\le \tau + z \\
+x &\ge \tau\cdot z
+\end{aligned}
+$$
+At exactly $x = \tau$ both values of $z$ are allowed.
 
 ---
 
-# Part 7 — The answer template (this is literally the rubric)
+# Part 7: Answer template
 
-Both the SS24 and SS25 official solutions are written in exactly this shape. Copy it:
+The SS24 and SS25 official solutions use this shape:
 
-```
-We introduce z ∈ {0,1}:  z = 1  ⟺  <meaning, in a full sentence>
+$$
+\begin{aligned}
+& \text{We introduce } z \in \{0,1\}: \ z = 1 \iff \langle \text{meaning in a full sentence} \rangle \\
+& \qquad \langle \text{linking constraints tying } z \text{ to the other variables} \rangle \\
+& \text{Then:} \\
+& \qquad \langle \text{the requirement, keyed on } z \rangle \quad \forall i \in \langle \text{explicit range} \rangle
+\end{aligned}
+$$
 
-    <linking constraint(s) that tie z to reality>
+The meaning in words, the linking constraints, and the $\forall$ with an explicit range are marked separately. The prompt says every year:
 
-Then we can formulate the constraint:
-
-    <the actual requirement, keyed on z>     ∀ i ∈ <explicit range>
-```
-
-Three things score **independently**: the **meaning in words**, the **linking constraints**, the
-**`∀` with an explicit range**. The exam prompt says it every year —
-
-> *"You may introduce additional variables. If you do so, please also state their intuitive
-> meaning in words."*
-
-That sentence is a rubric line, not politeness.
-
-## Which parts need an auxiliary variable
+> *"You may introduce additional variables. If you do so, please also state their intuitive meaning in words."*
 
 | Kind | Who supplies it | Example |
 |---|---|---|
-| **Decision** | The exam hands them to you | `x_{i,j}` = student `j` → school `i` |
-| **Indicator** | **You invent these** | `t` = 1 if more than 100 students at school 1 |
-| **Shorthand** | You, for readability | `X_i = Σⱼ x_{i,j}` |
+| decision | given in the exam | $x_{i,j}$ = student $j$ to school $i$ |
+| indicator | you | $t = 1$ if more than 100 students at school 1 |
+| shorthand | you, for readability | $X_i = \sum_j x_{i,j}$ |
 
-**A sub-question worth more than 2 points is almost always asking you to invent an indicator.**
-Use the point value as your hint.
+A sub-question worth more than 2 points usually needs an indicator.
 
 ---
 
-# Part 8 — The patterns, ranked by exam frequency
+# Part 8: Patterns, by exam frequency
 
-The full catalogue is in [05-ip-modeling](05-ip-modeling.md). These are the ones that have
-actually appeared on papers.
+Full catalogue: [05-ip-modeling](05-ip-modeling.md).
 
-## Tier 1 — on literally every paper
+## On every paper
 
-```
-Exactly one          Σ_{i∈I} x_{i,j} = 1                    ∀j ∈ J
-At most once         Σ_{j∈J} x_{i,j} ≤ 1                    ∀i ∈ I
-At most k            Σ_i z_i ≤ k
-Capacity             Σ_{j∈J} x_{i,j} ≤ c_i                  ∀i ∈ I
-Only-if / linking    x_{i,j} ≤ y_i                          ∀i ∈ I, j ∈ J
-```
+$$
+\begin{aligned}
+&\text{exactly one} && \sum_{i\in I} x_{i,j} = 1 && \forall j \in J \\
+&\text{at most once} && \sum_{j\in J} x_{i,j} \le 1 && \forall i \in I \\
+&\text{at most } k && \sum_i z_i \le k \\
+&\text{capacity} && \sum_{j\in J} x_{i,j} \le c_i && \forall i \in I \\
+&\text{only-if / linking} && x_{i,j} \le y_i && \forall i \in I,\ j \in J
+\end{aligned}
+$$
 
-All five are Part 1 + Part 2 mechanics. If any looks unfamiliar, go back — don't memorise it.
+Use the disaggregated linking form by default.
 
-Use the **disaggregated** linking form (`x_{i,j} ≤ y_i`) by default; it's stronger (Part 4).
+Answer each sub-question separately. SS25 asked capacity in (b) and linking in (c); the combined $\sum_j x_{i,j} \le c_i\cdot y_i$ covers both but does not answer the part asked.
 
-**Don't merge sub-questions.** SS25 asked capacity in part (b) and linking in part (c). The
-combined constraint `Σⱼ x_{i,j} ≤ cᵢ·yᵢ` covers both at once — but answer the part you were asked.
+## Frequent
 
-## Tier 2 — where the points are
+**Implication between binaries.** $A \Rightarrow B$ is $A \le B$. With several premises:
+$$
+\begin{aligned}
+& \text{"if W and R both hold, then P or C must hold"} \\
+& \qquad W_t + R_t - 1 \le P_t + C_t \qquad \forall t \\
+& \text{general:} \quad \textstyle\sum(\text{premises}) - (\#\text{premises} - 1) \le \sum(\text{conclusions})
+\end{aligned}
+$$
+If $W = R = 1$ the left side is 1, forcing $P + C \ge 1$. If either premise is 0, nothing is forced.
 
-**Implication between binaries.** `A ⇒ B` is `A ≤ B` (Part 3). Generalised to several premises:
-```
-"if W and R both hold, then P or C must hold"
-    W_t + R_t − 1 ≤ P_t + C_t                ∀t
+**Pairwise conflict** (SS25 E4d, built schools at least 5 km apart):
+$$
+\begin{aligned}
+& d \text{ known when modelling:} \\
+& \qquad y_i + y_{i'} \le 1 && \forall i \ne i' \text{ with } d_{i,i'} < 5 \\
+& d \text{ symbolic (official solution):} \\
+& \qquad 1 + z_{i,i'} \ge y_i + y_{i'} && \forall i \ne i' && \text{(both built} \Rightarrow z = 1\text{)} \\
+& \qquad d_{i,i'}\cdot z_{i,i'} \ge 5\cdot z_{i,i'} && \forall i \ne i'
+\end{aligned}
+$$
 
-General shape:  Σ(premises) − (#premises − 1) ≤ Σ(conclusions)
-```
-Sanity check: if `W = R = 1` the left side is 1, forcing `P + C ≥ 1` — at least one conclusion.
-If either premise is 0 the left side is ≤ 0 and nothing is forced. ✓
+**At most one of two** (2026 P2f): $y_A + y_B \le 1$. **If A then B** (2026 P2g): $y_A \le y_B$. **At most k selected** (2026 P2h): $\sum_i y_i \le k$.
 
-**Pairwise conflict** — SS25 E4d, built schools must be ≥ 5 km apart:
-```
-Direct, when d is a known number at modelling time:
-    y_i + y_{i'} ≤ 1        ∀ i≠i' with d_{i,i'} < 5
+**Semi-continuous: zero or at least q** (2026 P2a + P2d):
+$$
+\begin{aligned}
+x_i &\le y_i && (M = 1 \text{ since } x_i \le 1) \\
+x_i &\ge q\cdot y_i
+\end{aligned}
+$$
+Together: $x_i = 0$ or $x_i \ge q$.
 
-Via an auxiliary, when d is a symbolic parameter (the official solution):
-    1 + z_{i,i'} ≥ y_i + y_{i'}       ∀i≠i'      (both open ⇒ z = 1)
-    d_{i,i'}·z_{i,i'} ≥ 5·z_{i,i'}    ∀i≠i'
-```
-Check the first auxiliary row: if `yᵢ = y_{i'} = 1` it reads `1 + z ≥ 2`, forcing `z = 1`. ✓
+**Adjacency in a sequence** (SS24 P4d, consecutive stages within 200 km):
+$$
+\begin{aligned}
+& x_{i,j} + x_{i',j+1} \le 1 + y_{i,i'} && \forall i,i' \in I,\ j \in J\setminus\{21\} \\
+& y_{i,i'}\cdot d_{i,i'} \le 200 && \forall i,i' \in I \\
+& \text{alternative:} \\
+& (x_{i,j} + x_{i',j+1} - 1)\cdot d_{i,i'} \le 200
+\end{aligned}
+$$
+$J\setminus\{21\}$: stage 21 has no successor. Truncated ranges are marked, as are lookbacks (a 3-year history condition runs $\forall t \in \{4,\dots,15\}$).
 
-**Adjacency in a sequence** — SS24 P4d, consecutive stages within 200 km:
-```
-    x_{i,j} + x_{i',j+1} ≤ 1 + y_{i,i'}    ∀i,i' ∈ I, j ∈ J\{21}
-    y_{i,i'}·d_{i,i'} ≤ 200                ∀i,i' ∈ I
+**Either-or:**
+$$
+\begin{aligned}
+f_1(x) &\le b_1 + M\cdot z \\
+f_2(x) &\le b_2 + M\cdot(1 - z)
+\end{aligned}
+$$
+Exactly one constraint is switched off, so at least one holds.
 
-one-liner alternative:
-    (x_{i,j} + x_{i',j+1} − 1)·d_{i,i'} ≤ 200
-```
-Note `J\{21}` — stage 21 has no successor. **Truncated ranges are graded.** Same for lookbacks:
-a 3-year history condition runs `∀t ∈ {4,…,15}`, not `∀t ∈ T`.
+**Exactly one of two conditions** (SS24 P4e, "more than 3 mountain routes in either the first or the last 7 stages, not both"):
+$$
+\begin{aligned}
+& \sum_i \sum_{j=1}^{7} m_i x_{i,j} \le 3 + M\cdot z && z = 1 \iff \text{first block exceeds 3} \\
+& \sum_i \sum_{j=1}^{7} m_i x_{i,j} \ge 4z \\
+& \sum_i \sum_{j=15}^{21} m_i x_{i,j} \le 3 + M(1-z) && \text{mirrored with } 1 - z \\
+& \sum_i \sum_{j=15}^{21} m_i x_{i,j} \ge 4(1-z)
+\end{aligned}
+$$
+The $z$ / $1-z$ mirror gives the exclusivity. A two-binary version with $z_1 + z_2 = 1$ also scores. $m_i$ is a 0/1 parameter, so $\sum m_i x_{i,j}$ counts mountain routes.
 
-**Either-or (disjunction)** — at least one of two constraints must hold:
-```
-    f₁(x) ≤ b₁ + M·z
-    f₂(x) ≤ b₂ + M·(1 − z)
-```
-`z = 0` switches off the second; `z = 1` switches off the first. Exactly one is off, so at least
-one is on. ✓
+**Ratios.** Clear the denominator so all coefficients are constants:
+$$
+\begin{aligned}
+& \text{"beer type w is at most 40\% of all barrels sold"} \\
+& \qquad \sum_b w_b \le 0.4\cdot\sum_b (w_b + h_b + s_b + a_b) \\
+& \Rightarrow\ 0.6 \sum_b w_b - 0.4 \sum_b (h_b + s_b + a_b) \le 0
+\end{aligned}
+$$
 
-**XOR (exactly one, "not in both")** — SS24 P4e:
-```
-"more than 3 mountain routes in either the first or the last 7 stages, not both"
+**Rolling window** ("at most 5 in any 7 consecutive days"):
+$$\sum_{t=k}^{k+6} x_t \le 5 \qquad \forall k \in \{1,\dots,T-6\}$$
+The window starts at $k$ and must stop at $T-6$. The $\forall k$ and its upper limit are the points.
 
-    ΣΣ_{j=1..7}   m_i x_{i,j} ≤ 3 + M·z        ┐ z = 1 ⟺ first block exceeds 3
-    ΣΣ_{j=1..7}   m_i x_{i,j} ≥ 4z             ┘   (both directions — it's an "iff")
-    ΣΣ_{j=15..21} m_i x_{i,j} ≤ 3 + M(1−z)     ┐ mirrored with (1−z)
-    ΣΣ_{j=15..21} m_i x_{i,j} ≥ 4(1−z)         ┘
-```
-The `z` / `1−z` mirror **is** the exclusivity — no separate XOR row needed. The two-binary
-version with `z₁ + z₂ = 1` also scores. Note `mᵢ` is a 0/1 *parameter*, so `Σ mᵢ x_{i,j}`
-counts only the mountain routes.
+**Product linearisation:**
+$$
+\begin{aligned}
+&\text{binary × binary:} && Y \le x_k,\ Y \le x_l,\ Y \ge x_k + x_l - 1 \\
+&\text{binary } z \text{ × continuous } a \in [0,U]: && w \le a,\ w \le U\cdot z,\ w \ge a - U(1-z),\ w \ge 0
+\end{aligned}
+$$
+Binary case check: if either $x$ is 0, $Y = 0$; if both are 1, $Y \ge 1$. For $a \in [0,1]$ (2026 P2i): $w \le x$, $w \le z$, $w \ge x + z - 1$, $w \ge 0$.
 
-**Ratio / percentage.** Move everything to the left and clear denominators so every coefficient
-is a constant:
-```
-"beer type w is at most 40% of all barrels sold"
-    Σ_b w_b ≤ 0.4·Σ_b (w_b + h_b + s_b + a_b)
-  → 0.6 Σ_b w_b − 0.4 Σ_b (h_b + s_b + a_b) ≤ 0
-```
+If the objective rewards $Y$ (max), $Y \le x_k$ and $Y \le x_l$ suffice; if it penalises $Y$, $Y \ge x_k + x_l - 1$ suffices. Writing all three is safe; stating which direction the objective handles earns the understanding point.
 
-**Rolling window.** "At most 5 in any 7 consecutive days":
-```
-    Σ_{t=k}^{k+6} x_t ≤ 5        ∀k ∈ {1,…,T−6}
-```
-`k` is the window's start; the window covers `k` through `k+6`, which is 7 days. It must stop at
-`T−6` or the window runs past the end. **The `∀k` and its explicit upper limit are the points.**
-
-**Product linearisation.** Never leave `x_k·x_l` in a model — that isn't linear.
-```
-binary × binary:      Y ≤ x_k,  Y ≤ x_l,  Y ≥ x_k + x_l − 1
-binary × continuous:  w ≤ a,  w ≤ M·z,  w ≥ a − M(1−z),  w ≥ 0
-```
-Check the binary case: if either `x` is 0, the first two rows force `Y = 0`. If both are 1, the
-third reads `Y ≥ 1`, forcing `Y = 1`. ✓ In a **max** problem where `Y` is rewarded, `Y ≤ x_k`
-and `Y ≤ x_l` suffice (the objective pushes `Y` up on its own). Where `Y` is penalised,
-`Y ≥ x_k + x_l − 1` suffices. All three is always safe — and saying *which* direction the
-objective handles earns the understanding point.
+A product of two continuous variables cannot be linearised exactly. That is why 2026 P2j first introduces a binary switch and then linearises $z\cdot x$ with P2i.
 
 **Fixed charge / minimum lot size:**
-```
-    x ≤ M·y,  x ≥ q·y,  y ∈ {0,1}      "produce nothing, or at least q"
-    objective: min f·y + c·x           f is paid once if any x > 0
-```
+$$
+\begin{aligned}
+& x \le M\cdot y,\ x \ge q\cdot y,\ y \in \{0,1\} && \text{produce nothing, or at least } q \\
+& \text{objective: } \min f\cdot y + c\cdot x && f \text{ paid once if } x > 0
+\end{aligned}
+$$
 
-**Startup detection:** `y_t ≥ x_t − x_{t−1}` for `t ≥ 2`. If the machine was off at `t−1`
-(`x=0`) and is on at `t` (`x=1`), the right side is 1, forcing `y_t = 1`. In a min problem with
-positive setup cost that inequality alone suffices — the objective pushes `y` down. **Say so**;
-it earns the point.
+**Startup detection:** $y_t \ge x_t - x_{t-1}$ for $t \ge 2$. Off at $t-1$ and on at $t$ forces $y_t = 1$. In a min problem with a positive setup cost this inequality alone suffices; say so.
 
-## Tier 3 — objectives
+## Objectives
 
-**Weighted-sum scalarisation** — SS25 E4f. Two goals pulling opposite ways. Flip the sign of
-whichever disagrees with your chosen sense:
-```
-"minimize construction cost while maximizing preference"
-    min  Σ_i f_i y_i  −  Σ_i Σ_j s_{i,j} x_{i,j}
-```
-Minimising a negative preference term = maximising preference. State that weights are strictly
-positive; their ratio encodes the trade-off ("twice as important" → weight 2 vs 1).
+**Weighted sum** (SS25 E4f):
+$$
+\begin{aligned}
+& \text{"minimise construction cost while maximising preference"} \\
+& \qquad \min \sum_i f_i y_i - \sum_i \sum_j s_{i,j} x_{i,j}
+\end{aligned}
+$$
+Minimising the negative preference maximises it. Weights must be positive; their ratio sets the trade-off ("twice as important" $\Rightarrow$ weight 2 vs 1).
 
-**Position-dependent coefficients** — SS24 P4a. Towns pay `pᵢ`, *double* for the first or last
-stage:
-```
-    max  Σ_{i∈I} p_i · ( 2·x_{i,1} + Σ_{j=2}^{20} x_{i,j} + 2·x_{i,21} )
-```
-The middle sum runs `j = 2..20`, not `1..21`, because stages 1 and 21 are already counted at the
-doubled rate. Splitting the index range correctly is the whole point of the part.
+**Position-dependent coefficients** (SS24 P4a, towns pay $p_i$, double for the first or last stage):
+$$\max \sum_{i\in I} p_i \cdot \left( 2\cdot x_{i,1} + \sum_{j=2}^{20} x_{i,j} + 2\cdot x_{i,21} \right)$$
+The middle sum runs $j = 2..20$ because stages 1 and 21 are counted at the doubled rate.
 
 ---
 
-# Part 9 — Worked example: SS25 E4, start to finish
+# Part 9: Worked example, SS25 E4
 
-> 15 sites, capacity `cᵢ`, cost `fᵢ`. 800 students, preference `s_{i,j}`.
-> Given: `yᵢ` = build site `i`, `x_{i,j}` = assign student `j` to school `i`.
+> 15 sites, capacity $c_i$, cost $f_i$. 800 students, preference $s_{i,j}$. Given: $y_i$ = build site $i$, $x_{i,j}$ = assign student $j$ to school $i$.
 
-**(a) Each student must be assigned to exactly one school.**
+**(a) Each student is assigned to exactly one school.** Column sum, free index $j$:
+$$\sum_{i\in I} x_{i,j} = 1 \qquad \forall j \in J \qquad \text{(800 constraints)}$$
 
-Draw the grid: schools down, students across. "Each student to one school" = each **column**
-sums to 1. Summing a column means summing over `i`. The free index is `j`:
-```
-Σ_{i∈I} x_{i,j} = 1        ∀j ∈ J          (800 constraints)
-```
+**(b) Capacity.** Row sum, free index $i$:
+$$\sum_{j\in J} x_{i,j} \le c_i \qquad \forall i \in I \qquad \text{(15 constraints)}$$
 
-**(b) Students at a school cannot exceed its capacity.**
+**(c) Assign only to built schools.**
+$$x_{i,j} \le y_i \qquad \forall i \in I,\ j \in J \qquad \text{(12,000 constraints)}$$
+If $y_i = 0$, every $x_{i,j} = 0$.
 
-Now it's a **row** sum — over `j`, free index `i`:
-```
-Σ_{j∈J} x_{i,j} ≤ c_i      ∀i ∈ I          (15 constraints)
-```
+**(d) Built schools at least 5 km apart.**
 
-**(c) A student may be assigned to a school only if the school is built.**
+Introduce $z_{i,i'} \in \{0,1\}$: $z_{i,i'} = 1$ if schools $i$ and $i'$ are both built.
+$$
+\begin{aligned}
+1 + z_{i,i'} &\ge y_i + y_{i'} && \forall i,i' \in I,\ i \ne i' \\
+d_{i,i'}\cdot z_{i,i'} &\ge 5\cdot z_{i,i'} && \forall i,i' \in I,\ i \ne i'
+\end{aligned}
+$$
+The second row reads $d \ge 5$ when $z = 1$, so two schools closer than 5 km cannot both be built.
 
-"Only if" = implication = `A ≤ B` (Part 3). Assignment implies built:
-```
-x_{i,j} ≤ y_i              ∀i ∈ I, j ∈ J   (12,000 constraints)
-```
-Check: if `yᵢ = 0` then every `x_{i,j} ≤ 0`, so nobody is assigned there. ✓ Disaggregated form —
-stronger relaxation.
+**(e) If more than 200 students go to zone A, at least 300 go to zone B** ($A_i \in \{0,1\}$ marks zone-A sites):
 
-**(d) Built schools must be at least 5 km apart** (`d_{i,i'}` given).
+Introduce $t \in \{0,1\}$: $t = 1$ if more than 200 students are assigned to zone-A schools.
+$$
+\begin{aligned}
+& \sum_i \sum_j A_i x_{i,j} \le 200 + M\cdot t \\
+& \sum_i \sum_j A_i x_{i,j} \ge 201\cdot t \\
+& \text{Then:} \\
+& \sum_i \sum_j (1-A_i) x_{i,j} \ge 300\cdot t
+\end{aligned}
+$$
+$M = 800$ works, since there are only 800 students.
 
-Worth more points → auxiliary needed. We need "both built" as something we can talk about:
-```
-Introduce z_{i,i'} ∈ {0,1}:  z_{i,i'} = 1 if schools i and i' are both built.
-    1 + z_{i,i'} ≥ y_i + y_{i'}          ∀i,i' ∈ I, i ≠ i'
-    d_{i,i'}·z_{i,i'} ≥ 5·z_{i,i'}       ∀i,i' ∈ I, i ≠ i'
-```
-The second row is vacuous when `z = 0`, and reads `d_{i,i'} ≥ 5` when `z = 1`. So if the distance
-is under 5, `z` can't be 1, so both can't be built. ✓
+$(1 - A_i)$ selects zone-B sites. The last row imposes nothing when $t = 0$.
 
-**(e) If more than 200 students go to zone A, at least 300 must go to zone B.**
-(`Aᵢ ∈ {0,1}` marks zone-A sites.)
-
-The threshold-indicator pattern from Part 6, then the consequence:
-```
-Introduce t ∈ {0,1}:  t = 1 if more than 200 students are assigned to zone-A schools.
-    Σ_i Σ_j A_i x_{i,j} ≤ 200 + M·t          (A: forces t up)
-    Σ_i Σ_j A_i x_{i,j} ≥ 201·t              (B: forces t down)
-Then:
-    Σ_i Σ_j (1−A_i) x_{i,j} ≥ 300·t
-M = 800 works, since there are only 800 students.
-```
-Note `(1 − Aᵢ)` is the negation from Part 3 — it selects zone-**B** sites. And the final row is
-vacuous when `t = 0`, correctly imposing nothing when the trigger hasn't fired.
-
-**(f) A single objective: minimise cost, maximise preference.**
-```
-min  Σ_i f_i y_i − Σ_i Σ_j s_{i,j} x_{i,j}
-```
+**(f) One objective:**
+$$\min \sum_i f_i y_i - \sum_i \sum_j s_{i,j} x_{i,j}$$
 
 ---
 
-# Part 10 — Traps and drills
+# Part 10: Traps and practice
 
-## The six ways people lose points
+## Where points are lost
 
-1. **Missing `∀` range**, or the wrong one — `j ∈ J\{21}`, `t ∈ {4,…,15}`.
-2. **Unnamed auxiliary variable.** The prompt demands words. No words, no points.
-3. **M treated as a variable**, or no justification for its size.
-4. **Only one direction of an indicator** when the wording said "iff".
-5. **A product left non-linear.**
-6. **Answering a different sub-question** than the one asked (merging b and c).
+1. Missing or wrong $\forall$ range ($j \in J\setminus\{21\}$, $t \in \{4,\dots,15\}$).
+2. Auxiliary variable without a meaning in words.
+3. $M$ written as a variable, or its size not justified.
+4. Only one direction of an indicator when the wording says "if and only if".
+5. A product of variables left in the model.
+6. Answering a different sub-question than the one asked.
 
-## If you're stuck in the exam
+## When stuck
 
-1. Which index is free? That tells you the `∀`.
-2. Am I summing a row or a column? Draw the grid.
-3. Is this conditional? If yes → invent a binary, name it in words, write both directions.
-4. Enumerate the 0/1 cases and check against the English (Part 3).
-5. Write *something* structured — partial credit is real on E4.
+1. Which index is free? That gives the $\forall$.
+2. Row or column sum? Draw the grid.
+3. Conditional? Introduce a binary, state its meaning, write both directions.
+4. Check the 0/1 cases against the text.
+5. Write something structured; partial credit is common on this question.
 
-## Drill order — timeboxed at one minute per point
+## Papers (one minute per point)
 
-1. SS25 E4 *School Planning* (21 min)
-2. SS24 P4 *Tour d'Allemagne* (22 min)
-3. SS23 E2 *Ice cream production* (22 min)
-4. SS21 A3 *Biergärten* (35 min) — stamina
+1. 2026 P2 *Glass Production* (21 min)
+2. SS25 E4 *School Planning* (21 min)
+3. SS24 P4 *Tour d'Allemagne* (22 min)
+4. SS23 E2 *Ice cream production* (22 min)
+5. SS21 A3 *Biergärten* (35 min)
 
-## End-of-day test — from blank paper
+## From blank paper
 
 1. exactly-one assignment
-2. capacity linked to an open/build decision
-3. "only if" linking, disaggregated
-4. pairwise mutual exclusion from a distance parameter
-5. **"if A > k then B ≥ m"** — both indicator directions plus the consequence
+2. capacity linked to a build decision
+3. disaggregated "only if" linking
+4. pairwise exclusion from a distance parameter
+5. "if $A > k$ then $B \ge m$": both indicator directions plus the consequence
 6. two goals in one objective, with the sign flip explained
+7. linearising binary × continuous
 
-Number 5 decides whether you get 15/22 or 22/22.
+## Facts used elsewhere
 
-## Three sentences worth points elsewhere on the paper
-
-1. The LP relaxation of a max IP gives an **upper** bound; equal integer sets with a smaller
-   relaxation region means a **stronger** formulation.
-2. It is NP-hard to decide whether an IP is even **feasible**; SAT reduces to binary IP.
-3. **TU + integral `b` ⇒ the LP relaxation's vertices are already integral** ⇒ the IP is solvable
-   in polynomial time. That's why assignment and network flow are easy, and GAP and bin packing
-   are not. → [08-total-unimodularity-and-matroids](08-total-unimodularity-and-matroids.md)
+1. The LP relaxation of a max IP is an upper bound; same integer set with a smaller relaxation region means a stronger formulation.
+2. Deciding IP feasibility is NP-hard; SAT reduces to binary IP.
+3. TU + integral $b$ $\Rightarrow$ the LP relaxation's vertices are integral $\Rightarrow$ the IP is solvable as an LP. That is why assignment and network flow are easy and GAP and bin packing are not ([08](08-total-unimodularity-and-matroids.md)).

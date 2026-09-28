@@ -1,256 +1,200 @@
-# Network flow — from scratch
+# Network flow
 
-Teaching companion to [09-network-flow](09-network-flow.md). That file is the reference;
-**this one assumes you know nothing**.
+Companion to [09-network-flow](09-network-flow.md).
 
-Part of exam slot **E6** (12–18 pts), which rotates between flow, matroids, TU, knapsack DP and
-TSP. Flow is the cheapest of the five to learn and **`S8.3` is SS25 E6 word-for-word**, so this
-is the highest-value hour in the whole combinatorial block.
+Exam slot E6/P6 (12–18 pts), which rotates between flow, matroids, TU, knapsack DP and TSP. `S8.3` is SS25 E6 word for word.
 
 ---
 
-# Part 0 — What the exam actually asks
+# Part 0: What the exam asks
 
-**SS25 E6** (14 pts) — *Maximum flow and minimum cut counterexamples*:
+**SS25 E6** (14 pts), *Maximum flow and minimum cut counterexamples*:
 
-> *"Consider the following statements. Use the given graphs to find a suitable counterexample
-> for each one of them. Clearly describe why the given counterexample refutes the statement."*
+> *"Consider the following statements. Use the given graphs to find a suitable counterexample for each one of them. Clearly describe why the given counterexample refutes the statement."*
 >
-> a) If all capacities are odd then there is a maximal `s–t` flow `f` such that `f(e)` is odd
->    for all `e ∈ E`.
-> b) Adding a number `λ ∈ ℕ` to all capacities `c(e)` does not change the minimal cuts.
+> a) If all capacities are odd then there is a maximal $s$–$t$ flow $f$ such that $f(e)$ is odd for all $e \in E$.
+> b) Adding a number $\lambda \in \mathbb{N}$ to all capacities $c(e)$ does not change the minimal cuts.
 
-Both are **false**, and you're given a blank diamond graph to write capacities onto.
+Both are false; you write capacities onto a blank diamond graph.
 
-**SS21 A5** — the more traditional version: run Ford-Fulkerson, state the max flow, identify a
-minimum cut.
+**SS21 A5:** run Ford–Fulkerson, state the max flow, give a minimum cut.
 
-So two skills: **execute the algorithm**, and **break a plausible-sounding claim**.
+**2026 P6** (17 cr): starting from a given flow, list the residual network, run Ford–Fulkerson (one path needs a backward arc), give a cut equal to the flow value, and justify integrality.
 
----
-
-# Part 1 — What a flow network is
-
-A directed graph where each arc has a **capacity** — the most that can pass through it. Think
-water pipes, or traffic.
-
-```
-N = (V, E, u, s, t)
-
-V   nodes
-E   directed arcs
-u   u(e) ≥ 0 — capacity of arc e
-s   the SOURCE — where everything starts
-t   the SINK — where everything must end up
-```
-
-A **flow** `f` assigns a number `f(e)` to each arc: how much is actually flowing through it,
-as opposed to how much *could*.
-
-## The two rules a flow must obey
-
-**Rule 1 — capacity.** You can't push more through a pipe than it holds, and you can't push
-negative amounts:
-```
-0  ≤  f(e)  ≤  u(e)        for every arc e
-```
-
-**Rule 2 — conservation.** At every node *except* `s` and `t`, what comes in must go out.
-Nothing is created or stored:
-```
-Σ (flow in)  =  Σ (flow out)        for every v ∈ V \ {s, t}
-```
-
-`s` is exempt (it produces), `t` is exempt (it absorbs). That's all a flow is.
-
-> In the min-cost formulation the course writes conservation with a supply term on the inflow
-> side: `Σᵢ f(i,j) + bⱼ = Σᵢ f(j,i)`. Here `bⱼ > 0` is production, `bⱼ < 0` is consumption. For
-> max-flow problems `b = 0` everywhere except `s` and `t`, which is the version above.
-
-## Value of a flow
-
-```
-val(f) = total flow leaving s = Σⱼ f(s,j)
-```
-
-By conservation this equals the total arriving at `t` — nothing leaks in between. **The
-max-flow problem is: make `val(f)` as large as possible.**
+Two skills: run the algorithm, and break a claim with a counterexample.
 
 ---
 
-# Part 2 — Cuts
+# Part 1: Flow networks
 
-A **cut** is a way of splitting the nodes into two teams, with `s` on one side and `t` on the
-other:
+$$N = (V, E, u, s, t)$$
 
-```
-S = [X, V\X]      with  s ∈ X   and   t ∈ V\X
-```
+| Symbol | Meaning |
+|---|---|
+| $V$ | nodes |
+| $E$ | directed arcs |
+| $u$ | $u(e) \ge 0$, capacity of arc $e$ |
+| $s$ | source |
+| $t$ | sink |
 
-Delete the arcs going from `X` to `V\X` and there is no longer any route from `s` to `t`. A cut
-is a *bottleneck you could impose*.
+A flow $f$ assigns $f(e)$ to each arc.
 
-## Cut capacity — forward arcs only
+**Capacity:**
 
-```
-cap(S)  =  Σ  u(i,j)      over arcs with  i ∈ X,  j ∈ V\X
-```
+$$0 \le f(e) \le u(e) \qquad \text{for every arc } e$$
 
-**Only arcs pointing from the `s`-side to the `t`-side count.** Arcs pointing backwards — from
-`V\X` back to `X` — contribute **nothing**.
+**Conservation** at every node except $s$ and $t$:
 
-Why: capacity measures how much *could* cross toward `t`. An arc pointing the wrong way can't
-carry anything toward `t` at all, so it imposes no limit. Counting it would inflate the cut.
+$$\sum (\text{flow in}) = \sum (\text{flow out}) \qquad \text{for every } v \in V \setminus \{s, t\}$$
 
-**This is the single most common error in the topic.** Write "forward only" next to your working.
+The course's min-cost form writes conservation with a supply term: $\sum_i f(i,j) + b_j = \sum_i f(j,i)$, with $b_j > 0$ production and $b_j < 0$ consumption. For max flow, $b = 0$ except at $s$ and $t$.
 
----
+**Value:**
 
-# Part 3 — Weak duality, and why this is Day 2 again
+$$\text{val}(f) = \text{total flow leaving } s = \sum_j f(s,j)$$
 
-Here's the elegant part. Take **any** flow `f` and **any** cut `S`. Everything reaching `t` has
-to cross from `X` to `V\X` at some point, and the crossing capacity is `cap(S)`. So:
-
-```
-val(f)  ≤  cap(S)          for EVERY flow and EVERY cut
-```
-
-**That is weak duality** — the same statement, and the same shape of argument, as
-`cᵀx ≤ bᵀy` in LP duality ([04a](04a-duality-lesson.md) Part 1). Every cut is a *certificate*
-bounding every flow, exactly as every dual-feasible point bounds every primal-feasible one.
-
-And the theorem:
-
-> **Max-flow = min-cut.**
-> ```
-> max val(f)  =  min cap(S)
-> ```
-
-That's **strong duality** for this problem. The best flow exactly matches the tightest
-bottleneck — no gap.
-
-The practical consequence you'll use constantly:
-
-> **If you find a flow and a cut with the same value, both are optimal — and you've proved it.**
-
-No further work needed. That's your verification step every time.
+By conservation this equals the flow arriving at $t$. Max flow: maximise $\text{val}(f)$.
 
 ---
 
-# Part 4 — The residual network
+# Part 2: Cuts
 
-This is the one genuinely new construction, and the one conceptual hurdle. Take it slowly.
+A cut splits the nodes into two sets with $s$ on one side and $t$ on the other:
 
-Given a current flow `f`, build a new graph showing **what moves are still available**. For each
-original arc `(i,j)`:
+$$S = [X, V\setminus X] \qquad \text{with } s \in X \text{ and } t \in V\setminus X$$
 
-```
-FORWARD arc  (i,j)  with capacity  u(e) − f(e)     ← spare room left
-BACKWARD arc (j,i)  with capacity  f(e)            ← flow you could UNDO
-```
+Any split with $s \in X$ and $t \notin X$ is a cut.
 
-Arcs with residual capacity 0 are dropped.
+## Cut capacity: forward arcs only
 
-## Why the backward arc — the bit that matters
+$$\text{cap}(S) = \sum u(i,j) \qquad \text{over arcs with } i \in X,\; j \in V\setminus X$$
 
-The forward arc is obvious: unused capacity. The backward arc looks strange. It exists so you can
-**take back a routing decision you made earlier**. Without it, greedy path-finding gets stuck.
+Only arcs from the $s$-side to the $t$-side count, using their capacities. Arcs from $V\setminus X$ back into $X$ and arcs inside one side contribute nothing. Counting backward arcs is the most common error in this topic.
 
-**Concrete example.** Five arcs, every capacity 1:
+---
+
+# Part 3: Max-flow min-cut
+
+For any flow $f$ and any cut $S$, all flow reaching $t$ must cross from $X$ to $V\setminus X$, so
+
+$$\text{val}(f) \le \text{cap}(S) \qquad \text{for every flow and every cut}$$
+
+This is weak duality, the same shape as $c^Tx \le b^Ty$ in LP ([04a](04a-duality-lesson.md) Part 1).
+
+**Theorem (max-flow = min-cut):**
+
+$$\max \text{val}(f) = \min \text{cap}(S)$$
+
+Consequence: a flow and a cut with the same value are both optimal. This is the standard proof of optimality.
+
+$$\text{any flow} \le \text{max flow} = \text{min cut} \le \text{any cut}$$
+
+---
+
+# Part 4: The residual network
+
+For a current flow $f$ and each original arc $(i,j)$:
+
+$$
+\begin{aligned}
+&\text{forward arc } (i,j) \text{ with residual capacity } u(e) - f(e) && \text{spare room} \\
+&\text{backward arc } (j,i) \text{ with residual capacity } f(e) && \text{flow you can undo}
+\end{aligned}
+$$
+
+Drop arcs with residual capacity 0.
+
+## Why backward arcs are needed
+
+Five arcs, all capacity 1:
 ```
     s → a  (1)      a → t  (1)
     s → b  (1)      b → t  (1)
                     a → b  (1)
 ```
 
-Suppose your first augmenting path is `s → a → b → t`, pushing 1 unit. Now `s→a`, `a→b`, `b→t`
-are all full. Look for another `s→t` path using only unused arcs: `s→b` is free, but `b→t` is
-full. `a→t` is free, but `s→a` is full. **Dead end at value 1.**
+Push 1 along $s \to a \to b \to t$. Now $s\to a$, $a\to b$, $b\to t$ are full. Using forward arcs only, $s\to b$ leads to the full $b\to t$, and $a\to t$ is only reachable through the full $s\to a$. Stuck at value 1, but the maximum is 2.
 
-But the true maximum is **2** — send one unit `s→a→t` and another `s→b→t`.
+The residual network contains the backward arc $b\to a$ (capacity 1, since $f(a,b) = 1$), giving the path
 
-The residual network finds it. After the first augmentation it contains the backward arc `b→a`
-(capacity 1, because `f(a,b) = 1`). So this path exists:
-```
-s → b        (forward, spare capacity 1)
-b → a        (BACKWARD — undoing 1 unit of the a→b flow)
-a → t        (forward, spare capacity 1)
-```
-Augmenting along it adds 1 to `f(s,b)`, **subtracts** 1 from `f(a,b)`, adds 1 to `f(a,t)`. The
-result is `f(s,a) = f(a,t) = f(s,b) = f(b,t) = 1` and `f(a,b) = 0` — value **2**. ✓
+$$
+\begin{aligned}
+&s \to b && \text{forward, residual 1} \\
+&b \to a && \text{backward, undoes 1 unit on } a\to b \\
+&a \to t && \text{forward, residual 1}
+\end{aligned}
+$$
 
-> **The backward arc is the algorithm's undo button.** It's what makes Ford-Fulkerson correct
-> rather than merely greedy.
+Augmenting adds 1 to $f(s,b)$, subtracts 1 from $f(a,b)$, adds 1 to $f(a,t)$. Result: $f(s,a) = f(a,t) = f(s,b) = f(b,t) = 1$, $f(a,b) = 0$, value 2.
+
+Backward arcs let the algorithm undo earlier routing choices; without them it can stop below the maximum. They matter most when you start from a given flow, as in 2026 P6.
+
+## Updating after an augmentation
+
+For each arc on the path, pushing $\kappa$:
+
+$$
+\begin{aligned}
+&\text{residual in the path's direction} && -\kappa \\
+&\text{residual in the opposite direction} && +\kappa
+\end{aligned}
+$$
+
+If the path used a backward arc $(j,i)$, the flow on the original arc $(i,j)$ decreases by $\kappa$.
 
 ---
 
-# Part 5 — Ford-Fulkerson
+# Part 5: Ford–Fulkerson
 
-```
-1. Start with f(e) = 0 on every arc.
+1. Start with $f(e) = 0$ (or the given flow).
 2. Build the residual network.
-3. Find ANY path s → … → t in it. If none exists, STOP — the flow is maximum.
-4. κ = the smallest residual capacity along that path (the "bottleneck").
-5. Augment: f += κ on forward arcs, f −= κ on backward arcs.  val += κ.
+3. Find any $s \to t$ path in it with all residuals $> 0$. If none exists, stop: $f$ is maximum.
+4. $\kappa$ = smallest residual capacity on the path (bottleneck).
+5. Augment: $f \mathrel{+}= \kappa$ on forward arcs, $f \mathrel{-}= \kappa$ on backward arcs. $\text{val} \mathrel{+}= \kappa$.
 6. Go to 2.
-```
 
-**Edmonds-Karp** is the same algorithm with one rule added: always take a *shortest* augmenting
-path (BFS). That's what makes it polynomial.
+Any path with positive residuals is allowed and gives the same final value. The choice only affects the number of iterations. **Edmonds–Karp** always takes a shortest path (BFS), which makes it polynomial.
 
-```
-Ford-Fulkerson   O(|E| · U)     pseudopolynomial — depends on capacity size
-Edmonds-Karp     O(V · E²)      polynomial
-```
+| Algorithm | Running time | |
+|---|---|---|
+| Ford–Fulkerson | $O(\lvert E\rvert \cdot U)$ | pseudopolynomial |
+| Edmonds–Karp | $O(V \cdot E^2)$ | polynomial |
 
-## Integrality — and why the algorithm stops at all
+## Integrality
 
-**Integrality theorem.** If every capacity `u(e)` is an integer:
+$$
+\begin{aligned}
+&u \text{ integral, start } f = 0 \\
+&\implies \text{all residual capacities } u - f \text{ and } f \text{ stay integral} \\
+&\implies \text{every bottleneck } \kappa \text{ is an integer} \ge 1 \\
+&\implies \text{each augmentation raises } \text{val}(f) \text{ by} \ge 1 \\
+&\implies \text{FF terminates } (\text{val}(f) \le \text{cap}(S) \text{ bounds it}) \\
+&\phantom{\implies} \text{and returns a max flow with integral } f(e) \text{ on every arc.}
+\end{aligned}
+$$
 
-```
-u integral, start f = 0 (integral)
-  ⟹  every residual capacity  u−f  and  f  stays integral
-  ⟹  every bottleneck κ is a positive INTEGER, i.e. κ ≥ 1
-  ⟹  each augmentation raises val(f) by ≥ 1
-  ⟹  FF terminates (val(f) ≤ cap(S) is a finite bound)
-      and its max flow has f(e) integral on EVERY arc.
-```
+This is also the termination proof; with irrational capacities FF need not terminate. 2026 P6e asked for this argument, so write the chain, not just the conclusion. (Alternative: the max-flow LP has a totally unimodular constraint matrix.)
 
-This chain is simultaneously the **termination proof** for Ford-Fulkerson — with irrational
-capacities FF need not terminate at all — and the reason the `O(|E| · U)` bound holds.
+## Reading off the minimum cut
 
-**Endterm 2026 P6 (17 cr) asked for exactly this argument.** Write the chain, not just the
-conclusion: "integral capacities ⇒ integral residual capacities ⇒ integral κ ≥ 1 per
-augmentation ⇒ an integral maximum flow exists."
+1. Take the final residual network (no augmenting path left).
+2. $X$ = every node reachable from $s$ in it.
+3. $S = [X, V\setminus X]$ is a minimum cut.
+4. Check $\text{cap}(S) = \text{val}(f)$.
 
-## Reading off the minimum cut when you finish
+Why: $t$ is unreachable, so this is a cut. Every arc leaving $X$ is saturated (otherwise its forward residual would extend $X$), and every arc entering $X$ carries zero flow (otherwise its backward residual would extend $X$). So $\text{val}(f) = \text{cap}(S) - 0$.
 
-The algorithm hands you the min cut for free:
-
-```
-1. Take the FINAL residual network (after no augmenting path remains).
-2. X = every node reachable from s in that residual network.
-3. S = [X, V\X] is a minimum cut.
-4. Check: cap(S) should equal val(f). If it doesn't, you've made an error.
-```
-
-Step 4 is a free correctness check. Use it every time.
-
-Why it works: if no augmenting path exists, `t` is unreachable, so `t ∉ X` — it's a genuine cut.
-Every arc leaving `X` must be *saturated* (else its residual forward arc would extend `X`), **and**
-every arc entering `X` must carry zero flow (else its residual backward arc would point out of `X`
-and extend it). Hence `val(f)` = forward flow − backward flow = `cap(S) − 0 = cap(S)`.
+Sanity check on the final flow: $S\to T$ arcs full, $T\to S$ arcs empty.
 
 ---
 
-# Part 6 — Worked example: SS25 E6 / S8.3
+# Part 6: Worked example, SS25 E6 / S8.3
 
-You get a blank graph shaped `s → a → c`, `s → b → c`, `c → t`, and must **write capacities on
-it** to break each claim.
+The given graph: $s \to a \to c$, $s \to b \to c$, $c \to t$.
 
-## (a) "All capacities odd ⟹ some maximum flow has every `f(e)` odd"
+## (a) "All capacities odd $\implies$ some maximum flow has every $f(e)$ odd"
 
-**Counterexample.** Put capacity 1 on `s→a`, `a→c`, `s→b`, `b→c`, and 3 on `c→t`:
+Capacities 1 on $s\to a$, $a\to c$, $s\to b$, $b\to c$, and 3 on $c\to t$:
 
 ```
               a
@@ -260,122 +204,99 @@ it** to break each claim.
               b
 ```
 
-All five capacities — 1, 1, 1, 1, 3 — are odd. ✓
+All capacities are odd. The maximum flow sends one unit through $a$ and one through $b$; both merge at $c$, so
 
-Now the maximum flow: one unit through `a`, one through `b`, both merging at `c`, then both down
-`c→t`. So `val(f) = 2`, and:
-```
-f(c,t) = 2      ← EVEN
-```
-The arc `c→t` carries 2. And that's forced — no maximum flow can do otherwise, since all flow
-must funnel through `c→t`. **So the claim is false.** ∎
+$$f(c,t) = 2 \qquad \text{even}$$
 
-The mechanism: merging two odd flows produces an even one. Look for a bottleneck arc that
-*sums* several others.
+Every maximum flow must send both units through $c\to t$, so the claim is false. Mechanism: two odd flows merging give an even flow.
 
-## (b) "Adding `λ` to every capacity doesn't change the minimal cuts"
+## (b) "Adding $\lambda$ to every capacity does not change the minimal cuts"
 
-**Same graph works.** With the capacities above there are two natural cuts:
+Same graph and capacities:
 
-```
-cut around s:   X = {s}            arcs s→a, s→b        cap = 1 + 1 = 2   ← minimum
-cut around t:   X = {s,a,b,c}      arc  c→t             cap = 3
-```
+$$
+\begin{aligned}
+&\text{cut around } s: && X = \{s\} && \text{arcs } s\to a,\ s\to b && \text{cap} = 1 + 1 = 2 && \text{minimum} \\
+&\text{cut around } t: && X = \{s,a,b,c\} && \text{arc } c\to t && \text{cap} = 3
+\end{aligned}
+$$
 
-The minimum cut is the one isolating `s`, with capacity 2.
+Add $\lambda = 2$ to every capacity:
 
-Now add `λ = 2` to **every** capacity:
+$$
+\begin{aligned}
+&\text{cut around } s: && \text{two arcs, each 3} && \text{cap} = 6 \\
+&\text{cut around } t: && \text{one arc, 5} && \text{cap} = 5 && \text{now the minimum}
+\end{aligned}
+$$
 
-```
-cut around s:   two arcs, each 1+2 = 3        cap = 6
-cut around t:   one arc,       3+2 = 5        cap = 5   ← now the minimum
-```
+The minimum cut moved, so the claim is false. Mechanism: adding $\lambda$ raises a cut by $\lambda$ times its number of arcs, so cuts with fewer arcs gain less.
 
-**The minimum cut has moved to the other side of the graph.** The set of minimal cuts changed,
-so the claim is false. ∎
+## Counterexample method
 
-The mechanism, worth stating in your answer: **adding `λ` penalises cuts in proportion to how
-many arcs they contain.** A 2-arc cut gains `2λ`; a 1-arc cut gains only `λ`. So cuts with fewer
-arcs get relatively cheaper, and a narrow-but-expensive cut can overtake a wide-but-cheap one.
-
-## How to attack any "give a counterexample" question
-
-```
-1. Keep it SMALL — 4 or 5 nodes. You need one broken case, not a general theory.
-2. Look for the mechanism the claim ignores:
-      merging flows      → parities combine
-      counting arcs      → per-arc effects scale with cut width
-      ties               → a tie broken the other way
-3. Compute the actual numbers. Don't hand-wave.
-4. WRITE THE SENTENCE saying which part of the claim fails. The exam says
-   "clearly describe why" — the numbers alone don't score.
-```
+1. Keep it small: 4–5 nodes.
+2. Find the mechanism the claim ignores:
+    - merging flows $\to$ parities combine
+    - counting arcs $\to$ per-arc changes scale with cut size
+    - ties $\to$ break the tie the other way
+3. Compute the numbers.
+4. Write the sentence stating which part of the claim fails.
 
 ---
 
-# Part 7 — Modelling transformations
+# Part 7: Modelling transformations
 
-Occasionally you're asked to convert a messier network into the standard single-source,
-single-sink, arc-capacity form. Five standard moves ([09](09-network-flow.md) Procedures 4–7,
-plus `D8.4`):
+([09](09-network-flow.md) Procedures 4–7, `D8.4`)
 
 | Problem | Fix |
 |---|---|
-| **Several sources / sinks** | add a super-source `s` with arcs to each `sᵢ`, capacity `b(sᵢ)`; likewise a super-sink |
-| **Node has a capacity** | split `v` into `v_in` and `v_out`, join them by an arc with that capacity; incoming arcs → `v_in`, outgoing → `v_out` |
-| **Negative costs** | reverse the arc, negate the cost, adjust `b` at both endpoints |
-| **Undirected edge** | replace with two opposite directed arcs |
-| **Lower bounds on arcs** | shift flow to make the lower bound zero and adjust supplies |
+| several sources / sinks | super-source $s$ with arcs to each $s_i$, capacity $b(s_i)$; likewise a super-sink |
+| node capacity | split $v$ into $v_{\text{in}}$ and $v_{\text{out}}$ joined by an arc with that capacity; incoming arcs go to $v_{\text{in}}$, outgoing leave $v_{\text{out}}$ |
+| negative costs | reverse the arc, negate the cost, adjust $b$ at both ends |
+| undirected edge | two opposite directed arcs |
+| lower bounds on arcs | shift flow so the lower bound is zero and adjust supplies |
 
-Node-splitting is the one worth knowing cold — it's the standard trick and it's easy to state.
+$$
+\begin{aligned}
+&\text{assignment} \subset \text{transportation} \subset \text{min-cost flow} = \text{a linear program} \\
+&\text{shortest path, max flow} \to \text{also special cases of min-cost flow}
+\end{aligned}
+$$
 
-## Where flow sits in the bigger picture
-
-```
-assignment  ⊂  transportation  ⊂  min-cost flow  =  a linear program
-shortest path, max flow        →  also special cases of min-cost flow
-```
-
-All of these are LPs whose constraint matrices are **totally unimodular**, which is why they
-solve in polynomial time and why their LP relaxations come out integral.
-→ [08-total-unimodularity-and-matroids](08-total-unimodularity-and-matroids.md)
+All have totally unimodular constraint matrices, so their LP relaxations are integral. See [08-total-unimodularity-and-matroids](08-total-unimodularity-and-matroids.md).
 
 ---
 
-# Part 8 — Traps and drills
+# Part 8: Traps and practice
 
 ## Where points are lost
 
-1. **Counting backward arcs in a cut's capacity.** Forward only. The most common error.
-2. **Forgetting backward arcs in the *residual* network.** Opposite direction, same word —
-   residual backward arcs are essential, cut backward arcs are ignored. Keep them straight.
-3. **Not verifying `cap(S) = val(f)`.** It's a free check and it catches arithmetic slips.
-4. **Building the min cut from the original graph** instead of the *final residual* network.
-5. **Giving a counterexample without the sentence.** "Clearly describe why" is in the prompt.
-6. **Over-large counterexamples.** Four or five nodes is plenty; big graphs invite arithmetic
-   mistakes for no extra marks.
+1. Counting backward arcs in a cut's capacity.
+2. Forgetting backward arcs in the residual network. (Cut: ignore them. Residual: essential.)
+3. Not checking $\text{cap}(S) = \text{val}(f)$.
+4. Reading the min cut from the original graph instead of the final residual network.
+5. Giving a counterexample without the explanatory sentence.
+6. Using a large counterexample.
 
-## Say these without looking
+## Recall list
 
-- conservation: in = out at every node but `s` and `t`
-- `0 ≤ f(e) ≤ u(e)`
-- cut capacity counts **forward arcs only**
-- `val(f) ≤ cap(S)` always; **max-flow = min-cut** at optimum
-- residual: forward `u − f`, backward `f`
-- min cut `X` = nodes reachable from `s` in the **final** residual network
+- conservation: in = out at every node except $s$ and $t$
+- $0 \le f(e) \le u(e)$
+- cut capacity: capacities of $S\to T$ arcs only
+- $\text{val}(f) \le \text{cap}(S)$ always; max flow = min cut
+- residual: forward $u - f$, backward $f$
+- min cut $X$ = nodes reachable from $s$ in the final residual network
 
-## Warm-up ladder (untimed)
+## Exercises (untimed)
 
-1. `theory/09` Procedures 1–3 — Ford-Fulkerson, residual network, reading the min cut.
-2. **`S8.3`** *Max-flow and min-cut counterexamples* — `[SAME]` **this is SS25 E6 word-for-word,
-   same graphs.** Do it properly, then check against the SS25 solutions.
-3. `T8.2` *Maximum Flow* — `[DRILL]` only if executing Ford-Fulkerson is still shaky.
-4. `D8.4` *Tips and tricks for network modeling* — `[CONCEPT]`, 10 min skim.
+1. `theory/09` Procedures 1–3: Ford–Fulkerson, residual network, min cut.
+2. `S8.3` *Max-flow and min-cut counterexamples* `[SAME]`: SS25 E6 with the same graphs. Check against the SS25 solutions.
+3. `T8.2` *Maximum Flow* `[DRILL]`: if running Ford–Fulkerson is still slow.
+4. `D8.4` *Tips and tricks for network modeling* `[CONCEPT]`: 10-minute skim.
 
-Sheet 8 is `exercises/09-integer-programming-network-flow/sheet-08-exercises.pdf`; the
-self-study section (S8.x) is in the second half of the same file.
+Sheet 8: `exercises/09-integer-programming-network-flow/sheet-08-exercises.pdf`; S8.x is in the second half.
 
-## Then the paper
+## Papers
 
-- **SS21 A5** (flow part) — the traditional format: run the algorithm, state max flow, give a
-  minimum cut.
+- 2026 P6: residual network from a given flow, backward-arc augmentation, cut, integrality.
+- SS21 A5 (flow part): run the algorithm, state the max flow, give a minimum cut.

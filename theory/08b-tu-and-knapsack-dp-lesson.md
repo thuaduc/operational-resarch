@@ -1,169 +1,110 @@
-# Total unimodularity and knapsack DP — from scratch
+# Total unimodularity and knapsack DP
 
-Teaching companion to the other two halves of
-[08-total-unimodularity-and-matroids](08-total-unimodularity-and-matroids.md). Matroids are in
-[08a](08a-matroids-lesson.md).
-
-Both are **E6** blocks with a ~30-minute budget each. Mechanics only — skip every proof.
+Companion to the TU and DP parts of [08-total-unimodularity-and-matroids](08-total-unimodularity-and-matroids.md). Matroids are in [08a](08a-matroids-lesson.md).
 
 ---
 
-# PART ONE — TOTAL UNIMODULARITY
+# Part one: Total unimodularity
 
-## What it's for
+## Purpose
 
-Integer programs are NP-hard in general. But **some** IPs are secretly easy: solve the LP
-relaxation with plain simplex and the answer comes out integral anyway, for free.
+IPs are NP-hard in general, but for some IPs the LP relaxation already has an integral optimal vertex. Total unimodularity (TU) is a condition that guarantees this.
 
-TU is the condition that guarantees it.
+## Definition
 
-```
-A totally unimodular  +  b integral   ⟹   every vertex of {x ≥ 0 : Ax ≤ b} is INTEGRAL
-                                      ⟹   the LP relaxation already solves the IP
-                                      ⟹   the IP is in P
-```
+$$A \text{ is TU} \;:\iff\; \text{every square submatrix of } A \text{ has determinant in } \{-1, 0, +1\}$$
 
-That sentence is the single most quoted fact from this chapter. It's why assignment and network
-flow are easy while GAP and bin packing are not.
+With $1\times 1$ submatrices, every entry must be in $\{-1, 0, +1\}$. A single entry of 2 disproves TU.
 
-> **Careful (2026 P1e):** the theorem says the **vertices** are integral — simplex returns a
-> vertex, so it hands you an integral optimum. It does **not** say every feasible point is
-> integral: the feasible region is convex, so it still contains fractional points. One-line
-> counterexample: `A = [1]` is TU, `b = 1` is integral, yet `{x ≥ 0 : x ≤ 1} = [0,1]`
-> contains `x = 1/2`.
+## Why integrality follows
 
-## The definition
+A vertex is $x_B = B^{-1}b$. By Cramer's rule $x_i = \det(B_i)/\det(B)$, where $B_i$ is $B$ with column $i$ replaced by $b$. TU gives $\det(B) = \pm 1$, and integral $b$ makes the numerator an integer, so $x$ is integral.
 
-```
-A is TU  :⟺  EVERY square submatrix of A has determinant in {−1, 0, +1}
-```
+## Proving TU
 
-Immediate consequence: taking `1×1` submatrices, **every entry must itself be in `{−1,0,+1}`**.
-An entry of `2` disproves TU instantly.
+**Route A: recognise the matrix.** Accepted in SS21 A5b.
 
-## Why integrality follows (one line, worth knowing)
+$$
+\begin{aligned}
+&\text{incidence matrix of a bipartite graph} &&\to \text{TU} \\
+&\text{incidence matrix of a directed graph} &&\to \text{TU} \\
+&\text{consecutive-ones property (interval matrix)} &&\to \text{TU}
+\end{aligned}
+$$
 
-A vertex is `x_B = B⁻¹b`. By Cramer's rule `x_i = det(Bᵢ)/det(B)`, where `Bᵢ` is `B` with column
-`i` replaced by `b`. TU forces `det(B) = ±1`, and integral `b` makes the numerator an integer.
-Dividing an integer by `±1` gives an integer. ∎
+**Route B: three sufficient conditions.** Write them as three numbered checks:
 
-## How to PROVE a matrix is TU
+1. every entry is in $\{-1, 0, +1\}$
+2. every column has at most 2 non-zero entries
+3. the rows split into two groups $M_1, M_2$ such that for each column with two non-zeros:
+    - same sign $\to$ the two rows are in different groups
+    - opposite signs $\to$ the two rows are in the same group
 
-**Route A — recognise it.** Fastest, and it's what SS21 A5b accepts:
+If there is no conflict, give $(M_1, M_2)$ and conclude TU. If the split conflicts, try $A^T$, $-A$ or $[A, I]$, which preserve TU.
 
-```
-incidence matrix of a BIPARTITE graph        →  TU
-incidence matrix of a DIRECTED graph         →  TU
-consecutive-ones property (interval matrix)  →  TU
-```
+## Disproving TU
 
-> SS21's own solution says: *"The matrix is totally unimodular because it is the incidence matrix
-> of a bipartite graph (this alone would suffice as justification)."*
+1. Any entry outside $\{-1, 0, +1\}$? $\to$ not TU.
+2. Otherwise find a square submatrix with $\lvert\det\rvert \ge 2$.
+3. Show it and compute the determinant.
 
-**Route B — the three sufficient conditions.** State them as three numbered checks:
+A $2\times 2$ submatrix containing a zero always has determinant in $\{-1, 0, 1\}$, so check the zero-free $2\times 2$ blocks first.
 
-```
-1.  every entry is in {−1, 0, +1}
-2.  every COLUMN has at most 2 non-zero entries
-3.  the rows can be split into two groups M₁, M₂ such that, for each column with two
-    non-zeros:
-        same sign      →  the two rows go in DIFFERENT groups
-        opposite signs →  the two rows go in the SAME group
-```
+$$\det\begin{pmatrix} 1 & 1 \\ -1 & 1 \end{pmatrix} = 1\cdot 1 - 1\cdot(-1) = 2 \quad\to\quad \text{not TU}$$
 
-If no conflict arises, exhibit `(M₁, M₂)` and conclude TU.
+## Closure
 
-> **Do not write "by Ghouila-Houri".** The lecture never names this criterion, so the name earns
-> nothing. **Reproduce the three conditions.** (This is in the plan's corrections list.)
+$$A \text{ TU} \implies -A,\; A^T,\; A^{-1},\; [A, I] \text{ all TU}$$
 
-If the split conflicts, retry on `Aᵀ`, `−A`, or `[A, I]` — all preserve TU.
-
-## How to DISPROVE it
-
-```
-1. Any entry outside {−1, 0, +1}?  →  done, not TU.
-2. Otherwise hunt for a square submatrix with |det| ≥ 2.
-3. Exhibit it, compute the determinant, conclude.
-```
-
-**Shortcut that saves time:** a `2×2` submatrix containing a zero always has determinant in
-`{−1,0,+1}`. So **only zero-free `2×2` blocks can break it** — check those first.
-
-```
-⎡ 1  1 ⎤
-⎢      ⎥   det = 1·1 − 1·(−1) = 2   →  NOT TU
-⎣ −1 1 ⎦
-```
-
-## Closure facts
-
-```
-A TU  ⟹  −A, Aᵀ, A⁻¹, [A, I]  all TU
-```
-
-The `[A, I]` one matters: **adding slack variables never destroys TU**, which is why the
-standard-form version of a TU problem is still TU.
+$[A, I]$ means adding slack variables keeps TU.
 
 ---
 
-# PART TWO — KNAPSACK BY DYNAMIC PROGRAMMING
+# Part two: Knapsack by dynamic programming
 
-## The problem
+## Problem
 
-```
-max Σⱼ vⱼ xⱼ    s.t.  Σⱼ wⱼ xⱼ ≤ W,   x ∈ {0,1}
-```
-Pick items to maximise value without exceeding a weight budget.
+$$\max \sum_j v_j x_j \quad \text{s.t.} \quad \sum_j w_j x_j \le W,\quad x \in \{0,1\}$$
 
-## The table
+## Table
 
-```
-B[i, w] := the best total value using only items 1..i, with capacity w
-```
+$$B[i, w] := \text{best total value using only items } 1..i \text{ with capacity } w$$
 
-Rows = items considered so far, columns = capacity available. **Row 0 and column 0 are all
-zeros** — no items or no capacity means no value.
+Rows are items, columns are capacities. Row 0 and column 0 are all zeros.
 
-## The recurrence
+## Recurrence
 
-For each cell, you're deciding whether to take item `i`:
+$$
+\begin{aligned}
+&\text{if } w_i \le w: && B[i,w] = \max\{\underbrace{B[i-1, w]}_{\text{skip item } i},\; \underbrace{v_i + B[i-1, w - w_i]}_{\text{take item } i}\} \\
+&\text{else}: && B[i,w] = B[i-1, w] && \text{item } i \text{ does not fit}
+\end{aligned}
+$$
 
-```
-if wᵢ ≤ w :   B[i,w] = max{  B[i−1, w]  ,   vᵢ + B[i−1, w − wᵢ]  }
-                              ↑                ↑
-                          skip item i      take item i, and spend wᵢ
-                                           of the capacity
+Answer: $B[n, W]$.
 
-else      :   B[i,w] = B[i−1, w]           item doesn't fit at all
-```
+## Backtracking
 
-Answer: `B[n, W]`, the bottom-right corner.
+Start at $(n, W)$:
 
-## Backtracking — which items?
+1. $B[i,w] = B[i-1,w]$ $\to$ item $i$ not taken; go to $(i-1, w)$
+2. otherwise $\to$ item $i$ taken; record it; go to $(i-1, w - w_i)$
+3. Stop at $i = 0$.
 
-```
-Start at (n, W). Then repeatedly:
-   B[i,w] = B[i−1,w]   →  item i was NOT taken; move to (i−1, w)
-   otherwise           →  item i WAS taken; record it, move to (i−1, w − wᵢ)
-Stop at i = 0.
-```
+## Which index
 
-## The complexity question — it's asked directly
+$$
+\begin{aligned}
+&\text{by weight:} && O(n \cdot W_{\max}) \\
+&\text{by value:} && O(n \cdot V_{\max})
+\end{aligned}
+$$
 
-You can index the table by **weight** or by **value**:
+Use the smaller bound and say why. SS23 E4a asks this directly.
 
-```
-by weight:  O(n · W_max)
-by value:   O(n · V_max)
-```
+Both are pseudopolynomial: $W$ is a number that takes only $\log W$ bits to write, so knapsack is still NP-hard.
 
-**Run whichever bound is smaller.** SS23 E4a asks exactly this and awards marks for the
-justification.
-
-Note this is *pseudopolynomial*, not polynomial — `W` is a number, and writing it down takes
-only `log W` bits. That's why knapsack is still NP-hard.
-
-## Worked: SS23 E4
+## Worked example: SS23 E4
 
 > Five records, carry limit 5 kg. Maximise value.
 
@@ -175,14 +116,11 @@ only `log W` bits. That's why knapsack is still NP-hard.
 | Queen | 1 | 2 |
 | Nirvana | 2 | 1 |
 
-**(a) Which breakdown?**
-```
-W_max = 5        V_max = 2+3+4+1+2 = 12
-5 < 12   ⟹   index by WEIGHT
-```
+**(a) Index.**
 
-**(b) Fill the table.** Rows = items added one at a time, columns = capacity 0…5:
+$$W_{\max} = 5 \qquad V_{\max} = 2+3+4+1+2 = 12 \qquad 5 < 12 \implies \text{index by weight}$$
 
+**(b) Table.**
 ```
 capacity:        0   1   2   3   4   5
  0 records       0   0   0   0   0   0
@@ -193,73 +131,68 @@ capacity:        0   1   2   3   4   5
  + Nirvana       0   2   3   5   5   6
 ```
 
-Two sample cells, to see the recurrence working:
-```
-Pink Floyd (v=3, w=2) at capacity 5:
-   max{ B[1,5]=2 ,  3 + B[1,3]=3+2=5 }  =  5    ✓ take it
+Two cells:
 
-Nirvana (v=2, w=1) at capacity 5:
-   max{ B[4,5]=5 ,  2 + B[4,4]=2+4=6 }  =  6    ✓ take it
-```
+$$
+\begin{aligned}
+&\text{Pink Floyd } (v=3, w=2), \text{ capacity 5}: && \max\{B[1,5]=2,\; 3 + B[1,3] = 5\} = 5 \\
+&\text{Nirvana } (v=2, w=1), \text{ capacity 5}: && \max\{B[4,5]=5,\; 2 + B[4,4] = 6\} = 6
+\end{aligned}
+$$
 
-**(c) Which records, and what profit?** Maximum profit **6**. Backtracking gives two optima:
-```
-Led Zeppelin + Nirvana         4+2 = 6 €,   4+1 = 5 kg
-Pink Floyd + Queen + Nirvana   3+1+2 = 6 €, 2+2+1 = 5 kg
-```
+**(c) Items and profit.** Maximum 6, with two optima:
 
-## FPTAS, in case it's asked
+$$
+\begin{aligned}
+&\text{Led Zeppelin + Nirvana} && 4+2 = 6\text{ €}, && 4+1 = 5\text{ kg} \\
+&\text{Pink Floyd + Queen + Nirvana} && 3+1+2 = 6\text{ €}, && 2+2+1 = 5\text{ kg}
+\end{aligned}
+$$
 
-```
-1. θ = ε·v_max / n
-2. scale values:  vᵢ* = ⌊vᵢ/θ⌋     (weights and capacity unchanged)
-3. run the VALUE-indexed DP on the scaled instance
-4. report the chosen items at their ORIGINAL values
-Guarantee:  V_approx ≥ (1−ε)·V_opt
-```
+## FPTAS
 
-Placement in the hierarchy: `P ⊆ FPTAS ⊆ PTAS ⊆ APX`. Knapsack has an FPTAS. **Max clique, set
-cover and max independent set are not in APX at all** — no constant-factor approximation exists.
+1. $\theta = \varepsilon\cdot v_{\max} / n$
+2. scale values: $v_i^* = \lfloor v_i/\theta \rfloor$ (weights and capacity unchanged)
+3. run the value-indexed DP on the scaled instance
+4. report the chosen items at their original values
+
+Guarantee: $V_{\text{approx}} \ge (1-\varepsilon)\cdot V_{\text{opt}}$
+
+$P \subseteq \text{FPTAS} \subseteq \text{PTAS} \subseteq \text{APX}$. Knapsack has an FPTAS. Max clique, set cover and max independent set are not in APX.
 
 ---
 
-# Traps and drills
+# Traps
 
-## Where points are lost
+1. Writing "by Ghouila-Houri". The lecture does not name it; write out the three conditions.
+2. Checking every $2\times 2$ block instead of only the zero-free ones.
+3. Forgetting "and $b$ integral" in the integrality statement.
+4. Reading "integral polyhedron" as "all feasible points are integral" (false MC option, 2026 P1e). It means all vertices are integral; between two vertices lie fractional feasible points.
+5. Choosing the DP index without comparing $W_{\max}$ and $V_{\max}$.
+6. Giving the maximum value without the item set.
+7. Calling knapsack DP polynomial.
 
-1. **Writing "by Ghouila-Houri".** Unnamed in the lecture — reproduce the three conditions.
-2. **Checking every `2×2`** instead of just the zero-free ones.
-3. **Forgetting "+ integral `b`"** in the integrality statement. TU alone isn't enough.
-4. **Reading "integral polyhedron" as "all feasible points integral"** — tested verbatim as a
-   false MC option on endterm 2026 P1e. It means all VERTICES are integral; between two distinct
-   vertices lie uncountably many fractional feasible points, e.g. `1/2` in `[0,1]`.
-5. **Choosing the wrong DP index.** Compare `W_max` against `V_max` and *say why*.
-6. **Not backtracking.** "Maximum value 6" is half the answer; the item set is the other half.
-7. **Calling knapsack DP polynomial.** It's *pseudo*polynomial.
+# Recall list
 
-## Say these without looking
+$$
+\begin{aligned}
+&\text{TU} \iff \text{every square submatrix has } \det \in \{-1,0,+1\} \\
+&\text{TU} + b \text{ integral} \implies \text{integral polyhedron} \implies \text{IP solvable as an LP} \\
+&\text{incidence matrix of a bipartite or directed graph is TU} \\
+&B[i,w] = \max\{B[i-1,w],\; v_i + B[i-1,w-w_i]\} \\
+&O(nW) \text{ vs } O(nV)\text{: use the smaller}
+\end{aligned}
+$$
 
-```
-TU  ⟺  every square submatrix has det ∈ {−1,0,+1}
-TU + b integral  ⟹  integral polyhedron  ⟹  IP solvable in poly time
-incidence matrix of a bipartite or directed graph is TU
-B[i,w] = max{ B[i−1,w] , vᵢ + B[i−1,w−wᵢ] }
-O(nW) vs O(nV) — run the smaller
-```
-
-## Warm-up and papers
+# Exercises and papers
 
 ```
-TU     →  D8.1 Unimodularity [EXAM], then S8.1 TU + matroid dual [EXAM]
-          paper: SS21 A5b
-DP     →  D7.1 / T7.1 Cutting [EXAM]
-          paper: SS23 E4 (14 pts)
+TU  →  D8.1 Unimodularity [EXAM], then S8.1 TU + matroid dual [EXAM]
+       paper: SS21 A5b
+DP  →  D7.1 / T7.1 Cutting [EXAM]
+       paper: SS23 E4 (14 pts)
 ```
 
-`S8.1` covers TU and matroids together — efficient given the half-day budget.
+`S8.1` covers TU and matroids together.
 
-## Connection
-
-TU is "when is the **LP relaxation** exactly right". A matroid is "when is **greedy** exactly
-right" ([08a](08a-matroids-lesson.md)). Both answer *when is this combinatorial problem secretly
-easy* — the theme of the whole chapter.
+TU says when the LP relaxation is exact; a matroid says when greedy is exact ([08a](08a-matroids-lesson.md)).

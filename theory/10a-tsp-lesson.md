@@ -1,19 +1,17 @@
-# TSP and approximation — from scratch
+# TSP and approximation
 
-Teaching companion to [10-tsp-and-approximation](10-tsp-and-approximation.md).
-
-An **E6** block with a ~30-minute budget. Mechanics and definitions only.
+Companion to [10-tsp-and-approximation](10-tsp-and-approximation.md). Exam block E6/P6, about 30 minutes.
 
 ---
 
-# Part 0 — What the exam asks
+# Part 0: What the exam asks
 
-TSP has never been a "compute the optimal tour" question. It's been:
+TSP questions never ask for an optimal tour. Past questions:
 
 ```
 SS23 E6 (12 pts)  "Fabienne believes she has found a modification of the
                    Nearest-Neighbor Heuristic that solves TSP optimally…"
-                  → DISPROVE it
+                  → disprove it
 
 SS24 P6  (18 pts) "To which NP-hard problem learned in the lecture does this
                    correspond?"
@@ -22,239 +20,221 @@ SS24 P6  (18 pts) "To which NP-hard problem learned in the lecture does this
 T9.2              "To which of the problem classes (Assignment, Knapsack, Bin
                    Packing, Set Covering, Traveling Salesperson) can this be
                    assigned? Give reasons."
+
+2026 P1f          a 1.5-approximation returns 30 → bound OPT
 ```
 
-So: **definitions, the model, the approximation ratios, and the ability to break a heuristic.**
+What you need: the definitions, the IP model, the approximation ratios, and how to break a heuristic.
 
 ---
 
-# Part 1 — Euler vs Hamilton
+# Part 1: Euler vs Hamilton
 
-Two words that sound similar and mean opposite things. Get them straight — they're the cheapest
-marks in the topic.
+| Term | Definition |
+|---|---|
+| Eulerian path | uses every EDGE exactly once |
+| Eulerian cycle | an Eulerian path that returns to its start |
+| Hamiltonian cycle | visits every NODE exactly once |
 
-```
-EULERIAN path    uses every EDGE exactly once
-EULERIAN cycle   an Eulerian path that returns to its start
+$$
+\begin{aligned}
+&\text{Euler} \to \text{edges} && (\text{polynomial}) \\
+&\text{Hamilton} \to \text{nodes} && (\text{NP-complete})
+\end{aligned}
+$$
 
-HAMILTONIAN cycle  visits every NODE exactly once
-```
+**TSP:** find a minimum-weight Hamiltonian cycle.
 
-```
-Euler  →  EDGES        (easy — solvable in polynomial time)
-Hamilton → NODES       (hard — NP-complete)
-```
+$$
+\begin{aligned}
+&\text{brute force:} && O(n!) \\
+&\text{symmetric TSP:} && (n-1)!/2 \text{ distinct tours} && c_{ij} = c_{ji} \\
+&\text{asymmetric TSP:} && (n-1)! \text{ distinct tours} && c_{ij} \ne c_{ji}
+\end{aligned}
+$$
 
-**TSP = find a minimum-weight Hamiltonian cycle.**
-
-```
-brute force:        O(n!)
-symmetric TSP:      (n−1)!/2 distinct tours       c_ij = c_ji
-asymmetric TSP:     (n−1)!   distinct tours       c_ij ≠ c_ji
-```
-
-**Metric TSP** additionally satisfies the **triangle inequality** `c_ik ≤ c_ij + c_jk` — going
-direct is never worse than detouring. Both approximation guarantees below need it.
-
----
-
-# Part 2 — TSP as an integer program
-
-## Step 1 — the degree constraints
-
-```
-min  Σᵢ Σⱼ c_ij x_ij
-
-s.t. Σ_{i ≠ j} x_ij = 1     ∀j        each city ENTERED once
-     Σ_{j ≠ i} x_ij = 1     ∀i        each city LEFT once
-     x_ij ∈ {0,1}
-```
-
-## Step 2 — why that isn't enough
-
-Those constraints are **exactly the assignment problem**, and they permit **subtours**: with six
-cities you could get two disjoint triangles. Every city is entered once and left once, yet it
-isn't a tour.
-
-So you need subtour elimination. **Two ways, and the exam wants the trade-off.**
-
-## SEC — Dantzig–Fulkerson–Johnson
-
-```
-Σ_{i∈U} Σ_{j∈U} x_ij  ≤  |U| − 1      for every U ⊂ N with 2 ≤ |U| ≤ n−1
-```
-*"Any group of `k` cities can contain at most `k−1` tour edges among themselves"* — so it can't
-close into its own cycle.
-
-```
-2-city:  x_ij + x_ji ≤ 1
-3-city:  x_ij + x_jk + x_ki ≤ 2
-```
-
-**Exponentially many constraints (~2ⁿ), but a tight relaxation.**
-
-## MTZ — Miller–Tucker–Zemlin
-
-Give city `i` a position label `u_i` and force the labels to increase along the tour:
-
-```
-u₁ = 1
-2 ≤ u_i ≤ n                              ∀ i ≠ 1
-u_j ≥ u_i + 1 − (n−1)(1 − x_ij)          ∀ i,j ≠ 1, i ≠ j
-```
-
-Equivalently, the form the central exercise writes:
-```
-u_i − u_j + 1 ≤ (n−1)(1 − x_ij)
-```
-
-**Only `O(n²)` constraints, but a weak relaxation.**
-
-> **Use the lecture's `(n−1)` version.** The textbook form `u_i − u_j + n·x_ij ≤ n−1` is the same
-> family with big-M `= n`; the course uses `n−1`.
-
-## The trade-off, in one line
-
-```
-SEC:  exponential many constraints, TIGHT relaxation
-MTZ:  polynomial many constraints, WEAK relaxation
-```
-
-That sentence is the answer whenever the comparison is asked.
+**Metric TSP:** symmetric and the triangle inequality $c_{ik} \le c_{ij} + c_{jk}$ holds. Both approximation guarantees below require it.
 
 ---
 
-# Part 3 — Heuristics and their guarantees
+# Part 2: TSP as an integer program
+
+## Degree constraints
+
+$$
+\begin{aligned}
+\min\ & \sum_i \sum_j c_{ij} x_{ij} \\
+\text{s.t. } & \sum_{i \ne j} x_{ij} = 1 \quad \forall j && \text{each city entered once} \\
+& \sum_{j \ne i} x_{ij} = 1 \quad \forall i && \text{each city left once} \\
+& x_{ij} \in \{0,1\}
+\end{aligned}
+$$
+
+## Why that is not enough
+
+These are exactly the assignment constraints, and they allow **subtours**: with six cities, two disjoint triangles satisfy them. You need subtour elimination, and there are two ways to do it.
+
+## SEC (Dantzig–Fulkerson–Johnson)
+
+$$\sum_{i\in U} \sum_{j\in U} x_{ij} \le \lvert U\rvert - 1 \qquad \text{for every } U \subset N \text{ with } 2 \le \lvert U\rvert \le n-1$$
+
+A group of $k$ cities may contain at most $k-1$ tour edges among themselves, so it cannot close into its own cycle.
+
+$$
+\begin{aligned}
+&\text{2-city:} && x_{ij} + x_{ji} \le 1 \\
+&\text{3-city:} && x_{ij} + x_{jk} + x_{ki} \le 2
+\end{aligned}
+$$
+
+## MTZ (Miller–Tucker–Zemlin)
+
+Give each city a position label $u_i$ and force the labels to increase along the tour:
+
+$$
+\begin{aligned}
+&u_1 = 1 \\
+&2 \le u_i \le n && \forall\, i \ne 1 \\
+&u_j \ge u_i + 1 - (n-1)(1 - x_{ij}) && \forall\, i,j \ne 1,\ i \ne j
+\end{aligned}
+$$
+
+Equivalent form used in the central exercise:
+
+$$u_i - u_j + 1 \le (n-1)(1 - x_{ij})$$
+
+If $x_{ij} = 1$, this reads $u_j \ge u_i + 1$. A subtour avoiding city 1 would need labels increasing all the way around a cycle, which is impossible.
+
+Use the lecture's big-M of $(n-1)$. The textbook form $u_i - u_j + n\cdot x_{ij} \le n-1$ uses $M = n$.
+
+## Trade-off
+
+| Formulation | Constraints | LP relaxation |
+|---|---|---|
+| SEC | exponentially many | tight |
+| MTZ | $O(n^2)$ | weak |
+
+---
+
+# Part 3: Heuristics and their guarantees
 
 ## Nearest neighbour
 
-```
 1. Start anywhere; mark visited.
 2. Go to the nearest unvisited node.
 3. Repeat until all visited, then close the tour.
-```
-`O(n²)`, and **no constant-factor guarantee at all.** It can be arbitrarily bad. That's what
-SS23 E6 exploits.
 
-## MST-doubling — ratio 2
+Runs in $O(n^2)$ and has **no constant-factor guarantee**. SS23 E6 exploits this.
 
-```
-1. Compute the MST T.
-2. DOUBLE every edge of T  →  every node now has even degree.
+## MST-doubling (ratio 2)
+
+1. Compute the MST $T$.
+2. Double every edge of $T$, so every node has even degree.
 3. Find an Euler tour on the doubled multigraph.
-4. Walk it, SKIPPING already-visited nodes (shortcutting).
+4. Walk it, skipping already-visited nodes (shortcutting).
 5. Close back to the start.
-```
 
-## Christofides — ratio 3/2
+Why 2: $c(\text{MST}) \le \text{OPT}$ (delete one edge of the optimal tour to get a spanning tree), the Euler tour costs $2\cdot c(\text{MST})$, and shortcutting does not increase cost under the triangle inequality.
 
-```
-1. Compute the MST T.
-2. Let O = the ODD-degree vertices of T.
-3. Compute a MINIMUM-WEIGHT PERFECT MATCHING M on O.
-4. T ∪ M is a multigraph with all degrees even → find an Euler tour.
+## Christofides (ratio $3/2$)
+
+1. Compute the MST $T$.
+2. $O$ = the odd-degree vertices of $T$.
+3. Compute a minimum-weight perfect matching $M$ on $O$.
+4. $T \cup M$ has all degrees even; find an Euler tour.
 5. Shortcut repeated vertices.
-```
 
-The only difference is step 2–3: **doubling everything (ratio 2) versus matching just the
-odd-degree vertices (ratio 3/2).** Both require the triangle inequality, and both finish by
-shortcutting an Euler tour.
 
-## The correction you must carry in
+The only difference from MST-doubling is steps 2–3: match the odd-degree vertices instead of doubling every edge. Both need the triangle inequality and both end by shortcutting an Euler tour.
 
-> **Christofides = 3/2**, with the odd-degree matching.
-> **MST-doubling = 2**, no matching.
->
-> **Past papers and `ce-09-demo` D9.1 mislabel MST-doubling as "Christofides' 2-approximation".**
-> If a question is phrased their way, **execute MST-doubling** — that is what gets graded. Adding
-> a one-line note that Christofides proper is the 3/2 algorithm costs nothing and shows you know.
+## The mislabel
 
----
+Christofides is the $3/2$ algorithm with the odd-degree matching. MST-doubling is the 2-approximation without a matching.
 
-# Part 4 — Breaking a heuristic (SS23 E6)
+Past papers and `ce-09-demo` D9.1 call MST-doubling "Christofides' 2-approximation". If a question is worded that way, execute MST-doubling, since that is what is graded. You can add one line noting that Christofides proper is the $3/2$ algorithm.
 
-> Fabienne claims a modified Nearest-Neighbour heuristic solves TSP **optimally**, given: a
-> directed graph with all `c_uv ≥ 1`, a start node `a`, and an edge `(v,a)` of cost exactly 1
-> from every other node back to `a`.
+## Bounding OPT from an approximation
 
-The claim is false, and the method is the same as the max-flow counterexamples:
+An $r$-approximation returning cost $C$ gives:
 
-```
-1. Build a SMALL instance satisfying every stated assumption. Check them explicitly.
-2. Run the heuristic and record the tour it produces, with its cost.
-3. Exhibit a BETTER tour.
-4. Write the sentence: the heuristic's tour costs more, so it is not optimal.
-```
+$$C / r \le \text{OPT} \le C$$
 
-The lever is always the same: **greedy commits to a cheap early edge and pays for it later.** Make
-the first hop attractive and the consequence expensive.
+The lower bound comes from the guarantee, the upper bound from the returned tour being feasible. 2026 P1f: a 1.5-approximation returns 30, so $20 \le \text{OPT} \le 30$.
 
-Keep it to four or five nodes. And **check the assumptions hold in your instance** — a
-counterexample that violates the premises proves nothing.
+With an MST available, the best lower bound is $\max(c(\text{MST}), C/r)$. CE D9.1: $c(\text{MST}) = 13.24$, tours 17.6 and 22.19, so $13.24 \le \text{OPT} \le 17.6$.
 
 ---
 
-# Part 5 — Classifying a problem
+# Part 4: Breaking a heuristic (SS23 E6)
 
-SS24 P6b and T9.2 both ask *"which known problem class is this?"* — free marks if you can pattern-match.
+> Fabienne claims a modified nearest-neighbour heuristic solves TSP optimally, given: a directed graph with all $c_{uv} \ge 1$, a start node $a$, and an edge $(v,a)$ of cost exactly 1 from every other node back to `a`.
+
+Method:
+
+1. Build a small instance that satisfies every stated assumption. Check each one.
+2. Run the heuristic and record its tour and cost.
+3. Give a better tour.
+4. Conclude: the heuristic's tour costs more, so it is not optimal.
+
+Greedy commits to a cheap first edge and pays later, so make the first hop cheap and the node it leads to expensive to leave. Four or five nodes are enough.
+
+---
+
+# Part 5: Classifying a problem
+
+SS24 P6b and T9.2 both ask which known problem class a story belongs to.
 
 | Signature in the wording | Class |
 |---|---|
-| pair up `n` things with `n` things, one-to-one | **Assignment** |
+| pair $n$ things with $n$ things, one-to-one | **Assignment** |
 | one budget, pick items to maximise value | **Knapsack** |
-| minimise the *number of containers* used | **Bin packing** |
+| minimise the number of containers used | **Bin packing** |
 | cover every element at least once, minimise cost | **Set covering** |
 | visit every node once and return | **TSP** |
-| pick nodes so every *edge* is touched | **Vertex cover** ← SS24 P6 |
+| pick nodes so every edge is touched | **Vertex cover** (SS24 P6) |
 
-SS24 P6's model was `min Σᵢ xᵢ s.t. xᵢ + xⱼ ≥ 1 ∀(i,j) ∈ E` — every street needs an ATM at one of
-its two ends. That's vertex cover. Follow-up: on a complete graph with `n` nodes you need
-`n − 1`.
+SS24 P6's model was $\min \sum_i x_i \text{ s.t. } x_i + x_j \ge 1\ \forall (i,j) \in E$: every street needs an ATM at one of its ends, which is vertex cover. Follow-up: a complete graph on $n$ nodes needs $n - 1$.
 
-## NP-hardness of TSP, if asked
+## NP-hardness of TSP
 
 Reduce Hamiltonian Cycle to metric TSP:
-```
-1. Given an unweighted graph G = (V,E), build the complete graph on V.
-2. Weight edges:  1 if (i,j) ∈ E,  else 2.
-3. Symmetric and satisfies the triangle inequality → a metric TSP instance.
-4. Ask "is there a tour of length |V|?" — yes iff G has a Hamiltonian cycle.
-```
+1. Given an unweighted graph $G = (V,E)$, build the complete graph on $V$.
+2. Weight edges 1 if $(i,j) \in E$, else 2.
+3. Symmetric and satisfies the triangle inequality, so it is metric TSP.
+4. A tour of length $\lvert V\rvert$ exists iff $G$ has a Hamiltonian cycle.
 
 ---
 
-# Traps and drills
+# Traps
 
-## Where points are lost
+1. Swapping Euler and Hamilton. Euler = edges, Hamilton = nodes.
+2. Stopping at degree constraints. They allow subtours; add SEC or MTZ.
+3. The Christofides / MST-doubling mislabel. Execute what the wording describes.
+4. Quoting a ratio without the triangle inequality.
+5. Claiming nearest neighbour has a guarantee.
+6. Using the textbook MTZ big-M $n$ instead of $n-1$.
+7. Forgetting the free upper bound $\text{OPT} \le C$.
 
-1. **Swapping Euler and Hamilton.** Euler = edges, Hamilton = nodes.
-2. **Degree constraints alone.** They permit subtours — say so, then add SEC or MTZ.
-3. **The Christofides / MST-doubling mislabel.** Execute what the wording describes.
-4. **Forgetting the triangle inequality** when quoting either ratio.
-5. **Claiming nearest neighbour has a guarantee.** It has none.
-6. **Using the textbook MTZ big-M `n`** instead of the lecture's `n−1`.
+# Recall list
 
-## Say these without looking
+- Euler = every EDGE once (easy); Hamilton = every NODE once (NP-complete)
+- degree constraints alone = assignment problem, allows subtours
+- SEC: $\sum_{i,j\in U} x_{ij} \le \lvert U\rvert - 1$ (exponential, tight)
+- MTZ: $u_i - u_j + 1 \le (n-1)(1-x_{ij})$ (polynomial, weak)
+- $c(\text{MST}) \le \text{OPT}$
+- MST-doubling $= 2$; Christofides $= 3/2$ (odd-degree matching)
+- both need the triangle inequality
+- nearest neighbour = no guarantee
+- $r$-approx returns $C \implies C/r \le \text{OPT} \le C$
+
+# Exercises
 
 ```
-Euler = every EDGE once (easy)     Hamilton = every NODE once (NP-complete)
-degree constraints alone = the assignment problem, allows subtours
-SEC: Σ_{i,j∈U} x_ij ≤ |U|−1        exponential, tight
-MTZ: u_i − u_j + 1 ≤ (n−1)(1−x_ij)  polynomial, weak
-MST-doubling = 2      Christofides = 3/2 (odd-degree matching)
-both need the triangle inequality
-nearest neighbour = no guarantee
+D9.1  TSP-Approximation        [EXAM]  run the approximation; start here
+T9.1  Euler vs Hamilton        [DRILL] definitions
+T9.2  Filling of ATMs          [EXAM]  "which problem class?" (SS24 P6b type)
+
+papers: SS24 P6 (18), SS23 E6 (12), 2026 P1f
 ```
 
-## Warm-up and papers
-
-```
-D9.1  TSP-Approximation        [EXAM]  execute the approximation — start here
-T9.1  Euler vs Hamilton        [DRILL] the definitions
-T9.2  Filling of ATMs          [EXAM]  "which problem class?" = SS24 P6b's type
-
-papers: SS24 P6 (18), SS23 E6 (12)
-```
-
-Sheet 9 is `exercises/10-integer-programming-tsp/sheet-09-exercises.pdf`; CE-09 is
-`central exercises/10-integer-programming-tsp/ce-09-demo.pdf`.
+Sheet 9: `exercises/10-integer-programming-tsp/sheet-09-exercises.pdf`. CE-09: `central exercises/10-integer-programming-tsp/ce-09-demo.pdf`.
